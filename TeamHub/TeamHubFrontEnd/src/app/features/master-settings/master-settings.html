@@ -1,0 +1,106 @@
+<div class="page-shell">
+	<app-topbar />
+
+	<main class="settings-panel" *ngIf="config as master">
+		<div class="heading-row">
+			<h1 class="page-label">{{ master.title }}</h1>
+			<button class="back-button" type="button" (click)="goBack()">‹ Back</button>
+		</div>
+
+		<form #masterForm class="edit-form" autocomplete="off" [class.cotivity-employee-form]="cotivityEmployeeSettings" [formGroup]="form" (ngSubmit)="save()" (focusin)="normalizeNullFormValues()">
+			<div class="form-fields">
+				@for (field of fields; track field.key) {
+					<label class="form-field" [class.checkbox-field]="field.type === 'checkbox'" [class.cotivity-name-field]="field.key === 'cotivityEmployeeName'">
+						<span [class.visually-hidden]="cotivityEmployeeSettings && (field.key === 'cotivityEmployeeName' || field.type === 'select')">{{ field.label }}</span>
+						@if (field.type === 'checkbox') {
+							<input type="checkbox" autocomplete="off" [formControlName]="field.key" (blur)="showFieldError(field.key)">
+						} @else if (field.type === 'select') {
+							<select autocomplete="off" [formControlName]="field.key" [required]="field.required !== false" [attr.aria-label]="cotivityEmployeeSettings ? field.label : null" (blur)="showFieldError(field.key)">
+								<option [ngValue]="null">Select {{ field.label.toLowerCase() }}</option>
+								<option *ngFor="let option of optionsFor(field)" [ngValue]="option.id">{{ option.name }}</option>
+							</select>
+						} @else {
+							<input autocomplete="off" [type]="field.type" [formControlName]="field.key" [required]="field.required !== false" [attr.placeholder]="cotivityEmployeeSettings && field.key === 'cotivityEmployeeName' ? 'Employee name' : null" [attr.aria-label]="cotivityEmployeeSettings && field.key === 'cotivityEmployeeName' ? field.label : null" [attr.minlength]="field.minLength ?? null" [attr.maxlength]="field.maxLength ?? null" [attr.min]="field.min ?? null" [attr.max]="field.max ?? null" [attr.step]="field.integer ? 1 : null" (input)="normalizeNullInput($event, field.key)" (blur)="showFieldError(field.key)">
+						}
+					</label>
+				}
+				<div class="cotivity-form-footer" *ngIf="cotivityEmployeeSettings">
+					<section class="image-upload" [class.with-preview]="selectedImageBase64 || currentImageBase64" aria-label="Cotivity employee image">
+						<img *ngIf="selectedImageBase64 || currentImageBase64" class="image-preview" [src]="selectedImageBase64 || currentImageBase64" alt="Cotivity employee preview">
+						<div class="image-control">
+							<input #imageInput id="cotivityEmployeeImage" type="file" aria-label="Choose Cotivity employee image" accept="image/jpeg,image/png,image/gif" (change)="onImageSelected($event)">
+							<span class="image-help" *ngIf="isReadingImage">Preparing image...</span>
+							<span class="image-help" *ngIf="!isReadingImage && imageFileName">{{ imageFileName }}</span>
+							<span class="image-help" *ngIf="!isReadingImage && !imageFileName">JPEG, PNG, or GIF up to 5 MB</span>
+							<button *ngIf="selectedImageBase64" class="remove-image-action" type="button" (click)="clearSelectedImage(imageInput)">Remove image</button>
+						</div>
+					</section>
+					<div class="form-actions">
+						<button class="primary-action" type="submit" [disabled]="isSaving || isReadingImage">
+							{{ isSaving ? 'Saving...' : editingId === null ? 'Create' : 'Update' }}
+						</button>
+						<button class="secondary-action" type="button" *ngIf="editingId !== null" (click)="resetForm()">Cancel</button>
+					</div>
+				</div>
+			</div>
+			<div class="form-actions" *ngIf="!cotivityEmployeeSettings">
+				<button class="primary-action" type="submit" [disabled]="isSaving || isReadingImage">
+					{{ isSaving ? 'Saving...' : editingId === null ? 'Create' : 'Update' }}
+				</button>
+				<button class="secondary-action" type="button" *ngIf="editingId !== null" (click)="resetForm()">Cancel</button>
+			</div>
+		</form>
+
+		<div class="table-wrap">
+			<p class="loading-state" *ngIf="isLoading">Loading {{ master.title.toLowerCase() }}...</p>
+			<table *ngIf="!isLoading">
+				<thead>
+					<tr>
+						<th *ngIf="cotivityEmployeeSettings">Image</th>
+						@for (field of fields; track field.key) {
+							<th>{{ field.label }}</th>
+						}
+						<th class="actions-heading">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let row of rows">
+						<td *ngIf="cotivityEmployeeSettings">
+							<img *ngIf="row['imageBase64']" class="row-image" [src]="row['imageBase64']" alt="Cotivity employee">
+							<span *ngIf="!row['imageBase64']">-</span>
+						</td>
+						@for (field of fields; track field.key) {
+							<td>
+								<span *ngIf="field.type === 'checkbox'" class="status-pill" [class.inactive]="!row[field.key]">
+									{{ row[field.key] ? 'Active' : 'Inactive' }}
+								</span>
+								<span *ngIf="field.type !== 'checkbox'">{{ displayValue(row, field) }}</span>
+							</td>
+						}
+						<td class="row-actions">
+							<div class="row-action-buttons">
+								<button class="text-action" type="button" (click)="edit(row)">Edit</button>
+								<button class="text-action danger" type="button" (click)="delete(row)">Delete</button>
+							</div>
+						</td>
+					</tr>
+					<tr *ngIf="rows.length === 0">
+						<td class="empty-state" [attr.colspan]="fields.length + (cotivityEmployeeSettings ? 2 : 1)">No {{ master.title.toLowerCase() }} found.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<app-pagination
+			[pageNumber]="pageNumber"
+			[pageSize]="pageSize"
+			[totalCount]="totalCount"
+			[isLoading]="isLoading"
+			(pageChange)="changePage($event)"
+			(pageSizeChange)="changePageSize($event)"
+		/>
+	</main>
+
+	<main class="settings-panel" *ngIf="!config">
+		<p class="status-message error" role="alert">{{ errorMessage }}</p>
+	</main>
+</div>

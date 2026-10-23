@@ -1,0 +1,4 @@
+<div class="results-header">
+  <span>{{ isLoading ? 'Loading employees...' : 'All Employees (' + count + ')' }}</span>
+  <button *ngIf="showAddButton" type="button" class="add-btn" routerLink="/employees/add"><span>+</span>Add Employee</button>
+</div>

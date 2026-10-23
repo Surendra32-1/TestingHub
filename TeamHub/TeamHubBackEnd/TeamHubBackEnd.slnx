@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TeamHub.API/TeamHub.API.csproj" />
+    <Project Path="src/TeamHub.Application/TeamHub.Application.csproj" />
+    <Project Path="src/TeamHub.Domain/TeamHub.Domain.csproj" />
+    <Project Path="src/TeamHub.Auth/TeamHub.Auth.csproj" />
+    <Project Path="src/TeamHub.Infrastructure/TeamHub.Infrastructure.csproj" />
+    <Project Path="src/TeamHub.Shared/TeamHub.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TeamHub.IntegrationTests/TeamHub.IntegrationTests.csproj" />
+    <Project Path="tests/TeamHub.UnitTests/TeamHub.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,25 @@
+<div class="controls">
+  <label class="search-box" aria-label="Search employees">
+    <span class="search-icon">⌕</span>
+    <input
+      type="search"
+      placeholder="Search employees..."
+      [ngModel]="searchTerm"
+      (ngModelChange)="updateSearchTerm($event)"
+      aria-label="Search by name, designation, or department"
+    />
+  </label>
+
+  <select
+    class="filter-pill"
+    [ngModel]="searchField"
+    (ngModelChange)="updateSearchField($event)"
+    aria-label="Search by field"
+  >
+    <option value="all">All</option>
+    <option value="name">Name</option>
+    <option value="designation">Designation</option>
+    <option value="department">Department</option>
+  </select>
+  <!-- <button class="more-button" type="button" aria-label="More options">⋯</button> -->
+</div>

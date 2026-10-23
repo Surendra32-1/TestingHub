@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "bA0INav6iJE=",
+  "success": true,
+  "projectFilePath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\fluentvalidation\\11.11.0\\fluentvalidation.11.11.0.nupkg.sha512",
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.11.0\\fluentvalidation.dependencyinjectionextensions.11.11.0.nupkg.sha512",
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\mediatr\\12.4.1\\mediatr.12.4.1.nupkg.sha512",
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\sixlabors.imagesharp\\4.1.2\\sixlabors.imagesharp.4.1.2.nupkg.sha512",
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\system.io.hashing\\8.0.0\\system.io.hashing.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

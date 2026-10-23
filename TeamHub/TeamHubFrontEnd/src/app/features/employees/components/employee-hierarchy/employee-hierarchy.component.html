@@ -1,0 +1,113 @@
+<div class="hierarchy-layout">
+  <div class="hierarchy-toolbar">
+    <p class="chart-caption">{{ directOnly() ? 'Direct reporting structure' : 'Reporting structure' }}</p>
+    <button type="button" class="back-button" (click)="back.emit()">Back to directory</button>
+  </div>
+
+  <p *ngIf="isLoading()" class="hierarchy-message" aria-live="polite">Loading employee hierarchy...</p>
+  <p *ngIf="errorMessage() as message" class="hierarchy-message error" role="alert">{{ message }}</p>
+
+  <ng-container *ngIf="hierarchy() as data">
+    <div class="chart-scroll">
+      <div #chartCanvas class="chart-canvas">
+        <svg #connectorLayer class="connector-layer" aria-hidden="true">
+          <defs>
+            <marker
+              id="hierarchy-arrow"
+              markerWidth="8"
+              markerHeight="8"
+              refX="7"
+              refY="4"
+              orient="auto"
+              markerUnits="userSpaceOnUse"
+            >
+              <path d="M 0 0 L 8 4 L 0 8 z"></path>
+            </marker>
+          </defs>
+          <path
+            *ngFor="let connector of connectors(); trackBy: trackByConnectorId"
+            class="connector-path"
+            [attr.d]="connector.path"
+            marker-end="url(#hierarchy-arrow)"
+          ></path>
+        </svg>
+
+        <div class="chart-grid">
+          <div class="employee-column">
+            <section
+              *ngIf="visibleManagers().length > 0"
+              class="hierarchy-branch manager-branch"
+              aria-labelledby="infinite-hierarchy-heading"
+            >
+              <h2 id="infinite-hierarchy-heading">{{ directOnly() ? 'Immediate Manager' : 'Infinite Hierarchy' }}</h2>
+              <div class="manager-chain">
+                <app-hierarchy-node
+                  *ngFor="let manager of visibleManagers(); trackBy: trackByEmployeeId"
+                  [attr.data-node-id]="'employee-' + manager.employeeId"
+                  [person]="employeeNode(manager)"
+                />
+              </div>
+            </section>
+
+            <section class="hierarchy-branch selected-branch" aria-labelledby="selected-employee-heading">
+              <h2 id="selected-employee-heading">Selected Employee</h2>
+              <app-hierarchy-node
+                class="selected-node"
+                [attr.data-node-id]="'employee-' + data.selectedEmployee.employeeId"
+                [person]="employeeNode(data.selectedEmployee)"
+                [selected]="true"
+              />
+            </section>
+
+            <section
+              *ngIf="reportingTree()?.reports?.length"
+              class="hierarchy-branch reporting-branch"
+              aria-labelledby="direct-reports-heading"
+            >
+              <h2 id="direct-reports-heading">Direct Reports</h2>
+              <ng-container *ngIf="reportingTree() as root">
+                <ng-template #reportNode let-node>
+                  <li class="report-node">
+                    <app-hierarchy-node
+                      [attr.data-node-id]="'employee-' + node.employeeId"
+                      [person]="employeeNode(node)"
+                    />
+                    <ul class="report-tree" *ngIf="node.reports.length > 0">
+                      <ng-container *ngFor="let report of node.reports; trackBy: trackByEmployeeId">
+                        <ng-container
+                          *ngTemplateOutlet="reportNode; context: { $implicit: report }"
+                        ></ng-container>
+                      </ng-container>
+                    </ul>
+                  </li>
+                </ng-template>
+                <ul class="report-tree report-tree-root">
+                  <ng-container *ngFor="let report of root.reports; trackBy: trackByEmployeeId">
+                    <ng-container
+                      *ngTemplateOutlet="reportNode; context: { $implicit: report }"
+                    ></ng-container>
+                  </ng-container>
+                </ul>
+              </ng-container>
+            </section>
+          </div>
+
+          <section
+            *ngIf="cotivityNodes().length > 0"
+            class="hierarchy-branch cotivity-branch"
+            aria-labelledby="cotivity-hierarchy-heading"
+          >
+            <h2 id="cotivity-hierarchy-heading">Cotiviti Hierarchy</h2>
+            <div class="cotivity-chain">
+              <app-hierarchy-node
+                *ngFor="let person of cotivityNodes(); trackBy: trackByNodeId"
+                [attr.data-node-id]="person.id"
+                [person]="person"
+              />
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

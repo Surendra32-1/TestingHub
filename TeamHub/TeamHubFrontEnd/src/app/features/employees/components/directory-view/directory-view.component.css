@@ -1,0 +1,553 @@
+.employee-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(140px, 185px));
+  justify-content: start;
+  gap: 0.85rem;
+}
+
+.employee-table-wrap {
+  overflow: visible;
+  background: #fff;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.65rem;
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.employee-table th,
+.employee-table td {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e5e9ee;
+  white-space: nowrap;
+}
+
+.employee-table th {
+  color: #475569;
+  background: #f8fafc;
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.employee-table td {
+  color: #374151;
+  font-size: 0.88rem;
+}
+
+.employee-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.employee-table tbody tr.menu-open {
+  position: relative;
+  z-index: 2;
+}
+
+.employee-table-avatar {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.employee-table-name {
+  min-width: 12rem;
+  color: #111827 !important;
+  font-weight: 600;
+}
+
+.employee-table-actions {
+  width: 3rem;
+  text-align: center;
+}
+
+.employee-table .employee-action-menu {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  display: inline-block;
+  z-index: 3;
+}
+
+.employee-table-status {
+  height: 5rem;
+  color: #6b7280 !important;
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.employee-card {
+  position: relative;
+  background: #f2f3f5;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.7rem;
+  overflow: visible;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.employee-card.menu-open {
+  z-index: 2;
+}
+
+.avatar-wrap {
+  position: relative;
+  height: 120px;
+  background: #dfe7ee;
+  border-radius: 0.65rem 0.65rem 0 0;
+}
+
+.avatar-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background:#fff;
+  border-radius: 0.65rem 0.65rem 0 0;
+}
+
+.card-body {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  gap: 0.2rem;
+}
+
+.employee-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.card-body h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #111827;
+}
+
+.role {
+  margin: 0;
+  font-size: 0.76rem;
+  color: #6b7280;
+  line-height: 1.35;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 0.1rem;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.63rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.employee-action-menu {
+  position: absolute;
+  bottom: 0.55rem;
+  right: 0.75rem;
+  z-index: 3;
+}
+
+.menu-trigger {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid #cfd6dd;
+  border-radius: 50%;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+}
+
+.menu-trigger:hover {
+  background: #e9edf1;
+}
+
+.menu-trigger[aria-expanded='true'] {
+  border-color: #1e293b;
+  background: #1e293b;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.12);
+}
+
+.menu-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+}
+
+.menu-dots i {
+  width: 0.18rem;
+  height: 0.18rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.action-menu {
+  position: fixed;
+  z-index: 60;
+  width: 2.6rem;
+  padding: 0.2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.7rem;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.04), 0 16px 40px rgba(15, 23, 42, 0.18);
+  animation: menu-in 140ms ease-out;
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.action-menu button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 1.9rem;
+  padding: 0.3rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: #374151;
+  text-align: left;
+  font: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+/* Icon-only rows reveal their meaning as a tooltip on the left on hover. */
+.action-menu button::after {
+  content: attr(data-tip);
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.28rem 0.55rem;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.35rem;
+  background: #ffffff;
+  color: #111827;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease;
+}
+
+.action-menu button:hover::after {
+  opacity: 1;
+}
+
+.action-menu button svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.action-menu .hierarchy-menu-item,
+.action-menu .direct-hierarchy-menu-item {
+  color: #374151;
+}
+
+.action-menu button:hover {
+  background: #eef2f5;
+}
+
+.action-menu .release-menu-item {
+  color: #a12828;
+}
+
+.action-menu .terminate-menu-item:hover {
+  color: #a12828;
+}
+
+.loading-state,
+.empty-state {
+  margin: 2rem 0;
+  color: #4b5563;
+}
+
+@media (max-width: 1100px) {
+  .employee-grid { grid-template-columns: repeat(4, minmax(140px, 185px)); }
+}
+
+@media (max-width: 900px) {
+  .employee-grid { grid-template-columns: repeat(3, minmax(140px, 185px)); }
+}
+
+@media (max-width: 640px) {
+  .employee-grid { grid-template-columns: repeat(2, minmax(0, 170px)); }
+}
+
+.employee-preview {
+  position: fixed;
+  z-index: 1200;
+  width: 320px;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.65rem;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.22);
+  font-size: 0.82rem;
+  color: #374151;
+  animation: previewFade 120ms ease;
+  /* Captures the pointer while visible so hovering toward the card never
+     crosses an underlying employee image and swaps the popup. */
+  pointer-events: auto;
+}
+
+.preview-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.preview-close:hover {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+@keyframes previewFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.preview-loading {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.85rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid #eef1f4;
+}
+
+.preview-image {
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  border-radius: 0.55rem;
+  object-fit: cover;
+  border: 1px solid #e5e9ee;
+}
+
+.preview-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2f5;
+  color: #475569;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Typography mirrors the record-details modal standard across the app. */
+.preview-title h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.preview-title p {
+  margin: 0.15rem 0 0.4rem;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.preview-status {
+  display: inline-block;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.preview-status.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 0.75rem;
+  margin: 0;
+}
+
+.preview-grid div {
+  min-width: 0;
+}
+
+.preview-grid dt {
+  color: #64748b;
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.preview-grid dd {
+  margin: 0.15rem 0 0;
+  color: #374151;
+  font-size: 0.86rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin: 0.85rem 0 0;
+  padding: 0.65rem 0 0;
+  border: 0;
+  border-top: 1px solid #eef1f4;
+  background: none;
+  color: #363738;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 120ms ease;
+}
+
+.preview-cta:hover {
+  color: #242425;
+}
+
+.preview-cta:active {
+  transform: scale(0.97);
+}
+
+/* Sliding underline draws attention to the link on hover. */
+.cta-text {
+  position: relative;
+  /* Text glides in sync with the arrow so the whole CTA feels alive. */
+  animation: ctaTextSlide 1.4s ease-in-out infinite;
+}
+
+.cta-text::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: #555557;
+  transition: width 220ms ease;
+}
+
+.preview-cta:hover .cta-text::after {
+  width: 100%;
+}
+
+/* Arrow loops left-to-right so the CTA feels clickable at a glance. */
+.cta-arrow {
+  display: inline-block;
+  font-size: 1.3rem;
+  line-height: 1;
+  animation: ctaArrowLoop 1.4s ease-in-out infinite;
+}
+
+@keyframes ctaTextSlide {
+  0% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes ctaArrowLoop {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  45% {
+    transform: translateX(6px);
+    opacity: 0.45;
+  }
+  60% {
+    transform: translateX(-3px);
+    opacity: 0.45;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

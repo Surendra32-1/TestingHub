@@ -1,0 +1,362 @@
+<div class="page-shell">
+  <app-topbar />
+  <main class="directory-panel">
+    <div class="heading-row">
+      <h1 class="page-label">{{ employeeId === null ? 'Add Employee' : 'Update Employee' }}</h1>
+      <button class="back-button" type="button" (click)="goBack()">‹ Back</button>
+    </div>
+
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+      <section class="image-upload" aria-label="Employee profile image">
+        <img *ngIf="imageBase64 || currentImageBase64" class="image-preview" [src]="imageBase64 || currentImageBase64" alt="Employee profile preview">
+        <div class="image-upload-controls">
+          <label for="employeeImage">Profile image</label>
+          <input #imageInput id="employeeImage" type="file" accept="image/jpeg,image/png,image/gif" (change)="onImageSelected($event)">
+          <span class="image-help" *ngIf="isReadingImage">Preparing image...</span>
+          <span class="image-help" *ngIf="!isReadingImage && imageFileName">{{ imageFileName }}</span>
+          <span class="image-help" *ngIf="!isReadingImage && !imageFileName">JPEG, PNG, or GIF up to 5 MB</span>
+        </div>
+        <button *ngIf="imageBase64" class="remove-image" type="button" (click)="clearImage(imageInput)">Remove image</button>
+      </section>
+
+      <section class="form-section personal-section">
+        <h2>Personal Information</h2>
+        <div class="row">
+          <div class="field">
+            <label for="eNumber">Employee Number</label>
+            <input id="eNumber" type="number" min="1" max="2147483647" step="1" formControlName="eNumber" required (input)="normalizeNullInput($event, 'eNumber')" (blur)="showFieldError('eNumber')">
+          </div>
+          <div class="field">
+            <label for="firstName">First Name</label>
+            <input id="firstName" type="text" maxlength="100" formControlName="firstName" required (input)="normalizeNullInput($event, 'firstName')" (blur)="showFieldError('firstName')">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="middleName">Middle Name</label>
+            <input id="middleName" type="text" maxlength="100" formControlName="middleName" (input)="normalizeNullInput($event, 'middleName')" (blur)="showFieldError('middleName')">
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <input id="lastName" type="text" maxlength="100" formControlName="lastName" required (input)="normalizeNullInput($event, 'lastName')" (blur)="showFieldError('lastName')">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" maxlength="150" formControlName="email" required (input)="normalizeNullInput($event, 'email')" (blur)="showFieldError('email')">
+          </div>
+          <div class="field">
+            <label for="alternateEmail">Alternate Email</label>
+            <input id="alternateEmail" type="email" maxlength="150" formControlName="alternateEmail" (input)="normalizeNullInput($event, 'alternateEmail')" (blur)="showFieldError('alternateEmail')">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="phoneNumber">Phone Number</label>
+            <input id="phoneNumber" type="tel" maxlength="20" formControlName="phoneNumber" (input)="normalizeNullInput($event, 'phoneNumber')" (blur)="showFieldError('phoneNumber')">
+          </div>
+          <div class="field">
+            <label for="mobileNumber">Mobile Number</label>
+            <input id="mobileNumber" type="tel" maxlength="20" formControlName="mobileNumber" (input)="normalizeNullInput($event, 'mobileNumber')" (blur)="showFieldError('mobileNumber')">
+          </div>
+          <div class="field">
+            <label for="emergencyContactNumber">Emergency Contact Number</label>
+            <input id="emergencyContactNumber" type="tel" maxlength="20" formControlName="emergencyContactNumber" (input)="normalizeNullInput($event, 'emergencyContactNumber')" (blur)="showFieldError('emergencyContactNumber')">
+          </div>
+          <div class="field">
+            <label for="emergencyContactPerson">Emergency Contact Person *</label>
+            <input id="emergencyContactPerson" type="text" maxlength="150" formControlName="emergencyContactPerson" required (input)="normalizeNullInput($event, 'emergencyContactPerson')" (blur)="showFieldError('emergencyContactPerson')">
+          </div>
+          <div class="field">
+            <label for="fatherName">Father Name *</label>
+            <input id="fatherName" type="text" maxlength="150" formControlName="fatherName" required (input)="normalizeNullInput($event, 'fatherName')" (blur)="showFieldError('fatherName')">
+          </div>
+          <div class="field">
+            <label for="motherName">Mother Name</label>
+            <input id="motherName" type="text" maxlength="150" formControlName="motherName" (input)="normalizeNullInput($event, 'motherName')" (blur)="showFieldError('motherName')">
+          </div>
+          <div class="field">
+            <label for="spouseName">Spouse (Optional)</label>
+            <input id="spouseName" type="text" maxlength="150" formControlName="spouseName" (input)="normalizeNullInput($event, 'spouseName')" (blur)="showFieldError('spouseName')">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="extensionNumber">Extension Number</label>
+            <input id="extensionNumber" type="number" min="0" max="2147483647" step="1" formControlName="extensionNumber" required (input)="normalizeNullInput($event, 'extensionNumber')" (blur)="showFieldError('extensionNumber')">
+          </div>
+          <div class="field">
+            <label for="genderId">Gender</label>
+            <select id="genderId" formControlName="genderId" required (blur)="showFieldError('genderId')">
+              <option value="">Select Gender</option>
+              @for(item of genders; track item.genderId){
+                <option [value]="item.genderId">{{ item.genderName }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="bloodGroupId">Blood Group</label>
+            <select id="bloodGroupId" formControlName="bloodGroupId" required (blur)="showFieldError('bloodGroupId')">
+              <option value="">Select Blood Group</option>
+              @for(item of bloodGroups; track item.bloodGroupId){
+                <option [value]="item.bloodGroupId">{{ item.bloodGroupName }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="stationNumber">Station Number</label>
+            <input id="stationNumber" type="text" maxlength="20" formControlName="stationNumber" (input)="normalizeNullInput($event, 'stationNumber')" (blur)="showFieldError('stationNumber')">
+          </div>
+          <div class="field">
+            <label for="lockerNumber">Locker Number</label>
+            <input id="lockerNumber" type="text" maxlength="20" formControlName="lockerNumber" (input)="normalizeNullInput($event, 'lockerNumber')" (blur)="showFieldError('lockerNumber')">
+          </div>
+        </div>
+        <div class="date-pair">
+          <div class="field">
+            <label for="joinedDate">Joined Date (A.D.)</label>
+            <mat-form-field appearance="outline">
+              <input id="joinedDate" matInput [matDatepicker]="joinedPicker" [min]="employeeId === null ? today : null" formControlName="joinedDate" required (blur)="showFieldError('joinedDate')">
+              <mat-datepicker-toggle matSuffix [for]="joinedPicker"></mat-datepicker-toggle>
+              <mat-datepicker #joinedPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="field">
+            <label for="joinedDateBS">Joined Date (B.S.)</label>
+            <app-nepali-date-picker formControlName="joinedDateBS" />
+          </div>
+        </div>
+        <div class="date-pair">
+          <div class="field">
+            <label for="dateOfBirth">Date of Birth (A.D.)</label>
+            <mat-form-field appearance="outline">
+              <input id="dateOfBirth" matInput [matDatepicker]="dobPicker" [max]="maxDateOfBirth" formControlName="dateOfBirth" (blur)="showFieldError('dateOfBirth')">
+              <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dobPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="field">
+            <label for="dateOfBirthBS">Date of Birth (B.S.)</label>
+            <app-nepali-date-picker formControlName="dateOfBirthBS" />
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section certificate-section">
+        <h2>Certificate &amp; Identification</h2>
+        <div class="row">
+          <div class="field">
+            <label for="citizenshipNumber">Citizenship Number</label>
+            <input id="citizenshipNumber" type="text" maxlength="50" formControlName="citizenshipNumber" required (input)="normalizeNullInput($event, 'citizenshipNumber')" (blur)="showFieldError('citizenshipNumber')">
+          </div>
+          <div class="field">
+            <label for="panNumber">PAN Number</label>
+            <input id="panNumber" type="text" maxlength="50" formControlName="panNumber" required (input)="normalizeNullInput($event, 'panNumber')" (blur)="showFieldError('panNumber')">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section skills-section">
+        <h2>Skills</h2>
+        <div class="row">
+          <div class="field">
+            <label for="skillIds">Skills</label>
+            <div id="skillIds" class="selection-list" role="group" aria-label="Employee skills">
+              @for(item of skills; track item.skillId){
+                <div class="selection-row skill-row">
+                  <label class="selection-label">
+                    <input type="checkbox" [checked]="isSkillSelected(item.skillId)" (change)="toggleSkill(item.skillId, $event)">
+                    <span>{{ item.skillName }}</span>
+                  </label>
+                  <label class="skill-level-field" *ngIf="isSkillSelected(item.skillId)">
+                    <span>Level</span>
+                    <select [value]="skillLevelFor(item.skillId)" [attr.aria-label]="'Skill level for ' + item.skillName" (change)="updateSkillLevel(item.skillId, $event)">
+                      @for (level of [1, 2, 3, 4, 5]; track level) {
+                        <option [value]="level">{{ level }}</option>
+                      }
+                    </select>
+                  </label>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <label for="dressIds">Dress Sizes</label>
+            <div id="dressIds" class="selection-list" role="group" aria-label="Employee dress sizes">
+              @for(item of dressSizes; track item.dressId){
+                <label class="selection-row selection-label">
+                  <input type="checkbox" [checked]="isDressSelected(item.dressId)" (change)="toggleDress(item.dressId, $event)">
+                  <span>{{ item.dressName }} - {{ item.size }}</span>
+                </label>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section address-section">
+        <h2>Address</h2>
+        <div class="row">
+          <div class="field">
+            <label for="addressTypeId">Address Type</label>
+            <select id="addressTypeId" formControlName="addressTypeId" (blur)="showFieldError('addressTypeId')">
+              <option value="">Select Address Type</option>
+              @for(item of addressTypes; track item.addressTypeId){
+                <option [value]="item.addressTypeId">{{ item.addressTypeName }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="address">Address Line 1</label>
+            <input id="address" type="text" maxlength="160" formControlName="address" (input)="normalizeNullInput($event, 'address')" (blur)="showFieldError('address')">
+          </div>
+          <div class="field">
+            <label for="addressLine2">Address Line 2</label>
+            <input id="addressLine2" type="text" maxlength="160" formControlName="addressLine2" (input)="normalizeNullInput($event, 'addressLine2')" (blur)="showFieldError('addressLine2')">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="city">City</label>
+            <input id="city" type="text" maxlength="100" formControlName="city" (input)="normalizeNullInput($event, 'city')" (blur)="showFieldError('city')">
+          </div>
+          <div class="field">
+            <label for="state">State</label>
+            <input id="state" type="text" maxlength="100" formControlName="state" (input)="normalizeNullInput($event, 'state')" (blur)="showFieldError('state')">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section team-section">
+        <h2>Team Info</h2>
+        <div class="row">
+          <div class="field">
+            <label for="departmentId">Department</label>
+            <select id="departmentId" formControlName="departmentId" required (blur)="showFieldError('departmentId')">
+              <option value="">Select Department</option>
+              @for(item of departments; track item.departmentId){
+                <option [value]="item.departmentId">{{ item.departmentName }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="designationId">Designation</label>
+            <select id="designationId" formControlName="designationId" required (blur)="showFieldError('designationId')">
+              <option value="">Select Designation</option>
+              @for(item of designations; track item.designationId){
+                <option [value]="item.designationId">{{ item.designationName }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="jobTypeId">Job Type</label>
+            <select id="jobTypeId" formControlName="jobTypeId" required (blur)="showFieldError('jobTypeId')">
+              <option value="">Select Job Type</option>
+              @for(item of jobTypes; track item.jobTypeId){
+                <option [value]="item.jobTypeId">{{ item.jobTypeName }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="roleIds">Role</label>
+            <div id="roleIds" class="selection-list" role="group" aria-label="Employee roles">
+              @for(item of roles; track item.roleId){
+                <label class="selection-row selection-label">
+                  <input type="checkbox" [checked]="isRoleSelected(item.roleId)" (change)="toggleRole(item.roleId, $event)">
+                  <span>{{ item.roleName }}</span>
+                </label>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <label for="teamId">Team</label>
+            <select id="teamId" formControlName="teamId" required (blur)="showFieldError('teamId')">
+              <option value="">Select Team</option>
+              @for(item of teams; track item.teamId){
+                <option [value]="item.teamId">{{ item.teamName }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="recruitmentId">Recruitment Source</label>
+            <select id="recruitmentId" formControlName="recruitmentId" (blur)="showFieldError('recruitmentId')">
+              <option value="">Select Source</option>
+              @for(item of recruitments; track item.recruitmentId){
+                <option [value]="item.recruitmentId">{{ item.recruitmentName }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="leadEmployeeId">Team Lead</label>
+            <select id="leadEmployeeId" formControlName="leadEmployeeId" (blur)="showFieldError('leadEmployeeId')">
+              <option value="">Select Team Lead</option>
+              @for(item of employees; track item.reportingManagerId){
+                <option [value]="item.reportingManagerId">{{ item.reportingManagerName }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="reportToEmployeeId">Report To</label>
+            <select id="reportToEmployeeId" formControlName="reportToEmployeeId" (blur)="showFieldError('reportToEmployeeId')">
+              <option value="">Select Report To</option>
+              @for(item of employees; track item.reportingManagerId){
+                <option [value]="item.reportingManagerId">{{ item.reportingManagerName }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="cotivityEmployeeId">Cotivity Employee</label>
+            <select id="cotivityEmployeeId" formControlName="cotivityEmployeeId" (blur)="showFieldError('cotivityEmployeeId')">
+              <option value="">Select Cotivity Employee</option>
+              @for(item of cotivityEmployees; track item.reportingManagerId){
+                <option [value]="item.reportingManagerId">{{ item.reportingManagerName }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <label class="active-field" for="isActive">
+            <input id="isActive" type="checkbox" formControlName="isActive" (blur)="showFieldError('isActive')">
+            <span>Active</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="form-section account-section" *ngIf="employeeId === null">
+        <h2>Login Account</h2>
+        <div class="row">
+          <label class="active-field" for="createLoginAccount">
+            <input id="createLoginAccount" type="checkbox" formControlName="createLoginAccount">
+            <span>Create login account for this employee</span>
+          </label>
+        </div>
+
+        <div class="row" *ngIf="employeeForm.get('createLoginAccount')?.value">
+          <div class="field">
+            <label for="username">Username</label>
+            <input id="username" type="text" formControlName="username" minlength="3" maxlength="100" autocomplete="username">
+          </div>
+          <div class="field">
+            <label for="initialPassword">Initial Password</label>
+            <input id="initialPassword" type="password" formControlName="initialPassword" minlength="12" maxlength="128" autocomplete="new-password">
+          </div>
+          <div class="field">
+            <label for="confirmInitialPassword">Confirm Initial Password</label>
+            <input id="confirmInitialPassword" type="password" formControlName="confirmInitialPassword" minlength="12" maxlength="128" autocomplete="new-password">
+          </div>
+        </div>
+      </section>
+
+      <button type="submit" [disabled]="isSubmitting || isReadingImage">
+        {{ isReadingImage ? 'Preparing Image...' : isSubmitting ? 'Saving...' : employeeId === null ? 'Create Employee' : 'Update Employee' }}
+      </button>
+    </form>
+  </main>
+</div>

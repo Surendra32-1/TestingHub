@@ -1,0 +1,163 @@
+:host {
+  display: block;
+}
+
+.details-panel {
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.7rem;
+}
+
+.back-button {
+  display: block;
+  margin: 0 0 1rem auto;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.4rem;
+  background: #fff;
+  color: #374151;
+  font: inherit;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background: #f3f4f6;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-image,
+.profile-placeholder {
+  width: 5.5rem;
+  height: 5.5rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.profile-image {
+  border: 1px solid #e5e7eb;
+  object-fit: cover;
+}
+
+.profile-placeholder {
+  display: grid;
+  place-items: center;
+  background: #dbeafe;
+  color: #1e3a8a;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.profile-heading h1,
+.profile-heading p {
+  margin: 0;
+}
+
+.profile-heading h1 {
+  color: #111827;
+  font-size: 1.45rem;
+}
+
+.profile-heading p {
+  margin-top: 0.25rem;
+  color: #64748b;
+}
+
+.status {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.details-section {
+  padding: 1rem 0;
+  border-bottom: 1px solid #eef0f2;
+}
+
+.details-section:last-child {
+  border-bottom: 0;
+}
+
+.details-section h2 {
+  margin: 0 0 0.8rem;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.85rem 1.25rem;
+  margin: 0;
+}
+
+.details-grid dt {
+  margin-bottom: 0.2rem;
+  color: #6b7280;
+  font-size: 0.76rem;
+}
+
+.details-grid dd {
+  margin: 0;
+  color: #1f2937;
+  overflow-wrap: anywhere;
+}
+
+.related-item {
+  padding: 0.65rem 0;
+  border-top: 1px solid #f0f2f4;
+  color: #374151;
+}
+
+.related-item p {
+  margin: 0.25rem 0 0;
+}
+
+.related-item.compact {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.muted,
+.state-message {
+  color: #6b7280;
+}
+
+.state-message.error {
+  color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+  .details-panel {
+    padding: 0.75rem;
+  }
+
+  .profile-image,
+  .profile-placeholder {
+    width: 4.25rem;
+    height: 4.25rem;
+  }
+
+  .related-item.compact {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}

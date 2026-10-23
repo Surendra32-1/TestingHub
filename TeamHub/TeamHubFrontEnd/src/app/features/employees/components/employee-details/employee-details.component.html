@@ -1,0 +1,97 @@
+<section class="details-panel" aria-labelledby="employee-details-heading">
+  <button type="button" class="back-button" (click)="back.emit()">← Back to employees</button>
+
+  <p *ngIf="isLoading" class="state-message" aria-live="polite">Loading employee details...</p>
+  <p *ngIf="!isLoading && errorMessage" class="state-message error">{{ errorMessage }}</p>
+
+  <ng-container *ngIf="employee as person">
+    <header class="profile-header">
+      <img *ngIf="person.imageBase64" class="profile-image" [src]="person.imageBase64" [alt]="person.firstName + ' ' + person.lastName" />
+      <div *ngIf="!person.imageBase64" class="profile-placeholder" aria-hidden="true">
+        {{ person.firstName.charAt(0) }}{{ person.lastName.charAt(0) }}
+      </div>
+      <div class="profile-heading">
+        <h1 id="employee-details-heading">{{ person.firstName }} {{ person.middleName }} {{ person.lastName }}</h1>
+        <p>{{ person.designationName || 'Designation not specified' }}</p>
+        <span class="status" [class.inactive]="!person.isActive">{{ person.isActive ? 'Active' : 'Inactive' }}</span>
+      </div>
+    </header>
+
+    <section class="details-section">
+      <h2>Employment</h2>
+      <dl class="details-grid">
+        <div><dt>Employee number</dt><dd>{{ person.eNumber }}</dd></div>
+        <div><dt>Department</dt><dd>{{ person.departmentName || '—' }}</dd></div>
+        <div><dt>Designation</dt><dd>{{ person.designationName || '—' }}</dd></div>
+        <div><dt>Team</dt><dd>{{ person.teamName || '—' }}</dd></div>
+        <div><dt>Job type</dt><dd>{{ person.jobTypeName || '—' }}</dd></div>
+        <div><dt>Role</dt><dd>{{ person.roleName || '—' }}</dd></div>
+        <div><dt>Joined date (A.D.)</dt><dd>{{ person.joinedDate | date:'mediumDate' }}</dd></div>
+        <div><dt>Joined date (B.S.)</dt><dd>{{ person.joinedDateBS || '—' }}</dd></div>
+        <div><dt>Recruitment</dt><dd>{{ person.recruitmentName || '—' }}</dd></div>
+        <div><dt>Reports to</dt><dd>{{ person.reportsToEmployeeName || '—' }}</dd></div>
+        <div><dt>Lead</dt><dd>{{ person.leadEmployeeName || '—' }}</dd></div>
+        <div><dt>Cotivity employee</dt><dd>{{ person.cotivityEmployeeName || '—' }}</dd></div>
+        <div><dt>Station number</dt><dd>{{ person.stationNumber || '—' }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="details-section">
+      <h2>Contact</h2>
+      <dl class="details-grid">
+        <div><dt>Email</dt><dd>{{ person.email }}</dd></div>
+        <div><dt>Alternate email</dt><dd>{{ person.alternateEmail || '—' }}</dd></div>
+        <div><dt>Phone number</dt><dd>{{ person.phoneNumber || '—' }}</dd></div>
+        <div><dt>Mobile number</dt><dd>{{ person.mobileNumber || '—' }}</dd></div>
+        <div><dt>Emergency contact number</dt><dd>{{ person.emergencyContactNumber || '—' }}</dd></div>
+        <div><dt>Emergency contact person</dt><dd>{{ person.emergencyContactPerson || '—' }}</dd></div>
+        <div><dt>Extension</dt><dd>{{ person.extensionNumber || '—' }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="details-section">
+      <h2>Personal information</h2>
+      <dl class="details-grid">
+        <div><dt>Date of birth (A.D.)</dt><dd>{{ person.dateOfBirth ? (person.dateOfBirth | date:'mediumDate') : '—' }}</dd></div>
+        <div><dt>Date of birth (B.S.)</dt><dd>{{ person.dateOfBirthBS || '—' }}</dd></div>
+        <div><dt>Father name</dt><dd>{{ person.fatherName || '—' }}</dd></div>
+        <div><dt>Mother name</dt><dd>{{ person.motherName || '—' }}</dd></div>
+        <div><dt>Spouse</dt><dd>{{ person.spouseName || '—' }}</dd></div>
+        <div><dt>Gender</dt><dd>{{ person.genderName || '—' }}</dd></div>
+        <div><dt>Blood group</dt><dd>{{ person.bloodGroupName || '—' }}</dd></div>
+        <div><dt>Citizenship number</dt><dd>{{ person.citizenshipNumber || '—' }}</dd></div>
+        <div><dt>PAN number</dt><dd>{{ person.panNumber || '—' }}</dd></div>
+        <div><dt>Locker number</dt><dd>{{ person.lockerNumber || '—' }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="details-section">
+      <h2>Addresses</h2>
+      <p *ngIf="person.addresses.length === 0" class="muted">No address records.</p>
+      <article *ngFor="let address of person.addresses; trackBy: trackByAddressId" class="related-item">
+        <strong>{{ address.addressTypeName }}<span *ngIf="address.isPrimary"> · Primary</span></strong>
+        <p>{{ address.addressLine1 }}<span *ngIf="address.addressLine2">, {{ address.addressLine2 }}</span></p>
+        <p>{{ address.city }}, {{ address.state }}</p>
+      </article>
+    </section>
+
+    <section class="details-section">
+      <h2>Skills</h2>
+      <p *ngIf="person.skills.length === 0" class="muted">No skills listed.</p>
+      <div *ngFor="let skill of person.skills" class="related-item compact">
+        <strong>{{ skill.skillName }}</strong>
+        <span>Level {{ skill.skillLevel }}<span *ngIf="skill.isPrimary"> · Primary</span></span>
+      </div>
+    </section>
+
+    <section class="details-section">
+      <h2>Dress sizes</h2>
+      <p *ngIf="person.dressSizes.length === 0" class="muted">No dress sizes listed.</p>
+      <div *ngFor="let dress of person.dressSizes" class="related-item compact">
+        <strong>{{ dress.dressName }}</strong>
+        <span>{{ dress.size }}</span>
+      </div>
+    </section>
+
+  </ng-container>
+</section>

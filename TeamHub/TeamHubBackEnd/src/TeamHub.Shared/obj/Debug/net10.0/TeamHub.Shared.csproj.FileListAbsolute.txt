@@ -1,0 +1,78 @@
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.deps.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfoInputs.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfo.cs
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.CoreCompileInputs.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\refint\TeamHub.Shared.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\ref\TeamHub.Shared.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.AssemblyReference.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.Shared.deps.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.Shared.pdb
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.Shared.deps.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.deps.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.AssemblyReference.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfoInputs.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfo.cs
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.CoreCompileInputs.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\refint\TeamHub.Shared.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\ref\TeamHub.Shared.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.deps.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.AssemblyReference.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfoInputs.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfo.cs
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.CoreCompileInputs.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\refint\TeamHub.Shared.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\ref\TeamHub.Shared.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.deps.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.AssemblyReference.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfoInputs.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfo.cs
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.CoreCompileInputs.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\refint\TeamHub.Shared.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\ref\TeamHub.Shared.dll
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.Shared.deps.json
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.Shared.dll
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.Shared.pdb
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.Shared.deps.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\Users\snishad\AppData\Local\Temp\TeamHubTest\bin\Debug\net10.0\TeamHub.Shared.deps.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubTest\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\Users\snishad\AppData\Local\Temp\TeamHubTest\bin\Debug\net10.0\TeamHub.Shared.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.deps.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\bin\Debug\net10.0\TeamHub.Shared.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.AssemblyReference.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.GeneratedMSBuildEditorConfig.editorconfig
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfoInputs.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.AssemblyInfo.cs
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.csproj.CoreCompileInputs.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\refint\TeamHub.Shared.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\TeamHub.Shared.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.Shared\obj\Debug\net10.0\ref\TeamHub.Shared.dll
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Shared.deps.json
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Shared.dll
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Shared.pdb

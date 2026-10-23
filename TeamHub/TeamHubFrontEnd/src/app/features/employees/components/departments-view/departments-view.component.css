@@ -1,0 +1,138 @@
+.department-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.department-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.7rem;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.department-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.department-leader-avatar,
+.department-avatar-placeholder {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: 0 0 2.4rem;
+  border: 1px solid #dfe3e8;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.department-avatar-placeholder {
+  display: grid;
+  place-items: center;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.department-option:hover,
+.department-option:focus-visible {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.department-option:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.department-arrow {
+  color: #64748b;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.department-heading {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.department-heading h2 {
+  /* Uniform pill page-label, matching Directory/form headings project-wide. */
+  display: inline-block;
+  align-self: flex-start;
+  margin: 0;
+  padding: 0.52rem 0.9rem;
+  background: #ffffff;
+  color: #111827;
+  border-radius: 0.38rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+}
+
+.department-heading p {
+  margin: 0.45rem 0 0;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.employee-table-wrap {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.65rem;
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.employee-table th,
+.employee-table td {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e5e9ee;
+  white-space: nowrap;
+}
+
+.employee-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.employee-table td {
+  color: #374151;
+  font-size: 0.88rem;
+}
+
+.employee-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.empty-table-cell {
+  padding: 1.5rem !important;
+  color: #64748b !important;
+  text-align: center;
+}
+
+.loading-state,
+.empty-state {
+  margin: 1.5rem 0;
+  color: #4b5563;
+}

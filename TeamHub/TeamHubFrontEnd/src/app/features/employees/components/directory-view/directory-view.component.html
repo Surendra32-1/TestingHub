@@ -1,0 +1,234 @@
+<app-directory-controls
+  [searchTerm]="searchTerm"
+  (searchTermChange)="searchTermChange.emit($event)"
+  [searchField]="searchField"
+  (searchFieldChange)="searchFieldChange.emit($event)"
+/>
+
+<app-results-header
+  [isLoading]="isLoading"
+  [count]="totalCount"
+  [showAddButton]="showAddButton"
+/>
+
+<p class="loading-state" *ngIf="isLoading" aria-live="polite">Loading employees...</p>
+
+<section class="employee-table-wrap" *ngIf="tableLayout" aria-label="Employee list">
+  <table class="employee-table">
+    <thead>
+      <tr>
+        <th scope="col">Image</th>
+        <th scope="col">Name</th>
+        <th scope="col">Department</th>
+        <th scope="col">Team Name</th>
+        <th scope="col">Designation Name</th>
+        <th scope="col"><span class="visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let employee of employees" [class.menu-open]="openMenuEmployeeId === employee.id">
+        <td>
+          <img class="employee-table-avatar" [src]="employee.imageBase64" [alt]="employee.name + ' photo'"
+               (mouseenter)="onEmployeeHover(employee.id, $event)" (mouseleave)="onEmployeeLeave()" />
+        </td>
+        <td class="employee-table-name">{{ employee.name }}</td>
+        <td>{{ employee.department || '—' }}</td>
+        <td>{{ employee.teamName || '—' }}</td>
+        <td>{{ employee.designation || '—' }}</td>
+        <td class="employee-table-actions">
+          <div class="employee-action-menu" (click)="$event.stopPropagation()">
+            <button
+              type="button"
+              class="menu-trigger"
+              [attr.aria-label]="'Actions for ' + employee.name"
+              [attr.aria-expanded]="openMenuEmployeeId === employee.id"
+              [attr.aria-controls]="'employee-menu-' + employee.id"
+              title="Employee actions"
+              (click)="toggleActionMenu(employee.id, $event)">
+              <span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            </button>
+            <div class="action-menu" *ngIf="openMenuEmployeeId === employee.id" [id]="'employee-menu-' + employee.id" role="menu"
+                 [style.left.px]="menuLeft" [style.top.px]="menuTop">
+              <button
+                type="button"
+                class="hierarchy-menu-item"
+                role="menuitem"
+                [attr.aria-label]="'View hierarchy for ' + employee.name"
+                data-tip="Full hierarchy"
+                (click)="showHierarchy(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3v5m0 0H6m6 0h6M6 8v4m12-4v4M6 12H4v7h5v-7H6Zm12 0h-2v7h5v-7h-3Zm-6-4v4m0 0h-2v7h5v-7h-3Z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="direct-hierarchy-menu-item"
+                role="menuitem"
+                [attr.aria-label]="'View immediate manager and reports for ' + employee.name"
+                data-tip="Manager &amp; Reports"
+                (click)="showDirectHierarchy(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M5 4v5h14V4" />
+                  <path d="M12 9v2.5" />
+                  <rect x="9.5" y="11.5" width="5" height="3.5" rx="0.8" />
+                  <path d="M12 15v2" />
+                  <path d="M5 21v-4h14v4" />
+                </svg>
+              </button>
+              <button *ngIf="canEditEmployee" type="button" role="menuitem" aria-label="Edit employee" data-tip="Edit" (click)="edit(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+              </button>
+              <button *ngIf="canReleaseEmployee" type="button" class="release-menu-item" role="menuitem" aria-label="Release employee" data-tip="Release" (click)="release(employee.id)">
+                              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <path d="M16 17l5-5-5-5" />
+                                <path d="M21 12H9" />
+                              </svg>
+                            </button>
+                            <button *ngIf="canTerminateEmployee" type="button" class="terminate-menu-item" role="menuitem" aria-label="Terminate employee" data-tip="Terminate" (click)="terminate(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+                  <path d="M12 2v10" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="isLoading">
+        <td colspan="6" class="employee-table-status" aria-live="polite">Loading employees...</td>
+      </tr>
+      <tr *ngIf="!isLoading && employees.length === 0">
+        <td colspan="6" class="employee-table-status">No employees match your search.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="employee-grid" *ngIf="!tableLayout && !isLoading && employees.length > 0" aria-label="Employee list">
+  <article class="employee-card" *ngFor="let employee of employees" [class.menu-open]="openMenuEmployeeId === employee.id">
+    <div class="avatar-wrap">
+      <img [src]="employee.imageBase64" [alt]="employee.name"
+           (mouseenter)="onEmployeeHover(employee.id, $event)" (mouseleave)="onEmployeeLeave()" />
+    </div>
+
+    <div class="card-body">
+      <div class="employee-summary">
+        <h2>{{ employee.name }}</h2>
+        <p class="role">{{ employee.designation }}</p>
+        <span class="tag" [style.background]="employee.accent">{{ employee.department }}</span>
+      </div>
+      <div class="employee-action-menu" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="menu-trigger"
+          [attr.aria-label]="'Actions for ' + employee.name"
+          [attr.aria-expanded]="openMenuEmployeeId === employee.id"
+          [attr.aria-controls]="'employee-menu-' + employee.id"
+          title="Employee actions"
+          (click)="toggleActionMenu(employee.id, $event)">
+          <span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
+        <div class="action-menu" *ngIf="openMenuEmployeeId === employee.id" [id]="'employee-menu-' + employee.id" role="menu"
+             [style.left.px]="menuLeft" [style.top.px]="menuTop">
+          <button
+            type="button"
+            class="hierarchy-menu-item"
+            role="menuitem"
+            [attr.aria-label]="'View hierarchy for ' + employee.name"
+            data-tip="Full hierarchy"
+            (click)="showHierarchy(employee.id)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 3v5m0 0H6m6 0h6M6 8v4m12-4v4M6 12H4v7h5v-7H6Zm12 0h-2v7h5v-7h-3Zm-6-4v4m0 0h-2v7h5v-7h-3Z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="direct-hierarchy-menu-item"
+            role="menuitem"
+            [attr.aria-label]="'View immediate manager and reports for ' + employee.name"
+            data-tip="Manager &amp; Reports"
+            (click)="showDirectHierarchy(employee.id)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M5 4v5h14V4" />
+              <path d="M12 9v2.5" />
+              <rect x="9.5" y="11.5" width="5" height="3.5" rx="0.8" />
+              <path d="M12 15v2" />
+              <path d="M5 21v-4h14v4" />
+            </svg>
+          </button>
+          <button *ngIf="canEditEmployee" type="button" role="menuitem" aria-label="Edit employee" data-tip="Edit" (click)="edit(employee.id)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button *ngIf="canReleaseEmployee" type="button" class="release-menu-item" role="menuitem" aria-label="Release employee" data-tip="Release" (click)="release(employee.id)">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <path d="M16 17l5-5-5-5" />
+                            <path d="M21 12H9" />
+                          </svg>
+                        </button>
+                        <button *ngIf="canTerminateEmployee" type="button" class="terminate-menu-item" role="menuitem" aria-label="Terminate employee" data-tip="Terminate" (click)="terminate(employee.id)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+              <path d="M12 2v10" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<p class="empty-state" *ngIf="!isLoading && employees.length === 0">No employees match your search.</p>
+
+<app-pagination
+  [pageNumber]="pageNumber"
+  [pageSize]="pageSize"
+  [totalCount]="totalCount"
+  [isLoading]="isLoading"
+  (pageChange)="pageChange.emit($event)"
+  (pageSizeChange)="pageSizeChange.emit($event)"
+/>
+
+<div
+  class="employee-preview"
+  *ngIf="previewVisible"
+  role="dialog"
+  aria-label="Employee preview"
+  [style.left.px]="previewLeft"
+  [style.top.px]="previewTop"
+  (mouseenter)="keepPreview()"
+  (mouseleave)="onEmployeeLeave()">
+  <button type="button" class="preview-close" aria-label="Close preview" (click)="closePreview()">&#10005;</button>
+  <p class="preview-loading" *ngIf="previewLoading">Loading details...</p>
+  <ng-container *ngIf="!previewLoading && previewEmployee as person">
+    <header class="preview-header">
+      <img *ngIf="person.imageBase64" class="preview-image" [src]="person.imageBase64" [alt]="person.firstName + ' ' + person.lastName" />
+      <div *ngIf="!person.imageBase64" class="preview-image preview-placeholder" aria-hidden="true">{{ person.firstName.charAt(0) }}{{ person.lastName.charAt(0) }}</div>
+      <div class="preview-title">
+        <h3>{{ person.firstName }} {{ person.middleName ? person.middleName + ' ' : '' }}{{ person.lastName }}</h3>
+        <p>{{ person.designationName || 'Designation not specified' }}</p>
+        <span class="preview-status" [class.inactive]="!person.isActive">{{ person.isActive ? 'Active' : 'Inactive' }}</span>
+      </div>
+    </header>
+    <dl class="preview-grid">
+      <div><dt>Employee No.</dt><dd>{{ person.eNumber }}</dd></div>
+      <div><dt>Department</dt><dd>{{ person.departmentName || '—' }}</dd></div>
+      <div><dt>Team</dt><dd>{{ person.teamName || '—' }}</dd></div>
+      <div><dt>Reports to</dt><dd>{{ person.reportsToEmployeeName || '—' }}</dd></div>
+      <div><dt>Email</dt><dd>{{ person.email || '—' }}</dd></div>
+      <div><dt>Mobile</dt><dd>{{ person.mobileNumber || person.phoneNumber || '—' }}</dd></div>
+      <div><dt>Extension</dt><dd>{{ person.extensionNumber || '—' }}</dd></div>
+      <div><dt>Joined</dt><dd>{{ person.joinedDate | date:'mediumDate' }}</dd></div>
+    </dl>
+    <button type="button" class="preview-cta" (click)="showDetails(previewEmployeeId!)">
+      <span class="cta-text">Click here to see details</span> <span class="cta-arrow" aria-hidden="true">&#8594;</span>
+    </button>
+  </ng-container>
+</div>

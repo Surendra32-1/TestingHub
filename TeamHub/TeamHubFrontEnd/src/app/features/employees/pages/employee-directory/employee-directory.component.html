@@ -1,0 +1,57 @@
+<div class="page-shell">
+  <app-topbar />
+
+  <main class="directory-panel">
+    <div class="heading-row" *ngIf="activeView !== 'details'">
+      <div class="tab-row" role="tablist" aria-label="Directory tabs">
+        <app-employee-tab
+          *ngFor="let tab of tabs"
+          [label]="tab.label"
+          [active]="activeView === tab.key"
+          (selected)="selectView(tab.key)"
+        />
+      </div>
+      <button *ngIf="activeView === 'directory' && !readOnlyHome && canAddEmployee" class="add-btn" type="button" routerLink="/employees/add"><span>+</span>Add Employee</button>
+      <button *ngIf="activeView === 'departments' && departmentSelected" class="add-btn" type="button" (click)="backToDepartments()">&#8249; All departments</button>
+    </div>
+
+    <app-directory-view
+      *ngIf="activeView === 'directory'"
+      [employees]="employees"
+      [tableLayout]="tableLayout"
+      [readOnlyHome]="readOnlyHome"
+      [canEditEmployee]="canEditEmployee"
+      [canReleaseEmployee]="canReleaseEmployee"
+      [canTerminateEmployee]="canTerminateEmployee"
+      [showAddButton]="false"
+      [isLoading]="isLoading"
+      [pageNumber]="pageNumber"
+      [pageSize]="pageSize"
+      [totalCount]="totalCount"
+      [searchTerm]="searchTerm"
+      [searchField]="searchField"
+      (searchTermChange)="updateSearchTerm($event)"
+      (searchFieldChange)="updateSearchField($event)"
+      (pageChange)="changePage($event)"
+      (pageSizeChange)="changePageSize($event)"
+      (editEmployee)="editEmployee($event)"
+      (releaseEmployee)="releaseEmployee($event)"
+      (terminateEmployee)="terminateEmployee($event)"
+      (viewEmployeeHierarchy)="showEmployeeHierarchy($event)"
+      (viewEmployeeDirectHierarchy)="showDirectHierarchy($event)"
+      (viewEmployeeDetails)="showEmployeeDetails($event)"
+    />
+    <app-departments-view *ngIf="activeView === 'departments'" (departmentSelectedChange)="departmentSelected = $event" />
+    <app-employee-hierarchy
+      *ngIf="activeView === 'hierarchy' && hierarchyEmployeeId !== null"
+      [employeeId]="hierarchyEmployeeId"
+      [directOnly]="hierarchyDirect"
+      (back)="returnToDirectory()"
+    />
+    <app-employee-details
+      *ngIf="activeView === 'details' && selectedEmployeeId !== null"
+      [employeeId]="selectedEmployeeId"
+      (back)="returnToDirectory()"
+    />
+  </main>
+</div>

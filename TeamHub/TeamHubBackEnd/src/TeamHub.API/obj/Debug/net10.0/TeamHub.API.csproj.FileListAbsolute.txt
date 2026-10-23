@@ -1,0 +1,537 @@
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.Development.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Core.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Identity.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Dapper.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.AspNetCore.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.OpenApi.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.SqlServer.Server.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.ClientModel.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Memory.Data.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\cs\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\de\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\es\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\fr\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\it\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ja\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ko\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pl\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pt-BR\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ru\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\tr\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hans\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.AssemblyReference.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.GeneratedMSBuildEditorConfig.editorconfig
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfoInputs.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfo.cs
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.CoreCompileInputs.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cs
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjimswa.dswa.cache.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\scopedcss\bundle\TeamHub.API.styles.css
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.development.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\swae.build.ex.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub..BF2B9330.Up2Date
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\refint\TeamHub.API.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.genruntimeconfig.cache
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\ref\TeamHub.API.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\SixLabors.ImageSharp.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\appsettings.Development.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\appsettings.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\bin\Debug\net10.0\appsettings.Development.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\bin\Debug\net10.0\appsettings.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.API.exe
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.API.deps.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\appsettings.Development.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\appsettings.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\TeamHub.API.staticwebassets.runtime.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\TeamHub.API.staticwebassets.endpoints.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\TeamHub.API.exe
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\TeamHub.API.deps.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\TeamHub.API.runtimeconfig.json
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\TeamHub.API.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\obj\verify\api\TeamHub.API.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.Contracts.dll
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\appsettings.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\bin\Debug\net10.0\appsettings.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.API.exe
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.API.dll
+C:\Users\snishad\AppData\Local\Temp\TeamHubHierarchyBuild\bin\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.Development.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.exe
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Core.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Identity.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Dapper.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.AspNetCore.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.Contracts.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.OpenApi.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.SqlServer.Server.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\SixLabors.ImageSharp.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.ClientModel.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Memory.Data.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\cs\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\de\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\es\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\fr\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\it\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ja\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ko\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pl\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pt-BR\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ru\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\tr\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hans\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.AssemblyReference.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.GeneratedMSBuildEditorConfig.editorconfig
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfoInputs.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfo.cs
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.CoreCompileInputs.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cs
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjimswa.dswa.cache.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\scopedcss\bundle\TeamHub.API.styles.css
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.development.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\swae.build.ex.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub..BF2B9330.Up2Date
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\refint\TeamHub.API.dll
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.genruntimeconfig.cache
+C:\ProjectInternal - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\ref\TeamHub.API.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\refint\TeamHub.API.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.Development.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.exe
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Core.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Identity.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Dapper.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.AspNetCore.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.Contracts.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.OpenApi.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.SqlServer.Server.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\SixLabors.ImageSharp.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.ClientModel.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Memory.Data.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\cs\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\de\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\es\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\fr\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\it\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ja\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ko\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pl\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pt-BR\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ru\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\tr\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hans\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.pdb
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.AssemblyReference.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.GeneratedMSBuildEditorConfig.editorconfig
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfoInputs.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfo.cs
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.CoreCompileInputs.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cs
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjimswa.dswa.cache.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\scopedcss\bundle\TeamHub.API.styles.css
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.development.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\swae.build.ex.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub..BF2B9330.Up2Date
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.genruntimeconfig.cache
+C:\ProjectInternal - 3\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\ref\TeamHub.API.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.Development.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.exe
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Core.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Identity.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Dapper.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.AspNetCore.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.Contracts.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.OpenApi.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.SqlServer.Server.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\SixLabors.ImageSharp.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.ClientModel.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Memory.Data.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\cs\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\de\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\es\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\fr\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\it\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ja\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ko\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pl\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pt-BR\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ru\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\tr\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hans\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.AssemblyReference.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.GeneratedMSBuildEditorConfig.editorconfig
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfoInputs.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfo.cs
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.CoreCompileInputs.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cs
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjimswa.dswa.cache.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\scopedcss\bundle\TeamHub.API.styles.css
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.development.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\swae.build.ex.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub..BF2B9330.Up2Date
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\refint\TeamHub.API.dll
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.genruntimeconfig.cache
+C:\ProjectInternal - 3 - Copy\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\ref\TeamHub.API.dll
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\appsettings.Development.json
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\appsettings.json
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.API.staticwebassets.runtime.json
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.API.exe
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.API.deps.json
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.API.runtimeconfig.json
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.API.dll
+C:\Users\snishad\.copilot\session-state\45cf4c25-39f1-4ce8-af62-26efb6e4099f\files\api-build\TeamHub.API.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IO.Hashing.dll
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\appsettings.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\bin\Debug\net10.0\appsettings.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.API.exe
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.API.dll
+C:\Users\snishad\AppData\Local\Temp\TeamHubBuild\bin\Debug\net10.0\TeamHub.API.pdb
+C:\ProjectInternal\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.exe
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.Development.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.exe
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.deps.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Core.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Identity.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\BCrypt.Net-Next.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Dapper.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.AspNetCore.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.Contracts.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Data.SqlClient.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.Extensions.Msal.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.OpenApi.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.SqlServer.Server.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\SixLabors.ImageSharp.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.ClientModel.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IO.Hashing.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Memory.Data.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\cs\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\de\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\es\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\fr\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\it\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ja\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ko\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pl\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pt-BR\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ru\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\tr\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hans\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.AssemblyReference.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rpswa.dswa.cache.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.GeneratedMSBuildEditorConfig.editorconfig
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfoInputs.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfo.cs
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.CoreCompileInputs.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cs
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjimswa.dswa.cache.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\scopedcss\bundle\TeamHub.API.styles.css
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.development.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\swae.build.ex.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub..BF2B9330.Up2Date
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\refint\TeamHub.API.dll
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.pdb
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.genruntimeconfig.cache
+E:\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\ref\TeamHub.API.dll
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\appsettings.Development.json
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\appsettings.json
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.staticwebassets.runtime.json
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.staticwebassets.endpoints.json
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.exe
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.deps.json
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.runtimeconfig.json
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.dll
+E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.pdb

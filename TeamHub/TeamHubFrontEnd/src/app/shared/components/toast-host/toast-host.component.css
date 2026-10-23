@@ -1,0 +1,137 @@
+:host {
+  position: fixed;
+  z-index: 2000;
+  top: 1rem;
+  right: 1rem;
+  width: min(24rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+:host:has(.toast.confirm) {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.32);
+  pointer-events: auto;
+}
+
+.toast-stack {
+  display: grid;
+  gap: 0.55rem;
+}
+
+:host:has(.toast.confirm) .toast-stack {
+  width: min(28rem, calc(100vw - 2rem));
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #dfe3e8;
+  border-left: 4px solid #64748b;
+  border-radius: 0.45rem;
+  background: #fff;
+  color: #1f2937;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.14);
+  pointer-events: auto;
+  animation: toast-in 160ms ease-out;
+}
+
+.toast.success {
+  border-color: #388e3c;
+  border-left-color: #2e7d32;
+  background: #43a047;
+  color: #fff;
+}
+
+.toast.error {
+  border-color: #c62828;
+  border-left-color: #b71c1c;
+  background: #d32f2f;
+  color: #fff;
+}
+
+.toast.info {
+  border-color: #1565c0;
+  border-left-color: #0d47a1;
+  background: #1976d2;
+  color: #fff;
+}
+
+.toast.confirm {
+  border-left-color: #b42318;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 16px 48px rgba(17, 24, 39, 0.24);
+}
+
+.message {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.86rem;
+}
+
+button {
+  flex: 0 0 1.75rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 0.3rem;
+  background: transparent;
+  color: #6b7280;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.toast > button {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  min-height: 1.9rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+button:hover {
+  background: #f2f3f5;
+}
+
+.toast.success button:hover,
+.toast.error button:hover,
+.toast.info button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.35rem;
+}
+
+.actions button {
+  width: auto;
+  height: auto;
+  min-height: 1.9rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid #dfe3e8;
+  font-size: 0.75rem;
+}
+
+.actions .confirm-action {
+  border-color: #b42318;
+  background: #b42318;
+  color: #fff;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-0.35rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; }
+}

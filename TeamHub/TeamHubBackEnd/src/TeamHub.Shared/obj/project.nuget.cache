@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "hEZPAQ7oUr0=",
+  "success": true,
+  "projectFilePath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\sixlabors.imagesharp\\4.1.2\\sixlabors.imagesharp.4.1.2.nupkg.sha512",
+    "C:\\Users\\Dell Suren\\.nuget\\packages\\system.io.hashing\\8.0.0\\system.io.hashing.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

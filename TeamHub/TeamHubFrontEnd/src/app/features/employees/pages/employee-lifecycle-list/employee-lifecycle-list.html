@@ -1,0 +1,298 @@
+<div class="page-shell">
+  <app-topbar />
+  <main class="directory-panel">
+    <div class="heading-row">
+      <h1 class="page-label">{{ isResignation ? 'Resignations' : 'Terminations' }}</h1>
+      <button class="primary-button" type="button" (click)="createRecord()" *ngIf="isResignation ? canAdd : canAddTermination">
+        <span>+</span>{{ isResignation ? 'New Resignation' : 'New Termination' }}
+      </button>
+    </div>
+
+    <div class="filters" aria-label="Filter lifecycle records">
+      <label class="search-box">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="employeeSearch" type="search" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Search employee..." aria-label="Search employee">
+      </label>
+
+      <label class="visually-hidden" for="departmentFilter">Filter by department</label>
+      <select id="departmentFilter" [(ngModel)]="selectedDepartment" (ngModelChange)="resetPage()">
+        <option value="">All departments</option>
+        <option *ngFor="let department of departments" [value]="department.departmentName">{{ department.departmentName }}</option>
+      </select>
+
+      <label class="visually-hidden" for="statusFilter">Filter by status</label>
+      <select id="statusFilter" [(ngModel)]="selectedStatus" (ngModelChange)="resetPage()">
+        <option value="">All statuses</option>
+        <option *ngFor="let status of statuses" [value]="status">{{ statusLabel(status) }}</option>
+      </select>
+    </div>
+
+    <p class="loading-state" *ngIf="isLoading" aria-live="polite">Loading records...</p>
+
+    <section *ngIf="!isLoading && isResignation" class="table-wrap" aria-label="Resignation records">
+      <table class="record-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Designation</th>
+            <th>Department</th>
+            <th>Resignation Date</th>
+            <th>Last Working Day</th>
+            <th>Notice Served</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of pagedReleases">
+            <td>
+              <div class="cell-employee">
+                <button class="name-link" type="button" (click)="openDetails(record.releasedId)">{{ record.employeeName }}</button>
+                <span class="cell-code">Code: {{ record.employeeCode }}</span>
+              </div>
+            </td>
+            <td>{{ record.designation || '—' }}</td>
+            <td>{{ record.department || '—' }}</td>
+            <td>{{ record.resignationDate ? (record.resignationDate | date:'mediumDate') : '—' }}</td>
+            <td>{{ record.lastWorkingDate ? (record.lastWorkingDate | date:'mediumDate') : '—' }}</td>
+            <td>
+              {{ record.servedNoticeDays ?? '—' }} / {{ record.noticePeriodDays ?? '—' }} days
+              <div class="cell-early" *ngIf="record.earlyReleaseReason">Early release: {{ record.earlyReleaseReason }}</div>
+            </td>
+            <td><span class="status-badge" [attr.data-status]="record.status">{{ statusLabel(record.status) }}</span></td>
+            <td>
+              <div class="action-menu" *ngIf="hasResignationActions(record)">
+                <button class="menu-trigger" type="button" aria-label="Actions"
+                        [attr.aria-expanded]="openMenuId === record.releasedId"
+                        (click)="toggleMenu(record.releasedId, $event)">&#8942;</button>
+                <div class="menu-dropdown" *ngIf="openMenuId === record.releasedId" role="menu"
+                     [style.left.px]="menuLeft" [style.top.px]="menuTop">
+                  <div class="menu-section" *ngIf="record.status === 'Approved'">
+                    <span class="menu-section-title">Exit Clearance {{ clearedCount(record) }}/{{ clearanceFields.length }}</span>
+                    <label class="menu-check" *ngFor="let field of clearanceFields">
+                      <input type="checkbox"
+                             [checked]="!!record[field.key]"
+                             [disabled]="isBusy(record.releasedId) || !canManageClearance"
+                             (change)="toggleClearance(record, field.key, $any($event.target).checked)">
+                      <span>{{ field.label }}</span>
+                    </label>
+                  </div>
+                  <hr class="menu-separator" *ngIf="record.status === 'Approved'">
+                  <button class="action-button" type="button" role="menuitem"
+                          *ngFor="let action of nextActions(record)"
+                          [class.action-release]="action === 'Released'"
+                          [class.action-danger]="action === 'Rejected' || action === 'Cancelled'"
+                          [disabled]="isBusy(record.releasedId) || (action === 'Released' && !isCleared(record))"
+                          [title]="action === 'Released' && !isCleared(record) ? 'Complete the exit clearance first' : ''"
+                          (click)="transition(record, action)">
+                    {{ actionLabel(action) }}
+                  </button>
+                </div>
+              </div>
+              <span class="cell-muted" *ngIf="!hasResignationActions(record)">—</span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredReleases.length === 0">
+            <td colspan="8" class="empty-cell">No resignation records match these filters.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section *ngIf="!isLoading && !isResignation" class="table-wrap" aria-label="Termination records">
+      <table class="record-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Designation</th>
+            <th>Department</th>
+            <th>Termination Date</th>
+            <th>Termination Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of pagedTerminations">
+            <td>
+              <div class="cell-employee">
+                <button class="name-link" type="button" (click)="openDetails(record.terminationId)">{{ record.employeeName }}</button>
+                <span class="cell-code">Code: {{ record.employeeCode }}</span>
+              </div>
+            </td>
+            <td>{{ record.designation || '—' }}</td>
+            <td>{{ record.department || '—' }}</td>
+            <td>{{ record.effectiveDate ? (record.effectiveDate | date:'mediumDate') : '—' }}</td>
+            <td>{{ record.terminationType }}</td>
+            <td><span class="status-badge" [attr.data-status]="record.status">{{ statusLabel(record.status) }}</span></td>
+            <td>
+              <div class="action-menu" *ngIf="nextTerminationActions(record).length">
+                <button class="menu-trigger" type="button" aria-label="Actions"
+                        [attr.aria-expanded]="openMenuId === record.terminationId"
+                        (click)="toggleMenu(record.terminationId, $event)">&#8942;</button>
+                <div class="menu-dropdown" *ngIf="openMenuId === record.terminationId" role="menu"
+                     [style.left.px]="menuLeft" [style.top.px]="menuTop">
+                  <div class="menu-section" *ngIf="record.status === 'Approved'">
+                    <span class="menu-section-title">Exit Clearance {{ clearedTerminationCount(record) }}/{{ terminationClearanceFields.length }}</span>
+                    <label class="menu-check" *ngFor="let field of terminationClearanceFields">
+                      <input type="checkbox"
+                             [checked]="!!record[field.key]"
+                             [disabled]="isBusy(record.terminationId)"
+                             (change)="toggleTerminationClearance(record, field.key, $any($event.target).checked)">
+                      <span>{{ field.label }}</span>
+                    </label>
+                  </div>
+                  <hr class="menu-separator" *ngIf="record.status === 'Approved'">
+                  <button class="action-button" type="button" role="menuitem"
+                          *ngFor="let action of nextTerminationActions(record)"
+                          [class.action-release]="action === 'Terminated'"
+                          [class.action-danger]="action === 'Rejected' || action === 'Cancelled'"
+                          [disabled]="isBusy(record.terminationId) || (action === 'Terminated' && !isTerminationCleared(record))"
+                          [title]="action === 'Terminated' && !isTerminationCleared(record) ? 'Complete the exit clearance first' : ''"
+                          (click)="transitionTermination(record, action)">
+                    {{ actionLabel(action) }}
+                  </button>
+                </div>
+              </div>
+              <span class="cell-muted" *ngIf="!nextTerminationActions(record).length">—</span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredTerminations.length === 0">
+            <td colspan="7" class="empty-cell">No termination records match these filters.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <app-pagination
+      *ngIf="!isLoading && totalItems > 0"
+      [pageNumber]="currentPage"
+      [pageSize]="pageSize"
+      [totalCount]="totalItems"
+      [isLoading]="isLoading"
+      (pageChange)="goToPage($event)"
+      (pageSizeChange)="onPageSizeChange($event)">
+    </app-pagination>
+  </main>
+
+  <div class="modal-backdrop" *ngIf="detailId !== null" (click)="closeDetails()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <ng-container *ngIf="isResignation && detailRelease as r">
+        <header class="modal-header">
+          <div>
+            <h2>{{ r.employeeName }}</h2>
+            <p>Resignation &middot; {{ r.designation || '—' }} &middot; {{ r.department || '—' }}</p>
+          </div>
+          <button class="modal-close" type="button" aria-label="Close" (click)="closeDetails()">&#10005;</button>
+        </header>
+        <div class="modal-body">
+          <section class="detail-section">
+            <h3>Employee</h3>
+            <div class="record-details">
+              <p><span>Code</span><strong>{{ r.employeeCode }}</strong></p>
+              <p><span>Designation</span><strong>{{ r.designation || '—' }}</strong></p>
+              <p><span>Department</span><strong>{{ r.department || '—' }}</strong></p>
+              <p><span>Manager</span><strong>{{ r.managerName || '—' }}</strong></p>
+            </div>
+          </section>
+          <section class="detail-section">
+            <h3>Resignation</h3>
+            <div class="record-details">
+              <p><span>Release Type</span><strong>{{ r.releaseType }}</strong></p>
+              <p><span>Resignation Date</span><strong>{{ r.resignationDate ? (r.resignationDate | date:'mediumDate') : '—' }}</strong></p>
+              <p><span>Notice Date</span><strong>{{ r.noticeDate ? (r.noticeDate | date:'mediumDate') : '—' }}</strong></p>
+              <p><span>Last Working Day</span><strong>{{ r.lastWorkingDate ? (r.lastWorkingDate | date:'mediumDate') : '—' }}</strong></p>
+              <p><span>Notice Period</span><strong>{{ r.noticePeriodDays ?? '—' }} days</strong></p>
+              <p><span>Notice Served</span><strong>{{ r.servedNoticeDays ?? '—' }} days</strong></p>
+              <p class="detail-full"><span>Early Release Reason</span><strong>{{ r.earlyReleaseReason || '—' }}</strong></p>
+              <p class="detail-full"><span>Reason</span><strong>{{ r.reason || '—' }}</strong></p>
+              <p class="detail-full"><span>Remarks</span><strong>{{ r.remarks || '—' }}</strong></p>
+            </div>
+          </section>
+          <section class="detail-section">
+            <h3>Exit Clearance</h3>
+            <div class="record-details">
+              <p><span>Knowledge Transfer</span><strong>{{ yesNo(r.knowledgeTransferCompleted) }}</strong></p>
+              <p><span>Assets Returned</span><strong>{{ yesNo(r.assetsReturned) }}</strong></p>
+              <p><span>Exit Interview</span><strong>{{ yesNo(r.exitInterviewCompleted) }}</strong></p>
+              <p><span>Relieving Letter</span><strong>{{ yesNo(r.relievingLetterIssued) }}</strong></p>
+              <p><span>Experience Letter</span><strong>{{ yesNo(r.experienceLetterIssued) }}</strong></p>
+              <p><span>Settlement Amount</span><strong>{{ r.settlementAmount != null ? (r.settlementAmount | number:'1.2-2') : '—' }}</strong></p>
+            </div>
+          </section>
+          <section class="detail-section">
+            <h3>Status &amp; Audit</h3>
+            <div class="record-details">
+              <p><span>Status</span><strong><span class="status-badge" [attr.data-status]="r.status">{{ statusLabel(r.status) }}</span></strong></p>
+              <p><span>Approved By</span><strong>{{ r.approvedBy || '—' }}</strong></p>
+              <p><span>Approved Date</span><strong>{{ r.approvedDate ? (r.approvedDate | date:'medium') : '—' }}</strong></p>
+              <p><span>Created By</span><strong>{{ r.createdBy || '—' }}</strong></p>
+              <p><span>Created Date</span><strong>{{ r.createdDate ? (r.createdDate | date:'medium') : '—' }}</strong></p>
+              <p><span>Last Modified By</span><strong>{{ r.lastModifiedBy || '—' }}</strong></p>
+              <p><span>Last Modified</span><strong>{{ r.lastModifiedDate ? (r.lastModifiedDate | date:'medium') : '—' }}</strong></p>
+            </div>
+          </section>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!isResignation && detailTermination as t">
+        <header class="modal-header">
+          <div>
+            <h2>{{ t.employeeName }}</h2>
+            <p>Termination &middot; {{ t.designation || '—' }} &middot; {{ t.department || '—' }}</p>
+          </div>
+          <button class="modal-close" type="button" aria-label="Close" (click)="closeDetails()">&#10005;</button>
+        </header>
+        <div class="modal-body">
+          <section class="detail-section">
+            <h3>Employee</h3>
+            <div class="record-details">
+              <p><span>Code</span><strong>{{ t.employeeCode }}</strong></p>
+              <p><span>Designation</span><strong>{{ t.designation || '—' }}</strong></p>
+              <p><span>Department</span><strong>{{ t.department || '—' }}</strong></p>
+              <p><span>Manager</span><strong>{{ t.managerName || '—' }}</strong></p>
+              <p><span>Joined Date</span><strong>{{ t.joinedDate ? (t.joinedDate | date:'mediumDate') : '—' }}</strong></p>
+            </div>
+          </section>
+          <section class="detail-section">
+            <h3>Termination</h3>
+            <div class="record-details">
+              <p><span>Termination Type</span><strong>{{ t.terminationType }}</strong></p>
+              <p><span>Effective Date</span><strong>{{ t.effectiveDate ? (t.effectiveDate | date:'mediumDate') : '—' }}</strong></p>
+              <p><span>Investigation Required</span><strong>{{ yesNo(t.investigationRequired) }}</strong></p>
+              <p><span>Warning Count</span><strong>{{ t.warningCount ?? '—' }}</strong></p>
+              <p><span>Last Warning Date</span><strong>{{ t.lastWarningDate ? (t.lastWarningDate | date:'mediumDate') : '—' }}</strong></p>
+              <p><span>Eligible For Rehire</span><strong>{{ yesNo(t.eligibleForRehire) }}</strong></p>
+              <p class="detail-full" *ngIf="t.investigationSummary"><span>Investigation Summary</span><strong>{{ t.investigationSummary }}</strong></p>
+              <p class="detail-full"><span>Reason</span><strong>{{ t.reason || '—' }}</strong></p>
+              <p class="detail-full"><span>Remarks</span><strong>{{ t.remarks || '—' }}</strong></p>
+            </div>
+          </section>
+          <section class="detail-section">
+            <h3>Offboarding &amp; Clearance</h3>
+            <div class="record-details">
+              <p><span>Asset Recovered</span><strong>{{ yesNo(t.assetRecovered) }}</strong></p>
+              <p><span>System Access Revoked</span><strong>{{ yesNo(t.systemAccessRevoked) }}</strong></p>
+              <p><span>Exit Interview Completed</span><strong>{{ yesNo(t.exitInterviewCompleted) }}</strong></p>
+              <p><span>Termination Letter Issued</span><strong>{{ yesNo(t.terminationLetterIssued) }}</strong></p>
+              <p><span>Termination Letter Date</span><strong>{{ t.terminationLetterDate ? (t.terminationLetterDate | date:'mediumDate') : '—' }}</strong></p>
+              <p><span>Settlement Amount</span><strong>{{ t.settlementAmount != null ? (t.settlementAmount | number:'1.2-2') : '—' }}</strong></p>
+            </div>
+          </section>
+          <section class="detail-section">
+            <h3>Status &amp; Audit</h3>
+            <div class="record-details">
+              <p><span>Status</span><strong><span class="status-badge" [attr.data-status]="t.status">{{ statusLabel(t.status) }}</span></strong></p>
+              <p><span>Approved By</span><strong>{{ t.approvedBy || '—' }}</strong></p>
+              <p><span>Approved Date</span><strong>{{ t.approvedDate ? (t.approvedDate | date:'medium') : '—' }}</strong></p>
+              <p><span>Created By</span><strong>{{ t.createdBy || '—' }}</strong></p>
+              <p><span>Created Date</span><strong>{{ t.createdDate ? (t.createdDate | date:'medium') : '—' }}</strong></p>
+              <p><span>Last Modified By</span><strong>{{ t.lastModifiedBy || '—' }}</strong></p>
+              <p><span>Last Modified</span><strong>{{ t.lastModifiedDate ? (t.lastModifiedDate | date:'medium') : '—' }}</strong></p>
+            </div>
+          </section>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

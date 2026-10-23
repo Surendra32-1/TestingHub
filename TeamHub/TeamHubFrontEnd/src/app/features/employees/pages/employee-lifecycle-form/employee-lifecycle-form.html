@@ -1,0 +1,112 @@
+<div class="page-shell">
+  <app-topbar />
+  <main class="lifecycle-panel">
+    <div class="heading-row">
+      <h1 class="page-label">{{ pageLabel }}</h1>
+      <button class="back-button" type="button" (click)="cancel()">‹ Back</button>
+    </div>
+
+    <form [formGroup]="form" novalidate (ngSubmit)="submitWorkflow()">
+      <section class="form-section">
+        <h2>Employee Information</h2>
+        <p class="self-service-note" *ngIf="isSelfService">This resignation form is self-service only. It is locked to your own employee record and cannot be submitted on behalf of someone else.</p>
+        <p class="self-service-note" *ngIf="isOffboarding">This offboarding release is created on behalf of the selected employee and requires the Release Employee permission.</p>
+        <div class="form-grid">
+          <div class="field" *ngIf="employeeLocked">
+            <label for="lockedEmployee">Employee *</label>
+            <input id="lockedEmployee" [value]="lockedEmployeeLabel" readonly disabled>
+          </div>
+          <div class="field" *ngIf="!employeeLocked">
+            <label for="employeeId">Employee *</label>
+            <select id="employeeId" formControlName="employeeId" (change)="loadSelectedEmployee()">
+              <option value="">{{ isLoadingEmployees ? 'Loading employees...' : 'Select employee' }}</option>
+              <option *ngFor="let employee of employees" [value]="employee.id">
+                {{ employee.name }} — {{ employee.designation || 'No designation' }}
+              </option>
+            </select>
+          </div>
+          <div class="field"><label for="employeeCode">Employee Code</label><input id="employeeCode" [value]="selectedEmployee?.eNumber ?? ''" readonly></div>
+          <div class="field"><label for="employeeDepartment">Department</label><input id="employeeDepartment" [value]="selectedEmployee?.departmentName ?? ''" readonly></div>
+          <div class="field"><label for="employeeDesignation">Designation</label><input id="employeeDesignation" [value]="selectedEmployee?.designationName ?? ''" readonly></div>
+          <div class="field"><label for="employeeManager">Manager</label><input id="employeeManager" [value]="selectedEmployee?.reportsToEmployeeName ?? ''" readonly></div>
+          <div class="field" *ngIf="!isRelease"><label for="employeeJoinDate">Join Date</label><input id="employeeJoinDate" [value]="selectedEmployee?.joinedDate ?? ''" readonly></div>
+        </div>
+      </section>
+
+      <section class="form-section" *ngIf="isRelease">
+        <h2>{{ isOffboarding ? 'Release Details' : 'Resignation Details' }}</h2>
+        <div class="form-grid">
+          <div class="field" *ngIf="isOffboarding">
+            <label for="releaseType">Release Type *</label>
+            <select id="releaseType" formControlName="releaseType">
+              <option value="">Select release type</option>
+              <option *ngFor="let type of offboardingReleaseTypes" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="resignationDate">{{ isOffboarding ? 'Release Date *' : 'Resignation Date *' }}</label>
+            <input id="resignationDate" type="date" formControlName="resignationDate">
+          </div>
+          <div class="field">
+            <label for="noticePeriodDays">Notice Period Days *</label>
+            <input id="noticePeriodDays" type="number" min="0" max="180" step="1" formControlName="noticePeriodDays">
+          </div>
+          <div class="field">
+            <label for="lastWorkingDate">Last Working Day *</label>
+            <input id="lastWorkingDate" type="date" [min]="form.get('resignationDate')?.value || null" formControlName="lastWorkingDate">
+          </div>
+          <div class="notice-summary field-wide" *ngIf="form.get('resignationDate')?.value" aria-live="polite">
+            <p><span>Notice Period Required</span><strong>{{ requiredNoticePeriodDays === null ? '—' : requiredNoticePeriodDays + ' Days' }}</strong></p>
+            <p><span>Notice Period Served</span><strong>{{ servedNoticeDays === null ? '—' : servedNoticeDays + ' Days' }}</strong></p>
+            <p><span>Shortfall</span><strong>{{ noticePeriodShortfallDays === null ? '—' : noticePeriodShortfallDays + ' Days' }}</strong></p>
+            <p><span>Expected Release Date</span><strong>{{ expectedReleaseDate ? (expectedReleaseDate | date:'mediumDate') : '—' }}</strong></p>
+          </div>
+          <div class="field" *ngIf="!isEarlyRelease">
+            <label for="resignationReason">Reason *</label>
+            <input id="resignationReason" type="text" maxlength="500" formControlName="reason">
+          </div>
+          <div class="field" *ngIf="isEarlyRelease">
+            <label for="earlyReleaseReason">Early Release Reason *</label>
+            <input id="earlyReleaseReason" type="text" maxlength="500" formControlName="earlyReleaseReason"
+                   [attr.aria-invalid]="form.get('earlyReleaseReason')?.invalid">
+          </div>
+          <div class="field field-wide"><label for="resignationRemarks">Remarks</label><textarea id="resignationRemarks" rows="3" formControlName="remarks"></textarea></div>
+        </div>
+      </section>
+
+      <section class="form-section" *ngIf="!isRelease">
+        <h2>Termination Details</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="terminationDate">Termination Date *</label>
+            <input id="terminationDate" type="date" [max]="maxTerminationDate" formControlName="terminationDate">
+          </div>
+          <div class="field">
+            <label for="terminationType">Termination Type *</label>
+            <select id="terminationType" formControlName="terminationType">
+              <option value="">Select termination type</option>
+              <option *ngFor="let type of terminationTypes" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+          <div class="field"><label for="terminationReason">Reason *</label><input id="terminationReason" type="text" maxlength="500" formControlName="reason"></div>
+          <div class="field field-wide"><label for="terminationRemarks">Remarks</label><textarea id="terminationRemarks" rows="3" formControlName="remarks"></textarea></div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Approval Information</h2>
+        <p class="approval-note">The approving user's name is recorded in the workflow record when its status is approved.</p>
+      </section>
+
+      <div class="form-actions">
+        <button type="button" class="secondary-button" [disabled]="isSubmitting" (click)="saveDraft()">
+          {{ isSubmitting ? 'Saving...' : 'Save Draft' }}
+        </button>
+        <button type="submit" class="primary-button" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Submitting...' : (isRelease ? 'Submit' : 'Submit Termination') }}
+        </button>
+        <button type="button" class="cancel-button" [disabled]="isSubmitting" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </main>
+</div>

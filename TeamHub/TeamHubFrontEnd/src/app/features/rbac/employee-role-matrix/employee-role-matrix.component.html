@@ -1,0 +1,74 @@
+<div class="page-shell">
+	<app-topbar />
+
+	<main class="settings-panel">
+		<div class="heading-row">
+			<h1 class="page-label">Employee Role Matrix</h1>
+			<div class="heading-actions">
+				<p class="status-message" *ngIf="hasPendingChanges">
+					You have unsaved changes.
+					<span class="pending-badge">Pending</span>
+				</p>
+				<p class="status-message" *ngIf="!hasPendingChanges">All changes saved.</p>
+				<button class="primary-action" type="button" (click)="save()" [disabled]="isSaving || !hasPendingChanges || !canEdit">
+					{{ isSaving ? 'Saving...' : 'Save' }}
+				</button>
+				<button class="secondary-action" type="button" (click)="cancel()" [disabled]="isSaving || !hasPendingChanges || !canEdit">
+					Cancel
+				</button>
+				<button class="back-button" type="button" (click)="goBack()">‹ Back</button>
+			</div>
+		</div>
+
+		<div class="controls">
+			<label class="search-box" aria-label="Search employees">
+				<span class="search-icon">⌕</span>
+				<input
+					type="search"
+					placeholder="Search employee name..."
+					[ngModel]="searchTerm"
+					(ngModelChange)="onSearchChange($event)"
+					aria-label="Search by employee name" />
+			</label>
+		</div>
+
+		<p class="loading-state" *ngIf="isLoading">Loading employee role matrix...</p>
+
+		<div class="table-wrap" *ngIf="!isLoading">
+			<table *ngIf="rows.length">
+				<thead>
+					<tr>
+						<th class="sticky-col">Employee</th>
+						<th *ngFor="let role of roles; trackBy: trackByRole">{{ role.roleName }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let row of rows; trackBy: trackByUser">
+						<td class="sticky-col">
+							<span class="employee-name">{{ row.fullName }}</span>
+						</td>
+						<td *ngFor="let role of roles; trackBy: trackByRole">
+							<input
+								type="checkbox"
+								[checked]="isSelected(row.userId, role.roleId)"
+								[disabled]="!canEdit || isSaving"
+								(change)="toggle(row.userId, role.roleId, $event)" />
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<p class="empty-state" *ngIf="!rows.length">No employees with linked user accounts were found.</p>
+		</div>
+
+		<app-pagination
+			*ngIf="!isLoading && totalCount > 0"
+			[pageNumber]="pageNumber"
+			[pageSize]="pageSize"
+			[totalCount]="totalCount"
+			[isLoading]="isLoading"
+			(pageChange)="goToPage($event)"
+			(pageSizeChange)="onPageSizeChange($event)">
+		</app-pagination>
+	</main>
+</div>

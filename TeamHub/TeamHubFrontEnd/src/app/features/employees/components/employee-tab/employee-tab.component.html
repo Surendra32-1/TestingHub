@@ -1,0 +1,10 @@
+<button
+  class="tab"
+  [class.active]="active"
+  type="button"
+  role="tab"
+  [attr.aria-selected]="active"
+  (click)="select()"
+>
+  {{ label }}
+</button>

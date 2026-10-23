@@ -1,0 +1,22 @@
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+.results-header span {
+  font-weight: 600;
+}
+
+.sort-button,.add-btn {
+  border: 1px solid #dfe3e8;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 0.38rem;
+  padding: 0.68rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+}

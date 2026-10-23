@@ -1,0 +1,12 @@
+<section class="toast-stack" aria-label="Notifications" aria-live="polite" aria-relevant="additions">
+  <article class="toast" *ngFor="let message of messages" [class.success]="message.kind === 'success'" [class.error]="message.kind === 'error'" [class.info]="message.kind === 'info'" [class.confirm]="message.kind === 'confirm'" [attr.role]="message.kind === 'confirm' ? 'alertdialog' : 'status'">
+    <span class="message">{{ message.message }}</span>
+    <div class="actions" *ngIf="message.kind === 'confirm'; else dismissButton">
+      <button type="button" class="confirm-action" (click)="confirm(message)">{{ message.actionLabel }}</button>
+      <button type="button" (click)="dismiss(message.id)">Cancel</button>
+    </div>
+    <ng-template #dismissButton>
+      <button type="button" aria-label="Dismiss notification" (click)="dismiss(message.id)">Dismiss</button>
+    </ng-template>
+  </article>
+</section>

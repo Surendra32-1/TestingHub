@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.tab {
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  padding: 0.52rem 0.9rem;
+  border-radius: 0.38rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+}

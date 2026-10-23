@@ -1,0 +1,48 @@
+@baseUrl = http://localhost:5169
+@accessToken = replace-with-access-token
+
+### Sign in; refresh token is returned as an HttpOnly Secure cookie
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "employee.username",
+  "password": "replace-with-password"
+}
+
+### Rotate the refresh cookie (the editor/browser must retain cookies)
+POST {{baseUrl}}/api/auth/refresh-token
+
+### Get the current employee profile
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{accessToken}}
+
+### Change password
+POST {{baseUrl}}/api/auth/change-password
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "currentPassword": "replace-with-current-password",
+  "newPassword": "replace-with-a-new-12-character-password"
+}
+
+### Create an employee account (requires an HR access token)
+POST {{baseUrl}}/api/auth/create-user
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "employeeId": 1,
+  "username": "employee.username",
+  "initialPassword": "replace-with-a-12-character-password",
+  "roleIds": [1]
+}
+
+### Sign out this browser session
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{accessToken}}
+
+### Sign out all sessions for this user
+POST {{baseUrl}}/api/auth/logout-all
+Authorization: Bearer {{accessToken}}

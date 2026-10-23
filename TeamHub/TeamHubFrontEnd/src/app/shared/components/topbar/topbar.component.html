@@ -1,0 +1,10 @@
+<header class="topbar">
+  <nav class="main-nav">
+    <!-- Recursive, permission-filtered navigation. Anonymous items (Home/Login) and signed-in
+         items come from the same configuration, so nothing here is hardcoded per role. -->
+    <app-nav-menu [items]="menu.visibleMenu()" />
+  </nav>
+  @if (isAuthenticated) {
+    <button class="nav-item sign-out" type="button" (click)="logout()">Sign out</button>
+  }
+</header>

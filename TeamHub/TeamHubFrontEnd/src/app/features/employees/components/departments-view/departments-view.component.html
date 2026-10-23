@@ -1,0 +1,66 @@
+<p class="loading-state" *ngIf="isLoadingDepartments" aria-live="polite">Loading departments...</p>
+
+<section *ngIf="!isLoadingDepartments && !selectedDepartment" aria-label="Departments">
+  <p class="empty-state" *ngIf="departments.length === 0">No departments found.</p>
+  <div class="department-list" *ngIf="departments.length > 0">
+    <button
+      class="department-option"
+      type="button"
+      *ngFor="let department of departments"
+      (click)="selectDepartment(department)">
+      <span class="department-identity">
+        <img
+          *ngIf="departmentLeaders[department.departmentId] as leader"
+          class="department-leader-avatar"
+          [src]="leader.imageBase64"
+          [alt]="leader.name + ' photo'"
+          [title]="leader.name + ' - ' + leader.designation">
+        <span *ngIf="!departmentLeaders[department.departmentId]" class="department-avatar-placeholder" aria-hidden="true">—</span>
+        <span>{{ department.departmentName }}</span>
+      </span>
+      <span class="department-arrow" aria-hidden="true">›</span>
+    </button>
+  </div>
+</section>
+
+<section *ngIf="selectedDepartment" aria-label="Department employees">
+  <div class="department-heading">
+    <h2>{{ selectedDepartment.departmentName }}</h2>
+    <p>{{ totalCount }} {{ totalCount === 1 ? 'employee' : 'employees' }}</p>
+  </div>
+
+  <p class="loading-state" *ngIf="isLoadingEmployees" aria-live="polite">Loading employees...</p>
+
+  <div class="employee-table-wrap">
+    <table class="employee-table">
+      <thead>
+        <tr>
+          <th scope="col">Employee</th>
+          <th scope="col">Department</th>
+          <th scope="col">Designation</th>
+          <th scope="col">Team Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let employee of employees">
+          <td>{{ employee.name }}</td>
+          <td>{{ employee.department || '—' }}</td>
+          <td>{{ employee.designation || '—' }}</td>
+          <td>{{ employee.teamName || '—' }}</td>
+        </tr>
+        <tr *ngIf="!isLoadingEmployees && employees.length === 0">
+          <td class="empty-table-cell" colspan="4">No employees in this department.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <app-pagination
+    [pageNumber]="pageNumber"
+    [pageSize]="pageSize"
+    [totalCount]="totalCount"
+    [isLoading]="isLoadingEmployees"
+    (pageChange)="changePage($event)"
+    (pageSizeChange)="changePageSize($event)"
+  />
+</section>

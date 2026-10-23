@@ -1,0 +1,37 @@
+<app-topbar />
+
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="login-title">
+    <div class="brand-mark" aria-hidden="true">TH</div>
+    <p class="eyebrow">TEAMHUB</p>
+
+    @if (enableEntra) {
+      <h1 id="login-title">Welcome back</h1>
+      <p class="intro">Sign in with your Microsoft work account to continue.</p>
+      <button type="button" (click)="signInWithMicrosoft()">Sign in with Microsoft</button>
+    } @else {
+      <h1 id="login-title">Development sign-in</h1>
+      <p class="intro">
+        Microsoft Entra ID is not configured yet. Choose an approved development account to
+        continue. This passwordless sign-in is disabled outside the Development environment.
+      </p>
+
+      <div class="dev-accounts">
+        @for (user of devUsers; track user.userId) {
+          <button type="button" class="dev-account" [disabled]="isSubmitting" (click)="signInAs(user)">
+            <span class="dev-account__name">{{ user.displayName }}</span>
+            <span class="dev-account__meta">{{ user.username }} &middot; {{ user.roles.join(', ') }}</span>
+          </button>
+        } @empty {
+          @if (!errorMessage) {
+            <p class="intro">No approved development accounts are available.</p>
+          }
+        }
+      </div>
+
+      @if (errorMessage) {
+        <p class="error-message" role="alert">{{ errorMessage }}</p>
+      }
+    }
+  </section>
+</main>

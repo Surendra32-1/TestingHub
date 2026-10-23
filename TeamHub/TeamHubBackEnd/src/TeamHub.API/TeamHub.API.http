@@ -1,0 +1,116 @@
+@TeamHub.API_HostAddress = http://localhost:5169
+
+GET {{TeamHub.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+@employeeId = 1
+@releasedId = 1
+@terminationId = 1
+
+### Create an employee release record (Admin token required)
+POST {{TeamHub.API_HostAddress}}/api/employee-releases/employee/{{employeeId}}
+Content-Type: application/json
+
+{
+  "releaseType": "Resignation",
+  "resignationDate": "2026-10-16",
+  "noticeDate": "2026-10-16",
+  "lastWorkingDate": "2026-11-15",
+  "noticePeriodDays": 30,
+  "servedNoticeDays": 30,
+  "reason": "Personal reasons",
+  "remarks": "",
+  "knowledgeTransferCompleted": false,
+  "assetsReturned": false,
+  "exitInterviewCompleted": false,
+  "settlementAmount": 0,
+  "relievingLetterIssued": false,
+  "experienceLetterIssued": false,
+  "status": "Draft"
+}
+
+### Get employee release records
+GET {{TeamHub.API_HostAddress}}/api/employee-releases/employee/{{employeeId}}
+Accept: application/json
+
+### Get a release record by ID
+GET {{TeamHub.API_HostAddress}}/api/employee-releases/{{releasedId}}
+Accept: application/json
+
+### Update a release record
+PUT {{TeamHub.API_HostAddress}}/api/employee-releases/{{releasedId}}
+Content-Type: application/json
+
+{
+  "releaseType": "Resignation",
+  "resignationDate": "2026-10-16",
+  "noticeDate": "2026-10-16",
+  "lastWorkingDate": "2026-11-15",
+  "noticePeriodDays": 30,
+  "servedNoticeDays": 30,
+  "reason": "Personal reasons",
+  "remarks": "Knowledge transfer scheduled",
+  "knowledgeTransferCompleted": false,
+  "assetsReturned": false,
+  "exitInterviewCompleted": false,
+  "settlementAmount": 0,
+  "relievingLetterIssued": false,
+  "experienceLetterIssued": false,
+  "status": "PendingApproval"
+}
+
+### Create an employee termination record (Admin token required)
+POST {{TeamHub.API_HostAddress}}/api/employee-terminations/employee/{{employeeId}}
+Content-Type: application/json
+
+{
+  "terminationType": "Performance",
+  "effectiveDate": "2026-10-16",
+  "investigationRequired": true,
+  "investigationSummary": "Performance review completed",
+  "warningCount": 1,
+  "lastWarningDate": "2026-09-16",
+  "reason": "Performance concerns",
+  "remarks": "",
+  "assetRecovered": false,
+  "systemAccessRevoked": false,
+  "exitInterviewCompleted": false,
+  "settlementAmount": 0,
+  "eligibleForRehire": false,
+  "terminationLetterIssued": false,
+  "terminationLetterDate": null,
+  "status": "Draft"
+}
+
+### Get employee termination records
+GET {{TeamHub.API_HostAddress}}/api/employee-terminations/employee/{{employeeId}}
+Accept: application/json
+
+### Get a termination record by ID
+GET {{TeamHub.API_HostAddress}}/api/employee-terminations/{{terminationId}}
+Accept: application/json
+
+### Update a termination record
+PUT {{TeamHub.API_HostAddress}}/api/employee-terminations/{{terminationId}}
+Content-Type: application/json
+
+{
+  "terminationType": "Performance",
+  "effectiveDate": "2026-10-16",
+  "investigationRequired": true,
+  "investigationSummary": "Performance review completed",
+  "warningCount": 1,
+  "lastWarningDate": "2026-09-16",
+  "reason": "Performance concerns",
+  "remarks": "Review completed",
+  "assetRecovered": false,
+  "systemAccessRevoked": false,
+  "exitInterviewCompleted": false,
+  "settlementAmount": 0,
+  "eligibleForRehire": false,
+  "terminationLetterIssued": false,
+  "terminationLetterDate": null,
+  "status": "PendingApproval"
+}
