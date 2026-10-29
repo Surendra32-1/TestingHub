@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthService } from '../../../core/auth/auth.service';
+import { signedInLandingPath } from '../../../core/auth/auth.guard';
 import { EntraAuthService } from '../../../core/auth/entra-auth.service';
 import { DevSignInUser } from '../../../core/auth/auth.models';
 import { TopbarComponent } from '../../../shared/components/topbar/topbar.component';
@@ -76,7 +77,7 @@ export class LoginComponent implements OnInit {
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
     const safeReturnUrl = returnUrl?.startsWith('/') && !returnUrl.startsWith('//')
       ? returnUrl
-      : '/people';
+      : signedInLandingPath(this.authService);
     void this.router.navigateByUrl(safeReturnUrl);
   }
 }

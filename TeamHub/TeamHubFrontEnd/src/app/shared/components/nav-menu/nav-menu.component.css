@@ -1,11 +1,13 @@
-/* Visual language inherited from the previous topbar markup: dark pill for the bar, white rounded
-   panel for groups, left-border rows inside panels. Same colours, radii, paddings and transitions. */
 :host {
-  display: block;
+  display: flex;
+  flex: 1;
+  width: 100%;
 }
 
 .menu-level--root {
   display: flex;
+  flex: 1;
+  width: 100%;
   align-items: center;
   gap: 10px;
 }
@@ -14,7 +16,6 @@
   display: block;
 }
 
-/* Bar items (level 0). */
 .nav-item {
   border: none;
   background: transparent;
@@ -37,7 +38,6 @@
   margin-left: auto;
 }
 
-/* Groups. */
 .menu-branch {
   position: relative;
 }
@@ -47,7 +47,6 @@
   margin-left: 6px;
 }
 
-/* A branch is highlighted while any descendant route is active. */
 .menu-branch--active > .nav-item {
   background: #1f2937;
   color: #fff;
@@ -77,20 +76,17 @@
   z-index: 1000;
 }
 
-/* Only the top-level panel scrolls; nested panels must stay unclipped so they can fly out. */
 .menu-branch--root > .dropdown-menu {
   max-height: min(70vh, 34rem);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-/* Nested panels open to the right of their parent row. */
 .menu-branch:not(.menu-branch--root) > .dropdown-menu {
   top: -8px;
   left: 100%;
 }
 
-/* Hover keeps the previous behaviour; focus-within additionally makes panels keyboard reachable. */
 .menu-branch:hover > .dropdown-menu,
 .menu-branch:focus-within > .dropdown-menu {
   opacity: 1;
@@ -98,7 +94,6 @@
   transform: translateY(0);
 }
 
-/* Panel rows (level 1+) - declared after .nav-item so they override the pill look. */
 .menu-row {
   display: block;
   width: 100%;

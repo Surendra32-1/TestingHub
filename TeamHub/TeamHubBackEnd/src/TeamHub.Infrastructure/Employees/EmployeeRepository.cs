@@ -31,7 +31,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             FROM Employees e
             INNER JOIN Departments d ON d.DepartmentId = e.DepartmentId
             INNER JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
-            WHERE e.IsActive = 1
+            WHERE e.IsActive = 1 AND e.IsDeleted = 0
             ORDER BY d.DepartmentName, dsg.DesignationName, e.FirstName, e.LastName, e.EmployeeId;
             ";
 
@@ -137,32 +137,119 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
     public Task<IReadOnlyList<GetGridEmployeeDto>> GetAllAsync(
         CancellationToken cancellationToken = default,
         string? searchTerm = null,
-        string searchField = "all") =>
-        GetEmployeesAsync(cancellationToken, searchTerm, searchField, null);
+        string searchField = "all",
+        string? departmentName = null,
+        string status = "active") =>
+        GetEmployeesAsync(cancellationToken, searchTerm, searchField, null, departmentName, status);
 
     public Task<IReadOnlyList<GetGridEmployeeDto>> GetActiveByDepartmentIdAsync(
         int departmentId,
-        CancellationToken cancellationToken = default) =>
-        GetEmployeesAsync(cancellationToken, null, "all", departmentId);
+        CancellationToken cancellationToken = default,
+        string? searchTerm = null,
+        string searchField = "all") =>
+        GetEmployeesAsync(cancellationToken, searchTerm, searchField, departmentId, null, "active");
+
+    public async Task<IReadOnlyList<GetActiveInactiveEmployeeDto>> GetAllActiveInactiveAsync(
+        CancellationToken cancellationToken = default,
+        string? searchTerm = null,
+        string searchField = "all",
+        string? departmentName = null,
+        string status = "all")
+    {
+        searchTerm = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim();
+        searchField = searchField is "name" or "designation" or "department" ? searchField : "all";
+        departmentName = string.IsNullOrWhiteSpace(departmentName) ? null : departmentName.Trim();
+        status = status is "active" or "inactive" or "all" ? status : "all";
+
+        const string sql = @"
+            SELECT
+                e.EmployeeId AS Id,
+                e.ENumber,
+                CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName) AS Name,
+                dsg.DesignationName AS Designation,
+                d.DepartmentName AS Department,
+                CONCAT_WS(' ', reports.FirstName, reports.MiddleName, reports.LastName) AS ReportsToEmployee,
+                t.TeamName,
+                e.IsActive,
+                e.IsDeleted
+            FROM Employees e
+            LEFT JOIN Departments d ON d.DepartmentId = e.DepartmentId
+            LEFT JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
+            LEFT JOIN Employees reports ON reports.EmployeeId = e.ReportsToEmployeeId
+            LEFT JOIN Teams t ON t.TeamId = e.TeamId
+            WHERE (@Status = 'all' OR e.IsActive = CASE WHEN @Status = 'active' THEN 1 ELSE 0 END)
+                AND (@DepartmentName IS NULL OR d.DepartmentName = @DepartmentName)
+                AND (
+                        @SearchTerm IS NULL
+                        OR (@SearchField IN ('all', 'name') AND LOWER(CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName)) LIKE '%' + LOWER(@SearchTerm) + '%')
+                        OR (@SearchField IN ('all', 'designation') AND LOWER(dsg.DesignationName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                        OR (@SearchField IN ('all', 'department') AND LOWER(d.DepartmentName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                        OR (@SearchField = 'all' AND LOWER(t.TeamName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                )
+            ORDER BY
+                CASE WHEN e.IsActive = 1 THEN 0 ELSE 1 END,
+                e.FirstName, e.LastName, e.EmployeeId;
+            ";
+
+        using var connection = connectionFactory.CreateConnection();
+        var rows = await connection.QueryAsync<ActiveInactiveEmployeeRow>(
+            new CommandDefinition(sql, new { SearchTerm = searchTerm, SearchField = searchField, DepartmentName = departmentName, Status = status }, cancellationToken: cancellationToken));
+
+        return rows
+            .Select(row => new GetActiveInactiveEmployeeDto
+            {
+                Id = row.Id,
+                ENumber = row.ENumber,
+                Name = row.Name,
+                Designation = row.Designation,
+                Department = row.Department,
+                ReportsToEmployee = string.IsNullOrWhiteSpace(row.ReportsToEmployee) ? null : row.ReportsToEmployee,
+                TeamName = row.TeamName,
+                IsActive = row.IsActive,
+                IsDeleted = row.IsDeleted
+            })
+            .ToList();
+    }
+
+    private sealed class ActiveInactiveEmployeeRow
+    {
+        public int Id { get; set; }
+        public int ENumber { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Designation { get; set; }
+        public string? Department { get; set; }
+        public string? ReportsToEmployee { get; set; }
+        public string? TeamName { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
+    }
 
     private async Task<IReadOnlyList<GetGridEmployeeDto>> GetEmployeesAsync(
         CancellationToken cancellationToken,
         string? searchTerm,
         string searchField,
-        int? departmentId)
+        int? departmentId,
+        string? departmentName,
+        string status)
     {
         searchTerm = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim();
         searchField = searchField is "name" or "designation" or "department" ? searchField : "all";
+        departmentName = string.IsNullOrWhiteSpace(departmentName) ? null : departmentName.Trim();
+        status = status is "active" or "inactive" or "all" ? status : "active";
 
         const string sql = @"
             SELECT
                 e.EmployeeId AS Id,
+                e.ENumber,
                 CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName) AS Name,
                 e.Email,
                 dsg.DesignationName AS Designation,
                 dsg.[Rank] AS DesignationRank,
                 d.DepartmentName AS Department,
+                e.JoinedDate,
+                e.IsActive,
                 g.GenderName AS Gender,
+                e.ReportsToEmployeeId,
                 CONCAT_WS(' ', reports.FirstName, reports.MiddleName, reports.LastName) AS ReportsToEmployee,
                 CONCAT_WS(' ', leads.FirstName, leads.MiddleName, leads.LastName) AS LeadEmployee,
                 e.StationNumber,
@@ -177,21 +264,24 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 ce.CotivityEmployeeName AS ReportToCotivityEmployee,
                 CONCAT_WS(', ', address.AddressLine1, address.AddressLine2, address.City, address.State) AS Address,
                 skill.SkillName AS SkillName,
+                employeeSkill.IsPrimary AS SkillIsPrimary,
                 ei.ImagePath
             FROM Employees e
             LEFT JOIN Departments d ON d.DepartmentId = e.DepartmentId
             LEFT JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
             LEFT JOIN Gender g ON g.GenderId = e.GenderId
-            LEFT JOIN Employees reports ON reports.EmployeeId = e.ReportsToEmployeeId
-            LEFT JOIN Employees leads ON leads.EmployeeId = e.LeadEmployeeId
+            LEFT JOIN Employees reports ON reports.EmployeeId = e.ReportsToEmployeeId AND reports.IsDeleted = 0
+            LEFT JOIN Employees leads ON leads.EmployeeId = e.LeadEmployeeId AND leads.IsDeleted = 0
             LEFT JOIN Teams t ON t.TeamId = e.TeamId
             LEFT JOIN CotivityEmployees ce ON ce.CotivityEmployeeId = e.CotivityEmployeeId
             LEFT JOIN EmployeeAddresses address ON address.EmployeeId = e.EmployeeId
             LEFT JOIN EmployeeSkills employeeSkill ON employeeSkill.EmployeeId = e.EmployeeId
             LEFT JOIN Skills skill ON skill.SkillId = employeeSkill.SkillId
             LEFT JOIN EmployeeImages ei ON ei.EmployeeId = e.EmployeeId
-                        WHERE e.IsActive = 1
+                        WHERE e.IsDeleted = 0
+                            AND (@Status = 'all' OR e.IsActive = CASE WHEN @Status = 'active' THEN 1 ELSE 0 END)
                             AND (@DepartmentId IS NULL OR e.DepartmentId = @DepartmentId)
+                            AND (@DepartmentName IS NULL OR d.DepartmentName = @DepartmentName)
                             AND (
                                     @SearchTerm IS NULL
                                     OR (@SearchField IN ('all', 'name') AND LOWER(CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName)) LIKE '%' + LOWER(@SearchTerm) + '%')
@@ -206,7 +296,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
 
         using var connection = connectionFactory.CreateConnection();
         var rows = await connection.QueryAsync<EmployeeGridRow>(
-                        new CommandDefinition(sql, new { SearchTerm = searchTerm, SearchField = searchField, DepartmentId = departmentId }, cancellationToken: cancellationToken));
+                        new CommandDefinition(sql, new { SearchTerm = searchTerm, SearchField = searchField, DepartmentId = departmentId, DepartmentName = departmentName, Status = status }, cancellationToken: cancellationToken));
 
         return rows
             .GroupBy(row => row.Id)
@@ -216,12 +306,19 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 return new GetGridEmployeeDto
                 {
                     Id = first.Id,
+                    ENumber = first.ENumber,
                     Name = first.Name,
                     Email = first.Email,
                     Designation = first.Designation,
                     DesignationRank = first.DesignationRank,
                     Department = first.Department,
+                    JoinedDate = DateOnly.FromDateTime(first.JoinedDate),
+                    PrimarySkill = group.Where(row => row.SkillIsPrimary && row.SkillName is not null)
+                        .Select(row => row.SkillName)
+                        .FirstOrDefault(),
+                    IsActive = first.IsActive,
                     Gender = first.Gender,
+                    ReportsToEmployeeId = first.ReportsToEmployeeId,
                     ReportsToEmployee = first.ReportsToEmployee,
                     LeadEmployee = first.LeadEmployee,
                     StationNumber = first.StationNumber,
@@ -252,7 +349,13 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             .ToList();
     }
 
-    public async Task<GetEmployeeDto?> GetByIdAsync(int employeeId, CancellationToken cancellationToken = default)
+    public Task<GetEmployeeDto?> GetByIdAsync(int employeeId, CancellationToken cancellationToken = default) =>
+        GetEmployeeAsync(employeeId, includeDeleted: false, cancellationToken);
+
+    public Task<GetEmployeeDto?> GetActiveInactiveByIdAsync(int employeeId, CancellationToken cancellationToken = default) =>
+        GetEmployeeAsync(employeeId, includeDeleted: true, cancellationToken);
+
+    private async Task<GetEmployeeDto?> GetEmployeeAsync(int employeeId, bool includeDeleted, CancellationToken cancellationToken)
     {
         const string employeeSql = @"
             SELECT e.EmployeeId, e.ENumber, e.FirstName, e.MiddleName, e.LastName, e.JoinedDate,
@@ -286,12 +389,12 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 WHERE EmployeeId = e.EmployeeId
                 ORDER BY ImageId DESC
             ) image
-            WHERE e.EmployeeId = @EmployeeId;
+            WHERE e.EmployeeId = @EmployeeId AND (@IncludeDeleted = 1 OR e.IsDeleted = 0);
             ";
 
         using var connection = connectionFactory.CreateConnection();
         var row = await connection.QuerySingleOrDefaultAsync<EmployeeDetailRow>(
-            new CommandDefinition(employeeSql, new { EmployeeId = employeeId }, cancellationToken: cancellationToken));
+            new CommandDefinition(employeeSql, new { EmployeeId = employeeId, IncludeDeleted = includeDeleted }, cancellationToken: cancellationToken));
         if (row is null)
         {
             return null;
@@ -561,7 +664,13 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
         }
     }
 
-    public async Task<bool> UpdateAsync(Employee employee, CancellationToken cancellationToken = default)
+    public Task<bool> UpdateAsync(Employee employee, CancellationToken cancellationToken = default) =>
+        UpdateEmployeeAsync(employee, includeDeleted: false, cancellationToken);
+
+    public Task<bool> UpdateActiveInactiveAsync(Employee employee, CancellationToken cancellationToken = default) =>
+        UpdateEmployeeAsync(employee, includeDeleted: true, cancellationToken);
+
+    private async Task<bool> UpdateEmployeeAsync(Employee employee, bool includeDeleted, CancellationToken cancellationToken)
     {
         const string employeeSql = @"
             UPDATE Employees
@@ -598,9 +707,24 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 TeamId = @TeamId,
                 CotivityEmployeeId = @CotivityEmployeeId,
                 IsActive = @IsActive,
+                IsDeleted = CASE
+                    WHEN @IncludeDeleted = 0 THEN IsDeleted
+                    WHEN @IsActive = 1 THEN 0
+                    ELSE 1
+                END,
+                DeletedDate = CASE
+                    WHEN @IncludeDeleted = 0 THEN DeletedDate
+                    WHEN @IsActive = 1 THEN NULL
+                    ELSE COALESCE(DeletedDate, SYSUTCDATETIME())
+                END,
+                DeletedBy = CASE
+                    WHEN @IncludeDeleted = 0 THEN DeletedBy
+                    WHEN @IsActive = 1 THEN NULL
+                    ELSE COALESCE(DeletedBy, @LastModifiedBy)
+                END,
                 LastModifiedDate = @LastModifiedDate,
                 LastModifiedBy = @LastModifiedBy
-            WHERE EmployeeId = @EmployeeId;
+            WHERE EmployeeId = @EmployeeId AND (@IncludeDeleted = 1 OR IsDeleted = 0);
             ";
         const string deleteAddressesSql = "DELETE FROM EmployeeAddresses WHERE EmployeeId = @EmployeeId;";
         const string deleteSkillsSql = "DELETE FROM EmployeeSkills WHERE EmployeeId = @EmployeeId;";
@@ -660,7 +784,8 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             employee.CotivityEmployeeId,
             employee.IsActive,
             employee.LastModifiedDate,
-            employee.LastModifiedBy
+            employee.LastModifiedBy,
+            IncludeDeleted = includeDeleted
         };
 
         using var connection = connectionFactory.CreateConnection();
@@ -832,13 +957,13 @@ public async Task<EmployeeMastersResponse> GetEmployeeMastersAsync(CancellationT
 
                            SELECT
             AddressTypeId ,
-          AddressTypeName     
+          AddressTypeName
             FROM AddressType
                 WHERE IsActive = 1
            ORDER BY AddressTypeName;
         ";
 
-          
+
 
     using var connection = connectionFactory.CreateConnection();
 
@@ -875,6 +1000,31 @@ public async Task<EmployeeMastersResponse> GetEmployeeMastersAsync(CancellationT
         AddressTypes=await multi.ReadAsync<AddressTypeDto>(),
     };
 }
+    public async Task<bool> DeleteAsync(
+        int employeeId,
+        string deletedBy,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+            UPDATE dbo.Employees
+            SET IsDeleted = 1,
+                IsActive = 0,
+                DeletedDate = SYSUTCDATETIME(),
+                DeletedBy = @DeletedBy,
+                LastModifiedDate = SYSUTCDATETIME(),
+                LastModifiedBy = @DeletedBy
+            WHERE EmployeeId = @EmployeeId AND IsDeleted = 0;
+            ";
+
+        using var connection = connectionFactory.CreateConnection();
+        var affectedRows = await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            new { EmployeeId = employeeId, DeletedBy = deletedBy },
+            cancellationToken: cancellationToken));
+
+        return affectedRows > 0;
+    }
+
     public async Task AssignEmployeeRolesAsync(int employeeId, IReadOnlyCollection<int> roleIds, string? email, string modifiedBy, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(email))
@@ -1014,12 +1164,16 @@ public async Task<EmployeeMastersResponse> GetEmployeeMastersAsync(CancellationT
     private sealed class EmployeeGridRow
     {
         public int Id { get; set; }
+        public int ENumber { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? Designation { get; set; }
         public int DesignationRank { get; set; }
         public string? Department { get; set; }
+        public DateTime JoinedDate { get; set; }
+        public bool IsActive { get; set; }
         public string? Gender { get; set; }
+        public int? ReportsToEmployeeId { get; set; }
         public string? ReportsToEmployee { get; set; }
         public string? LeadEmployee { get; set; }
         public string? StationNumber { get; set; }
@@ -1034,6 +1188,7 @@ public async Task<EmployeeMastersResponse> GetEmployeeMastersAsync(CancellationT
         public string? ReportToCotivityEmployee { get; set; }
         public string? Address { get; set; }
         public string? SkillName { get; set; }
+        public bool SkillIsPrimary { get; set; }
         public string? ImagePath { get; set; }
     }
 

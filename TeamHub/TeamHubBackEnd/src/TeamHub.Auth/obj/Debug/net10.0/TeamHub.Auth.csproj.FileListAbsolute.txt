@@ -116,3 +116,61 @@ E:\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\ref\TeamHub.Auth.dl
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Auth.deps.json
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Auth.dll
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Auth.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Auth.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Auth.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Auth.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Application.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Infrastructure.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Shared.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Application.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Domain.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Infrastructure.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\bin\Debug\net10.0\TeamHub.Shared.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub.Auth.csproj.AssemblyReference.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub.Auth.GeneratedMSBuildEditorConfig.editorconfig
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub.Auth.AssemblyInfoInputs.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub.Auth.AssemblyInfo.cs
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub.Auth.csproj.CoreCompileInputs.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub.Auth.sourcelink.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub..EFE85F7B.Up2Date
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub.Auth.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\refint\TeamHub.Auth.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\TeamHub.Auth.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Auth\obj\Debug\net10.0\ref\TeamHub.Auth.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Auth.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Auth.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Auth.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Auth.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Auth.dll
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Auth.pdb
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Auth.deps.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Auth.dll
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Auth.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Auth.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Auth.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Auth.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Auth.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Auth.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Auth.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Auth.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Auth.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Auth.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Auth.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Auth.dll
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Auth.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Auth.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Auth.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Auth.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Auth.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Auth.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Auth.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Auth.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Auth.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Auth.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Auth.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Auth.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Auth.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Auth.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Auth.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Auth.pdb

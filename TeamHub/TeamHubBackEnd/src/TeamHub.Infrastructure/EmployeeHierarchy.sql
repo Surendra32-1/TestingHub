@@ -65,6 +65,7 @@ BEGIN
             0 AS Level
         FROM dbo.Employees e
         WHERE e.EmployeeId = @EmployeeId
+          AND e.IsDeleted = 0
 
         UNION ALL
 
@@ -76,6 +77,7 @@ BEGIN
         FROM dbo.Employees manager
         INNER JOIN Managers chain ON manager.EmployeeId = chain.ParentId
         WHERE chain.VisitedPath NOT LIKE '%/' + CAST(manager.EmployeeId AS VARCHAR(20)) + '/%'
+          AND manager.IsDeleted = 0
     )
     SELECT
         employee.EmployeeId,
@@ -120,7 +122,8 @@ BEGIN
         WHERE ei.EmployeeId = e.EmployeeId
         ORDER BY ei.ImageId DESC
     ) image
-    WHERE e.EmployeeId = @EmployeeId;
+    WHERE e.EmployeeId = @EmployeeId
+      AND e.IsDeleted = 0;
 
     ;WITH CotivityManagers AS
     (
@@ -132,6 +135,7 @@ BEGIN
         FROM dbo.Employees e
         INNER JOIN dbo.CotivityEmployees ce ON ce.CotivityEmployeeId = e.CotivityEmployeeId
         WHERE e.EmployeeId = @EmployeeId
+          AND e.IsDeleted = 0
 
         UNION ALL
 
@@ -178,6 +182,7 @@ BEGIN
             0 AS Level
         FROM dbo.Employees e
         WHERE e.EmployeeId = @EmployeeId
+          AND e.IsDeleted = 0
 
         UNION ALL
 
@@ -189,6 +194,7 @@ BEGIN
         FROM dbo.Employees report
         INNER JOIN Reportees chain ON report.ReportsToEmployeeId = chain.EmployeeId
         WHERE chain.VisitedPath NOT LIKE '%/' + CAST(report.EmployeeId AS VARCHAR(20)) + '/%'
+          AND report.IsDeleted = 0
     )
     SELECT
         employee.EmployeeId,

@@ -12,7 +12,6 @@
         />
       </div>
       <button *ngIf="activeView === 'directory' && !readOnlyHome && canAddEmployee" class="add-btn" type="button" routerLink="/employees/add"><span>+</span>Add Employee</button>
-      <button *ngIf="activeView === 'departments' && departmentSelected" class="add-btn" type="button" (click)="backToDepartments()">&#8249; All departments</button>
     </div>
 
     <app-directory-view
@@ -21,6 +20,8 @@
       [tableLayout]="tableLayout"
       [readOnlyHome]="readOnlyHome"
       [canEditEmployee]="canEditEmployee"
+      [canViewHierarchy]="canViewPeople || readOnlyHome"
+      [canViewEmployeeDetails]="canViewPeople"
       [canReleaseEmployee]="canReleaseEmployee"
       [canTerminateEmployee]="canTerminateEmployee"
       [showAddButton]="false"
@@ -30,8 +31,12 @@
       [totalCount]="totalCount"
       [searchTerm]="searchTerm"
       [searchField]="searchField"
+      [departmentFilterName]="selectedDepartmentName"
+      [resultsLabel]="selectedDepartmentName ? selectedDepartmentName + ' Employees' : 'All Employees'"
       (searchTermChange)="updateSearchTerm($event)"
       (searchFieldChange)="updateSearchField($event)"
+      (departmentFilterChange)="filterByDepartment($event)"
+      (clearDepartmentFilter)="clearDepartmentFilter()"
       (pageChange)="changePage($event)"
       (pageSizeChange)="changePageSize($event)"
       (editEmployee)="editEmployee($event)"
@@ -41,16 +46,32 @@
       (viewEmployeeDirectHierarchy)="showDirectHierarchy($event)"
       (viewEmployeeDetails)="showEmployeeDetails($event)"
     />
-    <app-departments-view *ngIf="activeView === 'departments'" (departmentSelectedChange)="departmentSelected = $event" />
+    <app-departments-view
+      *ngIf="activeView === 'departments'"
+      [initialDepartmentName]="selectedDepartmentName"
+      [readOnlyHome]="readOnlyHome"
+      [canEditEmployee]="canEditEmployee"
+      [canViewEmployeeDetails]="canViewPeople || readOnlyHome"
+      [canReleaseEmployee]="canReleaseEmployee"
+      [canTerminateEmployee]="canTerminateEmployee"
+      (editEmployee)="editEmployee($event)"
+      (releaseEmployee)="releaseEmployee($event)"
+      (terminateEmployee)="terminateEmployee($event)"
+      (viewEmployeeHierarchy)="showEmployeeHierarchy($event)"
+      (viewEmployeeDirectHierarchy)="showDirectHierarchy($event)"
+      (viewEmployeeDetails)="showEmployeeDetails($event)"
+    />
     <app-employee-hierarchy
       *ngIf="activeView === 'hierarchy' && hierarchyEmployeeId !== null"
       [employeeId]="hierarchyEmployeeId"
       [directOnly]="hierarchyDirect"
+      [publicDirectory]="readOnlyHome"
       (back)="returnToDirectory()"
     />
     <app-employee-details
       *ngIf="activeView === 'details' && selectedEmployeeId !== null"
       [employeeId]="selectedEmployeeId"
+      [readOnlyHome]="readOnlyHome"
       (back)="returnToDirectory()"
     />
   </main>

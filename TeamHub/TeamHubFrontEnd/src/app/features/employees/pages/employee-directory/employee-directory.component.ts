@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { TopbarComponent } from '../../../../shared/components/topbar/topbar.component';
@@ -40,13 +40,13 @@ export class EmployeeDirectoryComponent implements OnInit {
   totalCount = 0;
   searchTerm = '';
   searchField: 'all' | 'name' | 'designation' | 'department' = 'all';
+  selectedDepartmentName: string | null = null;
   hierarchyEmployeeId: number | null = null;
   hierarchyDirect = false;
   selectedEmployeeId: number | null = null;
-  departmentSelected = false;
-  @ViewChild(DepartmentsViewComponent) private readonly departmentsView?: DepartmentsViewComponent;
   readonly tableLayout: boolean;
   readonly readOnlyHome: boolean;
+  readonly canViewPeople: boolean;
   readonly canAddEmployee: boolean;
   readonly canEditEmployee: boolean;
   readonly canReleaseEmployee: boolean;
@@ -69,6 +69,7 @@ export class EmployeeDirectoryComponent implements OnInit {
   ) {
     this.tableLayout = route.snapshot.data['layout'] === 'table';
     this.readOnlyHome = route.snapshot.data['readOnlyHome'] === true;
+    this.canViewPeople = authService.hasPermission('people.view');
     this.canAddEmployee = authService.hasPermission('people.create');
     this.canEditEmployee = authService.hasPermission('people.update');
     this.canReleaseEmployee = authService.hasPermission('people.release');
@@ -84,7 +85,22 @@ export class EmployeeDirectoryComponent implements OnInit {
     this.isLoading = true;
     this.pageNumber = pageNumber;
     this.pageSize = pageSize;
-    this.employeeService.getEmployees(pageNumber, pageSize, this.searchTerm, this.searchField).subscribe({
+    const employeePage = this.readOnlyHome
+      ? this.employeeService.getPublicEmployees(
+        pageNumber,
+        pageSize,
+        this.searchTerm,
+        this.searchField,
+        this.selectedDepartmentName
+      )
+      : this.employeeService.getEmployees(
+        pageNumber,
+        pageSize,
+        this.searchTerm,
+        this.searchField,
+        this.selectedDepartmentName
+      );
+    employeePage.subscribe({
       next: (page) => {
         if (requestId !== this.loadRequestId) return;
         this.employees = page.items;
@@ -111,18 +127,28 @@ export class EmployeeDirectoryComponent implements OnInit {
     this.scheduleSearch();
   }
 
+  filterByDepartment(departmentName: string): void {
+    if (!departmentName) return;
+    this.selectedDepartmentName = departmentName;
+    this.activeView = 'departments';
+  }
+
+  clearDepartmentFilter(): void {
+    if (!this.selectedDepartmentName) return;
+    this.selectedDepartmentName = null;
+    this.loadEmployees(1, this.pageSize);
+  }
+
   private scheduleSearch(): void {
     if (this.searchTimeout) clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => this.loadEmployees(1, this.pageSize), 300);
   }
 
   selectView(view: EmployeeView): void {
+    if (view === 'directory' && this.activeView !== 'directory') {
+      this.clearDepartmentFilter();
+    }
     this.activeView = view;
-    this.departmentSelected = false;
-  }
-
-  backToDepartments(): void {
-    this.departmentsView?.showDepartments();
   }
 
   showEmployeeHierarchy(employeeId: number): void {
@@ -143,6 +169,7 @@ export class EmployeeDirectoryComponent implements OnInit {
   }
 
   returnToDirectory(): void {
+    this.clearDepartmentFilter();
     this.activeView = 'directory';
   }
 

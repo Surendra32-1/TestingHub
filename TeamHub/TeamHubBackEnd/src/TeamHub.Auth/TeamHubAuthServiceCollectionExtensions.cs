@@ -109,6 +109,14 @@ public static class TeamHubAuthServiceCollectionExtensions
                     .AddRequirements(new PermissionRequirement(policy.Value)));
             }
 
+            options.AddPolicy(RbacPolicies.ProfileViewOrEdit, builder => builder
+                .RequireAuthenticatedUser()
+                .RequireAssertion(context =>
+                    context.User.IsInRole(PermissionAuthorizationHandler.SuperAdminRole)
+                    || context.User.FindAll(PermissionAuthorizationHandler.PermissionClaimType).Any(claim =>
+                        string.Equals(claim.Value, RbacPolicies.ProfileView, StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(claim.Value, RbacPolicies.ProfileEdit, StringComparison.OrdinalIgnoreCase))));
+
             if (!environment.IsDevelopment())
             {
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()

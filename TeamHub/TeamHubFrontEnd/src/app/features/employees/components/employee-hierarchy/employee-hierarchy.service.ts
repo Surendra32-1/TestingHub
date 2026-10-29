@@ -16,7 +16,13 @@ export class EmployeeHierarchyService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}api/employees`;
 
-  getHierarchy(employeeId: number): Observable<EmployeeHierarchyResponse> {
+  getHierarchy(employeeId: number, publicDirectory = false): Observable<EmployeeHierarchyResponse> {
+    if (publicDirectory) {
+      return this.http
+        .get<ApiResponse<EmployeeHierarchyResponse>>(`${this.apiUrl}/public/${employeeId}/hierarchy`)
+        .pipe(map((response) => response.data));
+    }
+
     return this.http
       .get<ApiResponse<EmployeeHierarchyResponse>>(`${this.apiUrl}/${employeeId}/hierarchy`)
       .pipe(map((response) => response.data));

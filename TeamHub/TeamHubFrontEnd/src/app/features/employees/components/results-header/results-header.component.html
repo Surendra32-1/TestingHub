@@ -1,4 +1,9 @@
 <div class="results-header">
-  <span>{{ isLoading ? 'Loading employees...' : 'All Employees (' + count + ')' }}</span>
+  <div class="results-summary">
+    <span>{{ isLoading ? 'Loading employees...' : label + ' (' + count + ')' }}</span>
+    <button *ngIf="filterLabel" type="button" class="clear-filter-button" (click)="clearFilter.emit()">
+      Clear Filter
+    </button>
+  </div>
   <button *ngIf="showAddButton" type="button" class="add-btn" routerLink="/employees/add"><span>+</span>Add Employee</button>
 </div>

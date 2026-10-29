@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {}
+    "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {}
   },
   "projects": {
-    "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {
+    "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
+        "projectUniqueName": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
         "projectName": "TeamHub.Shared",
-        "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
+        "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
         "packagesPath": "C:\\Users\\Dell Suren\\.nuget\\packages\\",
-        "outputPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\obj\\",
+        "outputPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "E:\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
+          "E:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
           "C:\\Users\\Dell Suren\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"

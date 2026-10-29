@@ -10,12 +10,6 @@ using TeamHub.Infrastructure.UserRoles;
 
 namespace TeamHub.IntegrationTests;
 
-/// <summary>
-/// Dapper-backed RBAC tests. They only run when a real SQL Server is available via
-/// TEAMHUB_TEST_CONNECTION_STRING (same opt-in convention as DatabaseConnectionTests).
-/// Every test that writes data cleans up after itself, and mutating tests are wrapped
-/// so no rows are left behind. Without the connection string they return immediately.
-/// </summary>
 public class RbacRepositoryTests
 {
     private static string? ConnectionString =>
@@ -31,7 +25,7 @@ public class RbacRepositoryTests
         }
 
         var repository = new UserRoleRepository(new SqlConnectionFactory(connectionString));
-        var matrix = await repository.GetMatrixAsync();
+        var matrix = await repository.GetMatrixAsync(1, 100, null);
 
         Assert.NotNull(matrix);
         Assert.NotNull(matrix.Roles);
@@ -48,7 +42,7 @@ public class RbacRepositoryTests
         }
 
         var repository = new RolePermissionRepository(new SqlConnectionFactory(connectionString));
-        var matrix = await repository.GetMatrixAsync();
+        var matrix = await repository.GetMatrixAsync(1, 100, null);
 
         Assert.NotNull(matrix);
         Assert.NotNull(matrix.Roles);

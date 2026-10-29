@@ -180,6 +180,11 @@ no CHECK constraint — states are enforced in C#, see `06-application-services.
 `Status VARCHAR(50) NOT NULL` · `ApprovedBy`/`ApprovedDate` · audit columns (`CreatedBy NULL` here,
 unlike `EmployeeReleases` where it is NOT NULL).
 
+> **Succession feature removed (2026-10-27).** The interim-succession gate and its `Successions`
+> audit table were dropped from the codebase (`succession-schema.sql` deleted). On databases where
+> the schema was applied manually, the leftovers can be removed with:
+> `DELETE FROM RolePermissions WHERE PermissionId IN (SELECT PermissionId FROM Permissions WHERE PermissionCode LIKE 'successions.%'); DELETE FROM Permissions WHERE PermissionCode LIKE 'successions.%'; DROP TABLE IF EXISTS Successions;`
+
 ### Employee child collections
 
 | Table | Line | Columns | Notes |

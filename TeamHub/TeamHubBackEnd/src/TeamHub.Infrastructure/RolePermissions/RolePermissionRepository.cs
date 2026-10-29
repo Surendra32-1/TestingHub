@@ -24,7 +24,9 @@ public sealed class RolePermissionRepository(IDbConnectionFactory connectionFact
             SELECT COUNT(1)
             FROM dbo.Permissions
             WHERE IsActive = 1
-              AND (@Search IS NULL OR LOWER(PermissionName) LIKE '%' + LOWER(@Search) + '%');";
+              AND (@Search IS NULL
+                   OR LOWER(PermissionName) LIKE '%' + LOWER(@Search) + '%'
+                   OR LOWER(PermissionCode) LIKE '%' + LOWER(@Search) + '%');";
 
         const string pageSql = @"
             SELECT p.PermissionId,
@@ -33,7 +35,9 @@ public sealed class RolePermissionRepository(IDbConnectionFactory connectionFact
                    p.Module
             FROM dbo.Permissions p
             WHERE p.IsActive = 1
-              AND (@Search IS NULL OR LOWER(p.PermissionName) LIKE '%' + LOWER(@Search) + '%')
+              AND (@Search IS NULL
+                   OR LOWER(p.PermissionName) LIKE '%' + LOWER(@Search) + '%'
+                   OR LOWER(p.PermissionCode) LIKE '%' + LOWER(@Search) + '%')
             ORDER BY p.PermissionName
             OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
 

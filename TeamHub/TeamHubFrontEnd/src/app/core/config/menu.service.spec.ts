@@ -9,12 +9,14 @@ import { MenuService } from './menu.service';
 
 const FULL_CATALOG = [
   'people.view', 'people.create', 'people.update', 'people.release', 'people.terminate', 'people.hierarchy.view',
-  'resignations.view', 'resignations.manage', 'resignations.add',
+  'allemployee.search.view',
+  'resignations.button', 'resignations.view', 'resignations.manage', 'resignations.add',
   'resignations.action.submit', 'resignations.action.sendforapproval', 'resignations.action.approve',
   'resignations.action.reject', 'resignations.action.cancel', 'resignations.action.exitchecklist',
   'resignations.action.release',
   'terminations.view', 'terminations.add', 'terminations.manage',
   'master.view', 'master.manage', 'permissions.manage', 'user-roles.assign', 'role-permissions.manage',
+  'setting.gear', 'setting.gear.EmployeeRole', 'setting.gear.RolePermission',
   'master.department', 'master.designation', 'master.business-unit', 'master.dress-size',
   'master.cotivity-department', 'master.cotivity-designation', 'master.cotivity-employee', 'master.role',
   'master.address-type', 'master.blood-group', 'master.skills', 'master.job-type', 'master.team', 'master.gender'
@@ -63,7 +65,7 @@ describe('MenuService', () => {
     signIn(FULL_CATALOG);
 
     const visible = menuService.visibleMenu();
-    expect(labels(visible)).toEqual(['People', 'Resignations', 'Terminations', 'Manage', 'Settings']);
+    expect(labels(visible)).toEqual(['People', 'Employee', 'Resignations', 'Terminations', 'Manage']);
 
     const manage = visible.find((item) => item.id === 'manage')!;
     expect(labels(manage.children!)).toEqual([
@@ -72,45 +74,61 @@ describe('MenuService', () => {
       'Blood Group', 'Skills', 'Job Type', 'Team', 'Gender'
     ]);
 
-    const settings = visible.find((item) => item.id === 'settings')!;
-    expect(labels(settings.children!)).toEqual(['Employee Role Matrix', 'Role Permission Matrix']);
   });
 
-  it('hides the self-service entry from users who can already manage resignations', () => {
-    signIn(['resignations.add', 'resignations.view']);
+  it('does not show a hardcoded self-service resignation navigation entry', () => {
+    signIn(['people.view', 'resignations.add', 'resignations.button', 'resignations.view']);
 
     expect(labels(menuService.visibleMenu())).toEqual(['People', 'Resignations']);
   });
 
-  it('shows only the self-service entry to an employee who can file but not view', () => {
-    signIn(['resignations.add']);
+  it('shows Resignations only when the navigation permission is granted', () => {
+    signIn(['people.view', 'resignations.view']);
+    expect(labels(menuService.visibleMenu())).toEqual(['People']);
 
-    expect(labels(menuService.visibleMenu())).toEqual(['People', 'Apply Resignation']);
+    signIn(['people.view', 'resignations.button']);
+    expect(labels(menuService.visibleMenu())).toEqual(['People', 'Resignations']);
   });
 
-  it('leaves an account without granted permissions with just the directory entry', () => {
-    signIn([]);
+  it('does not show an Apply Resignation entry to employees with only the add permission', () => {
+    signIn(['people.view', 'resignations.add']);
 
     expect(labels(menuService.visibleMenu())).toEqual(['People']);
   });
 
+  it('shows the People entry only to accounts with people.view', () => {
+    signIn([]);
+
+    expect(labels(menuService.visibleMenu())).toEqual([]);
+
+    signIn(['people.view']);
+    expect(labels(menuService.visibleMenu())).toEqual(['People']);
+  });
+
+  it('shows the Employee page only to accounts with allemployee.search.view', () => {
+    signIn(['people.view']);
+    expect(labels(menuService.visibleMenu())).toEqual(['People']);
+
+    signIn(['allemployee.search.view']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Employee']);
+  });
+
   it('merges the permissions coming from several roles into one menu', () => {
-    signIn(['master.department', 'role-permissions.manage']);
+    signIn(['people.view', 'master.department', 'setting.gear.RolePermission']);
 
     const visible = menuService.visibleMenu();
-    expect(labels(visible)).toEqual(['People', 'Manage', 'Settings']);
+    expect(labels(visible)).toEqual(['People', 'Manage']);
     expect(labels(visible[1].children!)).toEqual(['Department']);
-    expect(labels(visible[2].children!)).toEqual(['Role Permission Matrix']);
   });
 
   it('matches permission codes case-insensitively', () => {
-    signIn(['Master.Department']);
+    signIn(['people.view', 'Master.Department']);
 
     expect(labels(menuService.visibleMenu()[1].children!)).toEqual(['Department']);
   });
 
   it('drops stale items on logout', () => {
-    signIn(['master.department']);
+    signIn(['people.view', 'master.department']);
     expect(labels(menuService.visibleMenu())).toEqual(['People', 'Manage']);
 
     authService.logout().subscribe();
@@ -120,7 +138,12 @@ describe('MenuService', () => {
 
   it('rebuilds the menu when the token refresh returns new permissions', () => {
     signIn(['master.department'], 'expired-token');
-    refreshResponses = [{ accessToken: 'new-token', expiresIn: 900, roles: ['HR'], permissions: ['terminations.view'] }];
+    refreshResponses = [{
+      accessToken: 'new-token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['people.view', 'terminations.view']
+    }];
 
     authService.refreshAccessToken().subscribe();
 
@@ -128,10 +151,10 @@ describe('MenuService', () => {
   });
 
   it('switches menus cleanly when another account signs in', () => {
-    signIn(['user-roles.assign']);
-    expect(labels(menuService.visibleMenu())).toEqual(['People', 'Settings']);
+    signIn(['people.view', 'setting.gear.EmployeeRole']);
+    expect(labels(menuService.visibleMenu())).toEqual(['People']);
 
-    signIn(['master.gender']);
+    signIn(['people.view', 'master.gender']);
     const visible = menuService.visibleMenu();
     expect(labels(visible)).toEqual(['People', 'Manage']);
     expect(labels(visible[1].children!)).toEqual(['Gender']);

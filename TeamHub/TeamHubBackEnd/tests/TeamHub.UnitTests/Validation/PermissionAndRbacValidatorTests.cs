@@ -94,12 +94,12 @@ public class PermissionAndRbacValidatorTests
     }
 
     [Fact]
-    public void SaveRolePermissions_RejectsDuplicatePermissionIds()
+    public void SaveRolePermissions_RejectsDuplicateRoleIds()
     {
         var result = new SaveRolePermissionsRequestValidator()
             .Validate(new SaveRolePermissionsRequest
             {
-                Assignments = [new RolePermissionAssignmentDto { RoleId = 1, PermissionIds = [3, 3] }]
+                Assignments = [new RolePermissionAssignmentDto { PermissionId = 1, RoleIds = [3, 3] }]
             });
 
         Assert.False(result.IsValid);
@@ -111,7 +111,11 @@ public class PermissionAndRbacValidatorTests
         var result = new SaveRolePermissionsRequestValidator()
             .Validate(new SaveRolePermissionsRequest
             {
-                Assignments = [new RolePermissionAssignmentDto { RoleId = 1, PermissionIds = [2, 3] }]
+                Assignments =
+                [
+                    new RolePermissionAssignmentDto { PermissionId = 2, RoleIds = [1] },
+                    new RolePermissionAssignmentDto { PermissionId = 3, RoleIds = [1, 2] }
+                ]
             });
 
         Assert.True(result.IsValid);

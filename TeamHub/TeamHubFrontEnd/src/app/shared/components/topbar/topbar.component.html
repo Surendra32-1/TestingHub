@@ -1,10 +1,64 @@
 <header class="topbar">
   <nav class="main-nav">
-    <!-- Recursive, permission-filtered navigation. Anonymous items (Home/Login) and signed-in
-         items come from the same configuration, so nothing here is hardcoded per role. -->
     <app-nav-menu [items]="menu.visibleMenu()" />
   </nav>
   @if (isAuthenticated) {
-    <button class="nav-item sign-out" type="button" (click)="logout()">Sign out</button>
+    <div class="topbar-actions">
+      @if (canOpenSettingsMenu) {
+        <div class="settings-menu-container">
+          <button
+            class="settings-trigger"
+            type="button"
+            aria-label="Open settings menu"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isSettingsMenuOpen"
+            (click)="toggleSettingsMenu()"
+          >
+            <span aria-hidden="true">⚙</span>
+          </button>
+          @if (isSettingsMenuOpen) {
+            <div class="profile-dropdown settings-dropdown" role="menu">
+              @if (canOpenEmployeeRoleMatrix) {
+                <button type="button" role="menuitem" (click)="openEmployeeRoleMatrix()">Employee Role</button>
+              }
+              @if (canOpenRolePermissionMatrix) {
+                <button type="button" role="menuitem" (click)="openRolePermissionMatrix()">Role Permission</button>
+              }
+            </div>
+          }
+        </div>
+      }
+      <div class="profile-menu-container">
+        @if (profileUsername) {
+          <span class="profile-username">{{ profileUsername }}</span>
+        }
+        <button
+          class="profile-trigger"
+          type="button"
+          aria-label="Open profile menu"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="isProfileMenuOpen"
+          (click)="toggleProfileMenu()"
+        >
+          @if (profileImage) {
+            <img class="profile-avatar" [src]="profileImage" alt="">
+          } @else {
+            <svg class="profile-avatar default-avatar" viewBox="0 0 40 40" aria-hidden="true">
+              <circle cx="20" cy="20" r="20" fill="#e2e8f0" />
+              <circle cx="20" cy="15" r="7" fill="#64748b" />
+              <path d="M7 36c1.7-7.2 6.4-10.8 13-10.8S31.3 28.8 33 36" fill="#64748b" />
+            </svg>
+          }
+        </button>
+        @if (isProfileMenuOpen) {
+          <div class="profile-dropdown" role="menu">
+            @if (canEditProfile) {
+              <button type="button" role="menuitem" (click)="editProfile()">Update Profile</button>
+            }
+            <button type="button" role="menuitem" (click)="logout()">Logout</button>
+          </div>
+        }
+      </div>
+    </div>
   }
 </header>

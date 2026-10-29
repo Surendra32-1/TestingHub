@@ -1,6 +1,6 @@
 <p class="loading-state" *ngIf="isLoadingDepartments" aria-live="polite">Loading departments...</p>
 
-<section *ngIf="!isLoadingDepartments && !selectedDepartment" aria-label="Departments">
+<section *ngIf="!isLoadingDepartments && !showEmployeeGrid" aria-label="Departments">
   <p class="empty-state" *ngIf="departments.length === 0">No departments found.</p>
   <div class="department-list" *ngIf="departments.length > 0">
     <button
@@ -16,51 +16,50 @@
           [alt]="leader.name + ' photo'"
           [title]="leader.name + ' - ' + leader.designation">
         <span *ngIf="!departmentLeaders[department.departmentId]" class="department-avatar-placeholder" aria-hidden="true">—</span>
-        <span>{{ department.departmentName }}</span>
+        <span>{{ department.departmentName }}<ng-container *ngIf="departmentEmployeeCounts[department.departmentId] !== undefined"> ({{ departmentEmployeeCounts[department.departmentId] }})</ng-container></span>
       </span>
       <span class="department-arrow" aria-hidden="true">›</span>
     </button>
   </div>
 </section>
 
-<section *ngIf="selectedDepartment" aria-label="Department employees">
-  <div class="department-heading">
-    <h2>{{ selectedDepartment.departmentName }}</h2>
-    <p>{{ totalCount }} {{ totalCount === 1 ? 'employee' : 'employees' }}</p>
-  </div>
+<section *ngIf="showEmployeeGrid" class="department-employee-view" aria-label="Department employees">
+  <app-directory-controls
+    [searchTerm]="searchTerm"
+    (searchTermChange)="updateSearchTerm($event)"
+    [searchField]="searchField"
+    (searchFieldChange)="updateSearchField($event)"
+    [departmentOptions]="departments"
+    [selectedDepartmentId]="selectedDepartment?.departmentId ?? null"
+    (departmentChange)="selectDepartmentFilter($event)"
+  />
+
+  <app-results-header
+    [isLoading]="isLoadingEmployees"
+    [count]="totalCount"
+    [label]="selectedDepartment?.departmentName ?? 'All Departments'"
+    [showAddButton]="false"
+  />
 
   <p class="loading-state" *ngIf="isLoadingEmployees" aria-live="polite">Loading employees...</p>
+  <p class="department-hierarchy-loading" *ngIf="isLoadingHierarchy" aria-live="polite">
+    Loading reporting hierarchy...
+  </p>
+  <p *ngIf="hierarchyLookupComplete && selectedDepartment && !departmentHead && totalCount > 0" class="department-no-head" role="status">
+    No department head could be identified by designation rank.
+  </p>
 
-  <div class="employee-table-wrap">
-    <table class="employee-table">
-      <thead>
-        <tr>
-          <th scope="col">Employee</th>
-          <th scope="col">Department</th>
-          <th scope="col">Designation</th>
-          <th scope="col">Team Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let employee of employees">
-          <td>{{ employee.name }}</td>
-          <td>{{ employee.department || '—' }}</td>
-          <td>{{ employee.designation || '—' }}</td>
-          <td>{{ employee.teamName || '—' }}</td>
-        </tr>
-        <tr *ngIf="!isLoadingEmployees && employees.length === 0">
-          <td class="empty-table-cell" colspan="4">No employees in this department.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <app-pagination
-    [pageNumber]="pageNumber"
-    [pageSize]="pageSize"
-    [totalCount]="totalCount"
-    [isLoading]="isLoadingEmployees"
-    (pageChange)="changePage($event)"
-    (pageSizeChange)="changePageSize($event)"
+  <app-department-hierarchy
+    *ngIf="!isLoadingEmployees"
+    [departmentHead]="departmentHead"
+    [departmentHeadDetails]="departmentHeadDetails"
+    [members]="departmentMembers"
+    [departmentName]="selectedDepartment ? 'Department Members' : 'Employees'"
+    [canViewEmployeeDetails]="canViewEmployeeDetails"
+    (viewEmployeeDetails)="viewEmployeeDetails.emit($event)"
   />
+
+  <p class="empty-state" *ngIf="!isLoadingEmployees && employees.length === 0">
+    {{ selectedDepartment ? 'No employees found in this department.' : 'No employees match your search.' }}
+  </p>
 </section>

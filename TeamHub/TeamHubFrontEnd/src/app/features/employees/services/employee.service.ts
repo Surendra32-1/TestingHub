@@ -105,6 +105,21 @@ export interface EmployeeEditResponse extends Omit<CreateEmployeeRequest, 'addre
   }>;
 }
 
+export interface PublicEmployeeDetails {
+  employeeId: number;
+  eNumber: number;
+  name: string;
+  designationName: string | null;
+  departmentName: string | null;
+  teamName: string | null;
+  reportsToEmployeeName: string | null;
+  stationNumber: string | null;
+  email: string;
+  phoneNumber: string | null;
+  extensionNumber: number;
+  imageBase64: string | null;
+}
+
 export interface EmployeeReleaseRequest {
   releaseType: 'Resignation' | 'Retirement' | 'Contract End' | 'Internal Transfer' | 'Mutual Separation';
   resignationDate: string | null;
@@ -272,10 +287,18 @@ export interface EmployeeDetails {
 
 interface EmployeeApiRecord {
   id: number;
+  eNumber?: number;
+  reportsToEmployeeId?: number | null;
+  reportsToEmployee?: string | null;
   name: string;
   designation: string | null;
   designationRank: number;
   department: string | null;
+  roleName?: string | null;
+  joinedDate?: string | null;
+  primarySkill?: string | null;
+  isActive?: boolean;
+  isDeleted?: boolean;
   teamName: string | null;
   imageBase64: string | null;
 }
@@ -295,6 +318,100 @@ export class EmployeeService {
     pageNumber = 1,
     pageSize = 10,
     searchTerm = '',
+    searchField: 'all' | 'name' | 'designation' | 'department' = 'all',
+    departmentName: string | null = null,
+    status: 'active' | 'inactive' | 'all' = 'active'
+  ): Observable<PagedResult<Employee>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize)
+      .set('searchTerm', searchTerm)
+      .set('searchField', searchField)
+      .set('departmentName', departmentName ?? '')
+      .set('status', status);
+
+    return this.http.get<ApiResponse<PagedResult<EmployeeApiRecord>>>(this.apiUrl, { params }).pipe(
+      map((response) => this.mapEmployeePage(response.data))
+    );
+  }
+
+  getAllActiveInactiveEmployees(
+    pageNumber = 1,
+    pageSize = 10,
+    searchTerm = '',
+    searchField: 'all' | 'name' | 'designation' | 'department' = 'all',
+    departmentName: string | null = null,
+    status: 'active' | 'inactive' | 'all' = 'all'
+  ): Observable<PagedResult<Employee>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize)
+      .set('searchTerm', searchTerm)
+      .set('searchField', searchField)
+      .set('departmentName', departmentName ?? '')
+      .set('status', status);
+
+    return this.http.get<ApiResponse<PagedResult<EmployeeApiRecord>>>(`${this.apiUrl}/active-inactive`, { params }).pipe(
+      map((response) => this.mapEmployeePage(response.data))
+    );
+  }
+
+  getPublicEmployees(
+    pageNumber = 1,
+    pageSize = 10,
+    searchTerm = '',
+    searchField: 'all' | 'name' | 'designation' | 'department' = 'all',
+    departmentName: string | null = null
+  ): Observable<PagedResult<Employee>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize)
+      .set('searchTerm', searchTerm)
+      .set('searchField', searchField)
+      .set('departmentName', departmentName ?? '');
+
+    return this.http
+      .get<ApiResponse<PagedResult<EmployeeApiRecord>>>(`${this.apiUrl}/public`, { params })
+      .pipe(map((response) => this.mapEmployeePage(response.data)));
+  }
+
+  getAllEmployees(
+    searchTerm = '',
+    searchField: 'all' | 'name' | 'designation' | 'department' = 'all',
+    pageSize = 100
+  ): Observable<Employee[]> {
+    const getPage = (pageNumber: number) =>
+      this.getEmployees(pageNumber, pageSize, searchTerm, searchField);
+
+    return getPage(1).pipe(
+      expand((page) => page.hasNextPage ? getPage(page.pageNumber + 1) : EMPTY),
+      reduce((employees, page) => employees.concat(page.items), [] as Employee[])
+    );
+  }
+
+  deleteEmployee(employeeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${employeeId}`);
+  }
+
+  getAllPublicEmployees(
+    searchTerm = '',
+    searchField: 'all' | 'name' | 'designation' | 'department' = 'all',
+    pageSize = 100
+  ): Observable<Employee[]> {
+    const getPage = (pageNumber: number) =>
+      this.getPublicEmployees(pageNumber, pageSize, searchTerm, searchField);
+
+    return getPage(1).pipe(
+      expand((page) => page.hasNextPage ? getPage(page.pageNumber + 1) : EMPTY),
+      reduce((employees, page) => employees.concat(page.items), [] as Employee[])
+    );
+  }
+
+  getActiveEmployeesByDepartmentId(
+    departmentId: number,
+    pageNumber = 1,
+    pageSize = 10,
+    searchTerm = '',
     searchField: 'all' | 'name' | 'designation' | 'department' = 'all'
   ): Observable<PagedResult<Employee>> {
     const params = new HttpParams()
@@ -303,23 +420,72 @@ export class EmployeeService {
       .set('searchTerm', searchTerm)
       .set('searchField', searchField);
 
-    return this.http.get<ApiResponse<PagedResult<EmployeeApiRecord>>>(this.apiUrl, { params }).pipe(
-      map((response) => this.mapEmployeePage(response.data))
-    );
-  }
-
-  getActiveEmployeesByDepartmentId(
-    departmentId: number,
-    pageNumber = 1,
-    pageSize = 10
-  ): Observable<PagedResult<Employee>> {
-    const params = new HttpParams()
-      .set('pageNumber', pageNumber)
-      .set('pageSize', pageSize);
-
     return this.http
       .get<ApiResponse<PagedResult<EmployeeApiRecord>>>(`${this.apiUrl}/department/${departmentId}`, { params })
       .pipe(map((response) => this.mapEmployeePage(response.data)));
+  }
+
+  getPublicActiveEmployeesByDepartmentId(
+    departmentId: number,
+    pageNumber = 1,
+    pageSize = 10,
+    searchTerm = '',
+    searchField: 'all' | 'name' | 'designation' | 'department' = 'all'
+  ): Observable<PagedResult<Employee>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize)
+      .set('searchTerm', searchTerm)
+      .set('searchField', searchField);
+
+    return this.http
+      .get<ApiResponse<PagedResult<EmployeeApiRecord>>>(
+        `${this.apiUrl}/public/department/${departmentId}`,
+        { params }
+      )
+      .pipe(map((response) => this.mapEmployeePage(response.data)));
+  }
+
+  getAllActiveEmployeesByDepartmentId(
+    departmentId: number,
+    searchTerm = '',
+    searchField: 'all' | 'name' | 'designation' | 'department' = 'all',
+    pageSize = 100
+  ): Observable<Employee[]> {
+    const getPage = (pageNumber: number) =>
+      this.getActiveEmployeesByDepartmentId(
+        departmentId,
+        pageNumber,
+        pageSize,
+        searchTerm,
+        searchField
+      );
+
+    return getPage(1).pipe(
+      expand((page) => page.hasNextPage ? getPage(page.pageNumber + 1) : EMPTY),
+      reduce((employees, page) => employees.concat(page.items), [] as Employee[])
+    );
+  }
+
+  getAllPublicActiveEmployeesByDepartmentId(
+    departmentId: number,
+    searchTerm = '',
+    searchField: 'all' | 'name' | 'designation' | 'department' = 'all',
+    pageSize = 100
+  ): Observable<Employee[]> {
+    const getPage = (pageNumber: number) =>
+      this.getPublicActiveEmployeesByDepartmentId(
+        departmentId,
+        pageNumber,
+        pageSize,
+        searchTerm,
+        searchField
+      );
+
+    return getPage(1).pipe(
+      expand((page) => page.hasNextPage ? getPage(page.pageNumber + 1) : EMPTY),
+      reduce((employees, page) => employees.concat(page.items), [] as Employee[])
+    );
   }
 
   getDepartments(pageSize = 100): Observable<Department[]> {
@@ -349,8 +515,24 @@ export class EmployeeService {
     return this.http.get<ApiResponse<EmployeeDetails>>(`${this.apiUrl}/${employeeId}/details`);
   }
 
+  getPublicEmployeeDetails(employeeId: number): Observable<ApiResponse<PublicEmployeeDetails>> {
+    return this.http.get<ApiResponse<PublicEmployeeDetails>>(`${this.apiUrl}/public/${employeeId}`);
+  }
+
   updateEmployee(employeeId: number, request: CreateEmployeeRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${employeeId}`, request);
+  }
+
+  getActiveInactiveEmployeeById(employeeId: number): Observable<ApiResponse<EmployeeEditResponse>> {
+    return this.http.get<ApiResponse<EmployeeEditResponse>>(`${this.apiUrl}/active-inactive/${employeeId}`);
+  }
+
+  getActiveInactiveEmployeeDetails(employeeId: number): Observable<ApiResponse<EmployeeDetails>> {
+    return this.http.get<ApiResponse<EmployeeDetails>>(`${this.apiUrl}/active-inactive/${employeeId}`);
+  }
+
+  updateActiveInactiveEmployee(employeeId: number, request: CreateEmployeeRequest): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/active-inactive/${employeeId}`, request);
   }
 
   getEmployeeReleases(employeeId: number): Observable<ApiResponse<EmployeeReleaseRecord[]>> {
@@ -407,9 +589,13 @@ export class EmployeeService {
     return this.http.put<void>(`${environment.apiUrl}api/employee-releases/${releasedId}`, request);
   }
 
-  updateEmployeeReleaseStatus(releasedId: number, status: ReleaseStatus): Observable<ApiResponse<EmployeeReleaseRecord>> {
+  updateEmployeeReleaseStatus(
+    releasedId: number,
+    status: ReleaseStatus
+  ): Observable<ApiResponse<EmployeeReleaseRecord>> {
     return this.http.post<ApiResponse<EmployeeReleaseRecord>>(
-      `${environment.apiUrl}api/employee-releases/${releasedId}/status`, { status }
+      `${environment.apiUrl}api/employee-releases/${releasedId}/status`,
+      { status }
     );
   }
 
@@ -491,10 +677,18 @@ export class EmployeeService {
         const accent = this.palette[index % this.palette.length];
         return {
           id: employee.id,
+          eNumber: employee.eNumber,
+          reportsToEmployeeId: employee.reportsToEmployeeId ?? null,
+          reportsToEmployee: employee.reportsToEmployee ?? null,
           name: employee.name,
           designation: employee.designation ?? '',
           designationRank: employee.designationRank,
           department: employee.department ?? '',
+          roleName: employee.roleName ?? null,
+          joinedDate: employee.joinedDate ?? null,
+          primarySkill: employee.primarySkill ?? null,
+          isActive: employee.isActive ?? true,
+          isDeleted: employee.isDeleted ?? false,
           teamName: employee.teamName ?? '',
           imageBase64: employee.imageBase64 ?? this.createAvatar(employee.name, accent),
           accent

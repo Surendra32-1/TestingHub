@@ -12,16 +12,34 @@ public sealed class EmployeeService(IEmployeeRepository repository) : IEmployeeS
     public Task<IReadOnlyList<GetGridEmployeeDto>> GetAllAsync(
         CancellationToken cancellationToken = default,
         string? searchTerm = null,
-        string searchField = "all") =>
-        repository.GetAllAsync(cancellationToken, searchTerm, searchField);
+        string searchField = "all",
+        string? departmentName = null,
+        string status = "active") =>
+        repository.GetAllAsync(cancellationToken, searchTerm, searchField, departmentName, status);
 
     public Task<IReadOnlyList<GetGridEmployeeDto>> GetActiveByDepartmentIdAsync(
         int departmentId,
-        CancellationToken cancellationToken = default) =>
-        repository.GetActiveByDepartmentIdAsync(departmentId, cancellationToken);
+        CancellationToken cancellationToken = default,
+        string? searchTerm = null,
+        string searchField = "all") =>
+        repository.GetActiveByDepartmentIdAsync(departmentId, cancellationToken, searchTerm, searchField);
+
+    public Task<IReadOnlyList<GetActiveInactiveEmployeeDto>> GetAllActiveInactiveAsync(
+        CancellationToken cancellationToken = default,
+        string? searchTerm = null,
+        string searchField = "all",
+        string? departmentName = null,
+        string status = "all") =>
+        repository.GetAllActiveInactiveAsync(cancellationToken, searchTerm, searchField, departmentName, status);
 
     public Task<GetEmployeeDto?> GetByIdAsync(int employeeId, CancellationToken cancellationToken = default) =>
         repository.GetByIdAsync(employeeId, cancellationToken);
+
+    public Task<GetEmployeeDto?> GetActiveInactiveByIdAsync(int employeeId, CancellationToken cancellationToken = default) =>
+        repository.GetActiveInactiveByIdAsync(employeeId, cancellationToken);
+
+    public Task<bool> DeleteAsync(int employeeId, string deletedBy, CancellationToken cancellationToken = default) =>
+        repository.DeleteAsync(employeeId, deletedBy, cancellationToken);
 
     public Task<IReadOnlyList<DepartmentTreeDto>> GetOrganizationTreeAsync(CancellationToken cancellationToken = default) =>
         repository.GetOrganizationTreeAsync(cancellationToken);
@@ -177,6 +195,20 @@ public sealed class EmployeeService(IEmployeeRepository repository) : IEmployeeS
 
     public async Task<bool> UpdateAsync(int employeeId, CreateOrUpdateEmployeeRequest request, CancellationToken cancellationToken = default)
     {
+        return await PersistUpdateAsync(employeeId, request, includeInactive: false, cancellationToken);
+    }
+
+    public async Task<bool> UpdateActiveInactiveAsync(int employeeId, CreateOrUpdateEmployeeRequest request, CancellationToken cancellationToken = default)
+    {
+        return await PersistUpdateAsync(employeeId, request, includeInactive: true, cancellationToken);
+    }
+
+    private async Task<bool> PersistUpdateAsync(
+        int employeeId,
+        CreateOrUpdateEmployeeRequest request,
+        bool includeInactive,
+        CancellationToken cancellationToken)
+    {
         var employee = new Employee
         {
             EmployeeId = employeeId,
@@ -244,7 +276,9 @@ public sealed class EmployeeService(IEmployeeRepository repository) : IEmployeeS
             }).ToList()
         };
 
-        var updated = await repository.UpdateAsync(employee, cancellationToken);
+        var updated = includeInactive
+            ? await repository.UpdateActiveInactiveAsync(employee, cancellationToken)
+            : await repository.UpdateAsync(employee, cancellationToken);
         if (updated)
         {
             await repository.AssignEmployeeRolesAsync(employeeId, request.RoleIds, request.Email, "System", cancellationToken);

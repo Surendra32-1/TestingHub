@@ -44,6 +44,8 @@ public static class DependencyInjection
         services.AddScoped<ICotivityDesignationRepository, CotivityDesignationRepository>();
         services.AddScoped<ICotivityEmployeeRepository, CotivityEmployeeRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IEmployeeSearchRepository, EmployeeSearchRepository>();
+        services.AddScoped<IEmployeeProfileRepository, EmployeeProfileRepository>();
         services.AddScoped<IEmployeeReleaseRepository, EmployeeReleaseRepository>();
         services.AddScoped<IEmployeeTerminationRepository, EmployeeTerminationRepository>();
         services.AddScoped<IBusinessUnitRepository, BusinessUnitRepository>();

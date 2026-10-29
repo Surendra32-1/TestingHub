@@ -11,6 +11,7 @@
   </label>
 
   <select
+    *ngIf="departmentOptions === null"
     class="filter-pill"
     [ngModel]="searchField"
     (ngModelChange)="updateSearchField($event)"
@@ -21,5 +22,16 @@
     <option value="designation">Designation</option>
     <option value="department">Department</option>
   </select>
-  <!-- <button class="more-button" type="button" aria-label="More options">⋯</button> -->
+  <select
+    *ngIf="departmentOptions !== null"
+    class="filter-pill"
+    [ngModel]="selectedDepartmentId?.toString() ?? ''"
+    (ngModelChange)="updateDepartment($event)"
+    aria-label="Filter by department"
+  >
+    <option value="">All</option>
+    <option *ngFor="let department of departmentOptions" [value]="department.departmentId">
+      {{ department.departmentName }}
+    </option>
+  </select>
 </div>

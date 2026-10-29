@@ -5,8 +5,33 @@ html, body {
   font-family: Inter, "Segoe UI", sans-serif;
 }
 
+:root {
+  --th-page-bg: #eef2f5;
+  --th-panel-bg: #f7f8f9;
+  --th-surface: #ffffff;
+  --th-border: #dfe3e8;
+  --th-control-border: #d4dbe3;
+  --th-text: #1f2937;
+  --th-text-strong: #111827;
+  --th-label: #374151;
+  --th-muted: #64748b;
+  --th-primary: #263445;
+  --th-primary-hover: #34465c;
+  --th-panel-radius: 0.65rem;
+  --th-control-radius: 0.45rem;
+  --th-control-height: 2.75rem;
+  --th-control-font: 0.9rem;
+  --th-button-font: 0.88rem;
+  --th-page-title-font: clamp(1.5rem, 2vw, 1.9rem);
+  --th-panel-shadow: 0 2px 12px rgba(17, 24, 39, 0.03);
+}
+
 * {
   box-sizing: border-box;
+}
+
+.page-title {
+  line-height: 1.2;
 }
 
 button,

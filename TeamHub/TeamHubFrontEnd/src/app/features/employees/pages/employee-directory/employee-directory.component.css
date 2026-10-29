@@ -1,9 +1,9 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: #eef2f5;
+  background: var(--th-page-bg);
   font-family: Inter, "Segoe UI", sans-serif;
-  color: #1f2937;
+  color: var(--th-text);
 }
 
 button,
@@ -18,11 +18,11 @@ input {
 .directory-panel {
   width: min(1180px, calc(100% - 2rem));
   margin: 1.25rem auto 2rem;
-  background: #f7f8f9;
-  border: 1px solid #dfe3e8;
-  border-radius: 0.65rem;
-  padding: 1rem 1.1rem 1.2rem;
-  box-shadow: 0 2px 12px rgba(17, 24, 39, 0.03);
+  padding: 1.25rem;
+  border: 1px solid var(--th-border);
+  border-radius: var(--th-panel-radius);
+  background: var(--th-panel-bg);
+  box-shadow: var(--th-panel-shadow);
 }
 
 .panel-header {
@@ -34,6 +34,15 @@ input {
   font-size: clamp(1.7rem, 2vw, 2.1rem);
   font-weight: 700;
   color: #1f2937;
+}
+
+.access-message {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.45rem;
+  background: #ffffff;
+  color: #4b5563;
 }
 
 .tab-row {
@@ -51,21 +60,29 @@ input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .add-btn {
-  border: 1px solid #dfe3e8;
-  background: #ffffff;
-  color: #374151;
-  border-radius: 0.38rem;
-  padding: 0.68rem 0.9rem;
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
+  min-height: var(--th-control-height);
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--th-control-border);
+  border-radius: var(--th-control-radius);
+  background: var(--th-surface);
+  color: var(--th-primary);
+  font: inherit;
+  font-size: var(--th-button-font);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-btn span {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 .add-btn:hover {

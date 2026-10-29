@@ -4,7 +4,30 @@
   <p *ngIf="isLoading" class="state-message" aria-live="polite">Loading employee details...</p>
   <p *ngIf="!isLoading && errorMessage" class="state-message error">{{ errorMessage }}</p>
 
-  <ng-container *ngIf="employee as person">
+  <ng-container *ngIf="readOnlyHome && publicEmployee as person">
+    <header class="profile-header">
+      <img *ngIf="person.imageBase64" class="profile-image" [src]="person.imageBase64" [alt]="person.name" />
+      <div class="profile-heading">
+        <h1 id="employee-details-heading">{{ person.name }}</h1>
+        <p>{{ person.designationName || 'Designation not specified' }}</p>
+      </div>
+    </header>
+    <section class="details-section">
+      <h2>Public employee information</h2>
+      <dl class="details-grid">
+        <div><dt>Employee number</dt><dd>{{ person.eNumber }}</dd></div>
+        <div><dt>Station number</dt><dd>{{ person.stationNumber || '—' }}</dd></div>
+        <div><dt>Department</dt><dd>{{ person.departmentName || '—' }}</dd></div>
+        <div><dt>Team</dt><dd>{{ person.teamName || '—' }}</dd></div>
+        <div><dt>Reports to</dt><dd>{{ person.reportsToEmployeeName || '—' }}</dd></div>
+        <div><dt>Work email</dt><dd>{{ person.email || '—' }}</dd></div>
+        <div><dt>Phone</dt><dd>{{ person.phoneNumber || '—' }}</dd></div>
+        <div><dt>Extension</dt><dd>{{ person.extensionNumber || '—' }}</dd></div>
+      </dl>
+    </section>
+  </ng-container>
+
+  <ng-container *ngIf="!readOnlyHome && employee as person">
     <header class="profile-header">
       <img *ngIf="person.imageBase64" class="profile-image" [src]="person.imageBase64" [alt]="person.firstName + ' ' + person.lastName" />
       <div *ngIf="!person.imageBase64" class="profile-placeholder" aria-hidden="true">

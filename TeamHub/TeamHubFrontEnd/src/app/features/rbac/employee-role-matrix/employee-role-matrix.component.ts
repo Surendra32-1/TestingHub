@@ -48,7 +48,7 @@ export class EmployeeRoleMatrixComponent implements OnInit {
   }
 
   get canEdit(): boolean {
-    return this.auth.hasPermission('user-roles.assign');
+    return this.auth.hasPermission('setting.gear.EmployeeRole');
   }
 
   ngOnInit(): void {

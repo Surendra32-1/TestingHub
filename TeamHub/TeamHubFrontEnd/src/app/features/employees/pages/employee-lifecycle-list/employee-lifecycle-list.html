@@ -1,30 +1,35 @@
 <div class="page-shell">
   <app-topbar />
   <main class="directory-panel">
-    <div class="heading-row">
-      <h1 class="page-label">{{ isResignation ? 'Resignations' : 'Terminations' }}</h1>
+    <header class="page-header">
+      <h1 class="page-title">{{ isResignation ? 'Resignations' : 'Terminations' }}</h1>
       <button class="primary-button" type="button" (click)="createRecord()" *ngIf="isResignation ? canAdd : canAddTermination">
-        <span>+</span>{{ isResignation ? 'New Resignation' : 'New Termination' }}
+        <span aria-hidden="true">+</span>
+        {{ isResignation ? 'New Resignation' : 'New Termination' }}
       </button>
-    </div>
+    </header>
 
-    <div class="filters" aria-label="Filter lifecycle records">
-      <label class="search-box">
+    <div class="filters" aria-label="Filter lifecycle records" *ngIf="canSearch || canFilterByDepartment || canFilterByStatus">
+      <label class="search-box" *ngIf="canSearch">
         <span class="search-icon" aria-hidden="true">⌕</span>
         <input id="employeeSearch" type="search" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Search employee..." aria-label="Search employee">
       </label>
 
-      <label class="visually-hidden" for="departmentFilter">Filter by department</label>
-      <select id="departmentFilter" [(ngModel)]="selectedDepartment" (ngModelChange)="resetPage()">
-        <option value="">All departments</option>
-        <option *ngFor="let department of departments" [value]="department.departmentName">{{ department.departmentName }}</option>
-      </select>
+      <ng-container *ngIf="canFilterByDepartment">
+        <label class="visually-hidden" for="departmentFilter">Filter by department</label>
+        <select id="departmentFilter" [(ngModel)]="selectedDepartment" (ngModelChange)="resetPage()">
+          <option value="">All departments</option>
+          <option *ngFor="let department of departments" [value]="department.departmentName">{{ department.departmentName }}</option>
+        </select>
+      </ng-container>
 
-      <label class="visually-hidden" for="statusFilter">Filter by status</label>
-      <select id="statusFilter" [(ngModel)]="selectedStatus" (ngModelChange)="resetPage()">
-        <option value="">All statuses</option>
-        <option *ngFor="let status of statuses" [value]="status">{{ statusLabel(status) }}</option>
-      </select>
+      <ng-container *ngIf="canFilterByStatus">
+        <label class="visually-hidden" for="statusFilter">Filter by status</label>
+        <select id="statusFilter" [(ngModel)]="selectedStatus" (ngModelChange)="resetPage()">
+          <option value="">All statuses</option>
+          <option *ngFor="let status of statuses" [value]="status">{{ statusLabel(status) }}</option>
+        </select>
+      </ng-container>
     </div>
 
     <p class="loading-state" *ngIf="isLoading" aria-live="polite">Loading records...</p>
@@ -295,4 +300,5 @@
       </ng-container>
     </div>
   </div>
+
 </div>

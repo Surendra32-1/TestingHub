@@ -151,24 +151,41 @@ public sealed class EmployeeReleaseRepository(IDbConnectionFactory connectionFac
     }
 
     public async Task<EmployeeReleaseResponse?> TransitionStatusAsync(
-        int releasedId, string status, string actorName, CancellationToken cancellationToken)
+        int releasedId, UpdateReleaseStatusRequest request, string actorName, CancellationToken cancellationToken)
     {
-        const string sql = """
+        const string releasedStatus = "Released";
+        var now = DateTime.UtcNow;
+
+        using var connection = connectionFactory.CreateConnection();
+        var departingEmployeeId = await connection.ExecuteScalarAsync<int?>(new CommandDefinition(
+            "SELECT e.EmployeeId FROM EmployeeReleases r INNER JOIN Employees e ON e.EmployeeId = r.EmployeeId WHERE r.ReleasedId = @ReleasedId",
+            new { ReleasedId = releasedId }, cancellationToken: cancellationToken));
+
+        if (departingEmployeeId is null)
+        {
+            return null;
+        }
+
+        await connection.ExecuteAsync(new CommandDefinition(
+            """
             UPDATE EmployeeReleases
             SET Status = @Status,
                 ApprovedBy = CASE WHEN @Status IN ('Approved', 'Released') THEN @Actor ELSE ApprovedBy END,
                 ApprovedDate = CASE WHEN @Status IN ('Approved', 'Released') THEN @Now ELSE ApprovedDate END,
                 LastModifiedBy = @Actor, LastModifiedDate = @Now
-            WHERE ReleasedId = @ReleasedId;
-            IF @Status = 'Released'
-                UPDATE Employees SET IsActive = 0
-                WHERE EmployeeId = (SELECT EmployeeId FROM EmployeeReleases WHERE ReleasedId = @ReleasedId);
-            """;
-        using var connection = connectionFactory.CreateConnection();
-        var affected = await connection.ExecuteAsync(new CommandDefinition(sql,
-            new { ReleasedId = releasedId, Status = status, Actor = actorName, Now = DateTime.UtcNow },
+            WHERE ReleasedId = @ReleasedId
+            """,
+            new { Status = request.Status, Actor = actorName, Now = now, ReleasedId = releasedId },
             cancellationToken: cancellationToken));
-        return affected > 0 ? await GetByIdAsync(releasedId, cancellationToken) : null;
+
+        if (request.Status == releasedStatus)
+        {
+            await connection.ExecuteAsync(new CommandDefinition(
+                "UPDATE Employees SET IsActive = 0 WHERE EmployeeId = @EmpId",
+                new { EmpId = departingEmployeeId.Value }, cancellationToken: cancellationToken));
+        }
+
+        return await GetByIdAsync(releasedId, cancellationToken);
     }
 
     public async Task<EmployeeReleaseResponse?> UpdateClearanceAsync(

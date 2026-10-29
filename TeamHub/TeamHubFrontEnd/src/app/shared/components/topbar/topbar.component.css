@@ -17,12 +17,123 @@
   gap: 10px;
 }
 
-.sign-out {
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
   margin-left: auto;
 }
 
-/* The Sign out button keeps the bar's pill styling; the navigation items themselves are styled by
-   the shared recursive menu component (../nav-menu/nav-menu.component.css). */
+.settings-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.settings-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #4b5563;
+  font: inherit;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.settings-trigger:hover,
+.settings-trigger[aria-expanded='true'] {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.settings-trigger:focus-visible {
+  outline: 2px solid #64748b;
+  outline-offset: 2px;
+}
+
+.profile-menu-container {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  position: relative;
+  margin-left: 0;
+}
+
+.profile-username {
+  max-width: 13rem;
+  overflow: hidden;
+  color: #4b5563;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.profile-avatar {
+  display: block;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  overflow: hidden;
+}
+
+.profile-dropdown {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  min-width: 9rem;
+  padding: 0.2rem 0;
+  border: 1px solid #dfe3e8;
+  border-radius: 0.35rem;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.profile-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0.75rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #374151;
+  font: inherit;
+  font-size: 0.85rem;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.profile-dropdown button:hover,
+.profile-dropdown button:focus-visible {
+  background: #1d67c9;
+  color: #fff;
+}
+
 .nav-item {
   border: none;
   background: transparent;
@@ -39,8 +150,21 @@
   color: #fff;
 }
 
-/* ONE ACTIVE NAV ITEM */
 .nav-item.active {
   background: #1f2937;
   color: #fff;
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .topbar-actions {
+    gap: 0.35rem;
+  }
+
+  .profile-username {
+    max-width: 8rem;
+  }
 }

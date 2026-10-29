@@ -23,21 +23,41 @@ export const authenticatedGuard: CanActivateFn = (_route, state) => {
 
 export const authGuard = authenticatedGuard;
 
+export const signedInLandingPath = (authService: AuthService): string => {
+  if (authService.hasPermission('allemployee.search.view')) {
+    return '/employee';
+  }
+
+  return authService.hasPermission('people.view') ? '/people' : '/home';
+};
+
 export const signedInLandingGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
   if (authService.isAuthenticated) {
-    return router.createUrlTree(['/people']);
+    return router.createUrlTree([signedInLandingPath(authService)]);
   }
 
   return authService.restoreSession().pipe(
-    map(() => router.createUrlTree(['/people'])),
+    map(() => router.createUrlTree([signedInLandingPath(authService)])),
     catchError(() => {
       authService.clearSession();
       return of(true);
     })
   );
+};
+
+export const anonymousHomeGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (!authService.isAuthenticated) {
+    return true;
+  }
+
+  const landingPath = signedInLandingPath(authService);
+  return landingPath === '/home' ? true : router.createUrlTree([landingPath]);
 };
 
 export const adminGuard: CanActivateFn = () => {
@@ -53,12 +73,12 @@ const rbacGuard = (permission: string): CanActivateFn => () => {
 
   return authService.hasPermission(permission)
     ? true
-    : router.createUrlTree(['/home']);
+    : router.createUrlTree([signedInLandingPath(authService)]);
 };
 
-export const employeeRoleMatrixGuard = rbacGuard('user-roles.assign');
+export const employeeRoleMatrixGuard = rbacGuard('setting.gear.EmployeeRole');
 
-export const rolePermissionMatrixGuard = rbacGuard('role-permissions.manage');
+export const rolePermissionMatrixGuard = rbacGuard('setting.gear.RolePermission');
 
 export const resignationViewGuard = rbacGuard('resignations.view');
 
@@ -69,6 +89,12 @@ export const peopleCreateGuard = rbacGuard('people.create');
 export const peopleUpdateGuard = rbacGuard('people.update');
 
 export const peopleReleaseGuard = rbacGuard('people.release');
+
+export const peopleViewGuard = rbacGuard('people.view');
+
+export const allemployeeSearchViewGuard = rbacGuard('allemployee.search.view');
+
+export const profileEditGuard = rbacGuard('profile.edit');
 
 export const terminationViewGuard = rbacGuard('terminations.view');
 

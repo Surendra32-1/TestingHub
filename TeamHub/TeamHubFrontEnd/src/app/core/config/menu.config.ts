@@ -18,20 +18,20 @@ export interface MenuItem {
 
 export const APP_MENU: readonly MenuItem[] = [
   { id: 'home', label: 'Home', route: '/home', exact: true, visibility: 'anonymous' },
-  { id: 'people', label: 'People', route: '/people', exact: true, visibility: 'authenticated' },
+  { id: 'people', label: 'People', route: '/people', exact: true, permission: 'people.view', visibility: 'authenticated' },
   {
-    id: 'resignations.apply',
-    label: 'Apply Resignation',
-    route: '/employees/resignations/new',
-    permission: 'resignations.add',
-    hideIfPermission: 'resignations.view',
+    id: 'employee',
+    label: 'Employee',
+    route: '/employee',
+    exact: true,
+    permission: 'allemployee.search.view',
     visibility: 'authenticated'
   },
   {
     id: 'resignations',
     label: 'Resignations',
     route: '/employees/resignations',
-    permission: 'resignations.view',
+    permission: 'resignations.button',
     visibility: 'authenticated'
   },
   {
@@ -77,26 +77,6 @@ export const APP_MENU: readonly MenuItem[] = [
       { id: 'master.job-type', label: 'Job Type', route: '/master/job-type', permission: 'master.job-type' },
       { id: 'master.team', label: 'Team', route: '/master/team', permission: 'master.team' },
       { id: 'master.gender', label: 'Gender', route: '/master/gender', permission: 'master.gender' }
-    ]
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: 'shield',
-    visibility: 'authenticated',
-    children: [
-      {
-        id: 'settings.employee-role-matrix',
-        label: 'Employee Role Matrix',
-        route: '/settings/employee-role-matrix',
-        permission: 'user-roles.assign'
-      },
-      {
-        id: 'settings.role-permission-matrix',
-        label: 'Role Permission Matrix',
-        route: '/settings/role-permission-matrix',
-        permission: 'role-permissions.manage'
-      }
     ]
   },
   { id: 'login', label: 'Login', route: '/login', exact: true, alignEnd: true, visibility: 'anonymous' }

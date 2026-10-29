@@ -108,3 +108,59 @@ E:\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\ref\TeamH
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Infrastructure.deps.json
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Infrastructure.dll
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Infrastructure.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Infrastructure.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Infrastructure.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Infrastructure.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Application.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Shared.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Application.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Domain.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\bin\Debug\net10.0\TeamHub.Shared.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub.Infrastructure.csproj.AssemblyReference.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub.Infrastructure.AssemblyInfoInputs.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub.Infrastructure.AssemblyInfo.cs
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub.Infrastructure.csproj.CoreCompileInputs.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub.Infrastructure.sourcelink.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub..52198DAC.Up2Date
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub.Infrastructure.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\refint\TeamHub.Infrastructure.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\TeamHub.Infrastructure.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Infrastructure\obj\Debug\net10.0\ref\TeamHub.Infrastructure.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Infrastructure.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Infrastructure.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Infrastructure.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Infrastructure.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Infrastructure.dll
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Infrastructure.pdb
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Infrastructure.deps.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Infrastructure.dll
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Infrastructure.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Infrastructure.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Infrastructure.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Infrastructure.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Infrastructure.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Infrastructure.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Infrastructure.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Infrastructure.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Infrastructure.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Infrastructure.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Infrastructure.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Infrastructure.dll
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Infrastructure.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Infrastructure.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Infrastructure.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Infrastructure.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Infrastructure.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Infrastructure.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Infrastructure.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Infrastructure.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Infrastructure.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Infrastructure.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Infrastructure.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Infrastructure.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Infrastructure.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Infrastructure.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Infrastructure.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Infrastructure.pdb

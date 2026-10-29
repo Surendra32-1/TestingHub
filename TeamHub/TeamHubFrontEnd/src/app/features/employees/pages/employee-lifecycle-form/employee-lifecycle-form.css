@@ -7,51 +7,48 @@
 }
 
 .lifecycle-panel {
-  width: min(980px, calc(100% - 2rem));
+  width: min(1180px, calc(100% - 2rem));
   margin: 1.25rem auto 2rem;
-  padding: 1.3rem;
-  border: 1px solid #dfe3e8;
-  border-radius: 0.65rem;
-  background: #f7f8f9;
+  padding: 1.25rem;
+  border: 1px solid var(--th-border);
+  border-radius: var(--th-panel-radius);
+  background: var(--th-panel-bg);
+  box-shadow: var(--th-panel-shadow);
 }
 
-.heading-row {
+.page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.1rem;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
-.page-label {
-  display: inline-block;
+.page-title {
   margin: 0;
-  padding: 0.52rem 0.9rem;
-  background: #ffffff;
-  color: #111827;
-  border-radius: 0.38rem;
-  font-size: 0.78rem;
-  font-weight: 400;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+  color: var(--th-text);
+  font-size: var(--th-page-title-font);
+  font-weight: 700;
 }
 
 .back-button {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.68rem 0.9rem;
-  border: 1px solid #dfe3e8;
-  border-radius: 0.38rem;
-  background: #fff;
-  color: #374151;
+  min-height: var(--th-control-height);
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--th-control-border);
+  border-radius: var(--th-control-radius);
+  background: var(--th-surface);
+  color: var(--th-primary);
   font: inherit;
-  font-size: 0.78rem;
+  font-size: var(--th-button-font);
   font-weight: 600;
   cursor: pointer;
   transition: background 120ms ease, border-color 120ms ease;
 }
 
-.back-button:hover {
-  border-color: #cbd5e1;
+.back-button:hover:not(:disabled) {
   background: #f8fafc;
 }
 
@@ -63,14 +60,11 @@
   background: #fff;
 }
 
-/* Section titles follow the same uppercase header format as the directory/list tables. */
 .form-section h2 {
   margin: 0 0 0.9rem;
-  color: #475569;
-  font-size: 0.76rem;
+  color: #334155;
+  font-size: 0.95rem;
   font-weight: 650;
-  letter-spacing: 0.035em;
-  text-transform: uppercase;
 }
 
 .approval-note {
@@ -79,7 +73,6 @@
   font-size: 0.88rem;
 }
 
-/* Self-service callout shown under the Employee Information header on the resignation form. */
 .self-service-note {
   margin: 0 0 0.9rem;
   padding: 0.55rem 0.75rem;
@@ -136,7 +129,7 @@
 }
 
 .field label {
-  color: #374151;
+  color: var(--th-label);
   font-size: 0.88rem;
   font-weight: 600;
 }
@@ -146,25 +139,32 @@
 .field textarea {
   width: 100%;
   min-width: 0;
-  padding: 0.6rem 0.7rem;
-  border: 1px solid #cfd6dd;
-  border-radius: 0.5rem;
-  background: #fff;
-  color: #374151;
+  min-height: var(--th-control-height);
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--th-control-border);
+  border-radius: var(--th-control-radius);
+  background: var(--th-surface);
+  color: var(--th-primary);
   font: inherit;
-  font-size: 0.88rem;
+  font-size: var(--th-control-font);
 }
 
-.field input[readonly] {
-  background: #f8fafc;
-  color: #64748b;
+.field textarea {
+  min-height: 5.5rem;
+  resize: vertical;
+}
+
+.field input[readonly],
+.field input:disabled {
+  background: #f1f5f9;
+  color: var(--th-muted);
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: #64748b;
-  outline: 2px solid rgba(100, 116, 139, 0.16);
+  border-color: #94a3b8;
+  outline: 2px solid rgba(100, 116, 139, 0.18);
 }
 
 .form-actions {
@@ -175,13 +175,13 @@
   margin-top: 1rem;
 }
 
-/* Buttons follow the same compact treatment as the directory actions. */
 .form-actions button {
-  padding: 0.68rem 0.9rem;
-  border: 1px solid #dfe3e8;
-  border-radius: 0.38rem;
+  min-height: var(--th-control-height);
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--th-control-border);
+  border-radius: var(--th-control-radius);
   font: inherit;
-  font-size: 0.78rem;
+  font-size: var(--th-button-font);
   font-weight: 600;
   cursor: pointer;
   transition: background 120ms ease, border-color 120ms ease;
@@ -193,21 +193,21 @@
 }
 
 .primary-button {
-  border-color: #1f2937;
-  background: #1f2937;
+  border-color: var(--th-primary);
+  background: var(--th-primary);
   color: #fff;
 }
 
 .primary-button:hover:not(:disabled) {
-  background: #374151;
-  border-color: #374151;
+  background: var(--th-primary-hover);
+  border-color: var(--th-primary-hover);
 }
 
 .secondary-button,
 .cancel-button {
-  border: 1px solid #dfe3e8 !important;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--th-control-border) !important;
+  background: var(--th-surface);
+  color: var(--th-primary);
 }
 
 .secondary-button:hover:not(:disabled),

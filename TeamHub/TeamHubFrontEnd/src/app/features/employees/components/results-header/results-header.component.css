@@ -11,6 +11,26 @@
   font-weight: 600;
 }
 
+.results-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.clear-filter-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #4b5563;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+}
+
+.clear-filter-button:hover {
+  color: #111827;
+}
+
 .sort-button,.add-btn {
   border: 1px solid #dfe3e8;
   background: #ffffff;

@@ -1952,14 +1952,14 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.API\\TeamHub.API.csproj",
+      "projectUniqueName": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.API\\TeamHub.API.csproj",
       "projectName": "TeamHub.API",
-      "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.API\\TeamHub.API.csproj",
+      "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.API\\TeamHub.API.csproj",
       "packagesPath": "C:\\Users\\Dell Suren\\.nuget\\packages\\",
-      "outputPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.API\\obj\\",
+      "outputPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "E:\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
+        "E:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
         "C:\\Users\\Dell Suren\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -1976,17 +1976,17 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj": {
-              "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj"
+            "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj": {
+              "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj"
             },
-            "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Auth\\TeamHub.Auth.csproj": {
-              "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Auth\\TeamHub.Auth.csproj"
+            "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Auth\\TeamHub.Auth.csproj": {
+              "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Auth\\TeamHub.Auth.csproj"
             },
-            "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\TeamHub.Infrastructure.csproj": {
-              "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\TeamHub.Infrastructure.csproj"
+            "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\TeamHub.Infrastructure.csproj": {
+              "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\TeamHub.Infrastructure.csproj"
             },
-            "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {
-              "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj"
+            "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {
+              "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj"
             }
           }
         }

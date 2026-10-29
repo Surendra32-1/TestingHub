@@ -3,8 +3,9 @@ import { ChangeDetectorRef, Component, EventEmitter, HostListener, Input, Output
 
 import { DirectoryControlsComponent, EmployeeSearchField } from '../directory-controls/directory-controls.component';
 import { ResultsHeaderComponent } from '../results-header/results-header.component';
+import { Department } from '../../models/employee-master.model';
 import { Employee } from '../../models/employee.model';
-import { EmployeeDetails, EmployeeService } from '../../services/employee.service';
+import { EmployeeDetails, EmployeeService, PublicEmployeeDetails } from '../../services/employee.service';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { ToastService } from '../../../../shared/services/toast.service';
 
@@ -24,22 +25,37 @@ export class DirectoryViewComponent {
   private hidePreviewTimer?: ReturnType<typeof setTimeout>;
   @Input() employees: Employee[] = [];
   @Input() tableLayout = false;
+  @Input() managementLayout = false;
   @Input() readOnlyHome = false;
   @Input() canEditEmployee = false;
+  @Input() canDeleteEmployee = false;
+  @Input() canViewCard = false;
+  @Input() canViewHierarchy = true;
+  @Input() canViewEmployeeDetails = true;
   @Input() canReleaseEmployee = false;
   @Input() canTerminateEmployee = false;
   @Input() showAddButton = true;
+  @Input() showControls = true;
   @Input() isLoading = false;
   @Input() pageNumber = 1;
   @Input() pageSize = 10;
   @Input() totalCount = 0;
+  @Input() resultsLabel = 'All Employees';
   @Input() searchTerm = '';
   @Input() searchField: EmployeeSearchField = 'all';
+  @Input() departmentFilterEnabled = true;
+  @Input() departmentFilterName: string | null = null;
+  @Input() departmentOptions: Department[] | null = null;
+  @Input() selectedDepartmentId: number | null = null;
   @Output() pageChange = new EventEmitter<number>();
   @Output() pageSizeChange = new EventEmitter<number>();
   @Output() searchTermChange = new EventEmitter<string>();
   @Output() searchFieldChange = new EventEmitter<EmployeeSearchField>();
+  @Output() departmentFilterChange = new EventEmitter<string>();
+  @Output() clearDepartmentFilter = new EventEmitter<void>();
+  @Output() departmentChange = new EventEmitter<number | null>();
   @Output() editEmployee = new EventEmitter<number>();
+  @Output() deleteEmployee = new EventEmitter<number>();
   @Output() releaseEmployee = new EventEmitter<number>();
   @Output() terminateEmployee = new EventEmitter<number>();
   @Output() viewEmployeeHierarchy = new EventEmitter<number>();
@@ -51,12 +67,14 @@ export class DirectoryViewComponent {
 
   previewEmployeeId: number | null = null;
   previewEmployee: EmployeeDetails | null = null;
+  previewPublicEmployee: PublicEmployeeDetails | null = null;
   previewLoading = false;
   previewVisible = false;
   previewLeft = 0;
   previewTop = 0;
 
   onEmployeeHover(employeeId: number, event: MouseEvent): void {
+    if (!this.readOnlyHome && !this.canViewEmployeeDetails) return;
     if (this.hidePreviewTimer) {
       clearTimeout(this.hidePreviewTimer);
       this.hidePreviewTimer = undefined;
@@ -96,6 +114,32 @@ export class DirectoryViewComponent {
   private openPreview(employeeId: number, anchor: HTMLElement): void {
     this.previewEmployeeId = employeeId;
     this.positionPreview(anchor);
+    if (this.readOnlyHome) {
+      this.previewPublicEmployee = null;
+      this.previewEmployee = null;
+      this.previewLoading = true;
+      this.previewVisible = true;
+      this.changeDetectorRef.markForCheck();
+      this.employeeService.getPublicEmployeeDetails(employeeId).subscribe({
+        next: ({ data }) => {
+          if (this.previewEmployeeId === employeeId) {
+            this.previewPublicEmployee = data;
+            this.previewLoading = false;
+            this.changeDetectorRef.markForCheck();
+          }
+        },
+        error: () => {
+          if (this.previewEmployeeId === employeeId) {
+            this.previewLoading = false;
+            this.previewVisible = false;
+            this.changeDetectorRef.markForCheck();
+          }
+        }
+      });
+      return;
+    }
+
+    this.previewPublicEmployee = null;
     const cached = this.previewCache.get(employeeId);
     if (cached) {
       this.previewEmployee = cached;
@@ -146,6 +190,7 @@ export class DirectoryViewComponent {
     this.previewVisible = false;
     this.previewEmployeeId = null;
     this.previewEmployee = null;
+    this.previewPublicEmployee = null;
     this.previewLoading = false;
     this.changeDetectorRef.markForCheck();
   }
@@ -169,8 +214,25 @@ export class DirectoryViewComponent {
   }
 
   edit(employeeId: number): void {
+    if (!this.canEditEmployee) return;
     this.openMenuEmployeeId = null;
     this.editEmployee.emit(employeeId);
+  }
+
+  showCard(employeeId: number): void {
+    if (!this.canViewCard) return;
+    this.openMenuEmployeeId = null;
+    this.viewEmployeeDetails.emit(employeeId);
+  }
+
+  requestDelete(employeeId: number): void {
+    if (!this.canDeleteEmployee) return;
+    const employeeName = this.employees.find((item) => item.id === employeeId)?.name ?? 'this employee';
+    this.toastService.confirm(
+      `Soft-delete ${employeeName}? The employee record will be retained for history.`,
+      () => this.deleteEmployee.emit(employeeId),
+      'Delete'
+    );
   }
 
   release(employeeId: number): void {

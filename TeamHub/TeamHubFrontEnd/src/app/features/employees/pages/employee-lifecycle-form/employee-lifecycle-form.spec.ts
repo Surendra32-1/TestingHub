@@ -53,7 +53,7 @@ describe('EmployeeLifecycleFormComponent', () => {
     expect(component.expectedReleaseDate).toEqual(new Date(2026, 11, 22));
     expect(component.isEarlyRelease).toBe(true);
     expect(fixture.nativeElement.textContent).toContain('Notice Period Required');
-    expect(fixture.nativeElement.textContent).toContain('Reason for Not Serving Full Notice Period');
+    expect(fixture.nativeElement.textContent).toContain('Early Release Reason');
   });
 
   it('rejects a last working day before the resignation date', () => {

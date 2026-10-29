@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamHub.Auth")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+294d2bbf049b8bb74c960e7dc6c849cd4754d77a")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamHub.Auth")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamHub.Auth")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

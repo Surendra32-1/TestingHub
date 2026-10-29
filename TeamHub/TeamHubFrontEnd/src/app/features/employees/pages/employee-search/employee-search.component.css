@@ -1,0 +1,237 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--th-page-bg);
+  font-family: Inter, "Segoe UI", sans-serif;
+  color: var(--th-text);
+}
+
+.employee-panel {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 1.25rem auto 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--th-border);
+  border-radius: var(--th-panel-radius);
+  background: var(--th-panel-bg);
+  box-shadow: var(--th-panel-shadow);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.page-title {
+  margin: 0;
+  font-size: var(--th-page-title-font);
+  font-weight: 700;
+  color: var(--th-text-strong);
+}
+
+.result-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--th-muted);
+  white-space: nowrap;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 0.7rem;
+  margin-bottom: 1.1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.field-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--th-label);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--th-control-height);
+  padding: 0 0.7rem;
+  border: 1px solid var(--th-control-border);
+  border-radius: var(--th-control-radius);
+  background: var(--th-surface);
+  color: var(--th-primary);
+  font: inherit;
+  font-size: var(--th-control-font);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: 2px solid #9db4d0;
+  outline-offset: 1px;
+}
+
+.clear-btn {
+  align-self: end;
+  min-height: var(--th-control-height);
+  padding: 0 1rem;
+  border: 1px solid var(--th-control-border);
+  border-radius: var(--th-control-radius);
+  background: var(--th-surface);
+  color: var(--th-primary);
+  font: inherit;
+  font-size: var(--th-button-font);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clear-btn:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
+.clear-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.status-message,
+.empty-state,
+.error-state {
+  margin: 1.5rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--th-muted);
+}
+
+.error-state {
+  color: #b91c1c;
+}
+
+.employee-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  gap: 1rem;
+  margin: 0 0 1.1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.employee-card {
+  display: flex;
+  gap: 0.9rem;
+  height: 100%;
+  padding: 0.9rem;
+  border: 1px solid var(--th-border);
+  border-radius: 0.6rem;
+  background: var(--th-surface);
+}
+
+.employee-card-photo {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  height: 7rem;
+  overflow: hidden;
+  border-radius: 0.45rem;
+  background: #e6eaf0;
+  color: #55657a;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.employee-card-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.employee-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.employee-card-body h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--th-text-strong);
+}
+
+.employee-card-designation {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  color: var(--th-muted);
+}
+
+.employee-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.meta-line {
+  display: flex;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.meta-line dt {
+  flex: 0 0 auto;
+  font-weight: 600;
+  color: var(--th-label);
+}
+
+.meta-line dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #334155;
+}
+
+.meta-extra {
+  margin-left: 0.3rem;
+  font-weight: 600;
+  color: #b45309;
+}
+
+@media (max-width: 960px) {
+  .filter-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .clear-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .employee-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .employee-panel {
+    width: calc(100% - 1rem);
+    padding: 0.9rem;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+}

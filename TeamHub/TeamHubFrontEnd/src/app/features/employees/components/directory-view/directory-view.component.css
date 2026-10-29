@@ -82,6 +82,56 @@
   text-align: center;
 }
 
+.management-table-wrap {
+  overflow-x: auto;
+}
+
+.management-table {
+  min-width: 1240px;
+}
+
+.management-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.75rem;
+  min-height: 2.15rem;
+  padding: 0 0.7rem;
+  border: 1px solid var(--th-control-border);
+  border-radius: var(--th-control-radius);
+  background: var(--th-surface);
+  color: var(--th-primary);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.management-action:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.management-action.danger {
+  color: #b91c1c;
+}
+
+.employee-status {
+  color: #166534;
+  font-weight: 600;
+}
+
+.employee-status.inactive {
+  color: #4b5563;
+}
+
+.employee-status.removed {
+  color: #6b7280;
+  font-style: italic;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -177,6 +227,23 @@
   color: #1f2937;
 }
 
+.department-filter-tag {
+  border: 0;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  transition: filter 120ms ease;
+}
+
+.department-filter-tag:hover {
+  filter: brightness(0.96);
+}
+
+.department-filter-tag:focus-visible {
+  outline: 2px solid #1e293b;
+  outline-offset: 2px;
+}
+
 .employee-action-menu {
   position: absolute;
   bottom: 0.55rem;
@@ -256,7 +323,6 @@
   cursor: pointer;
 }
 
-/* Icon-only rows reveal their meaning as a tooltip on the left on hover. */
 .action-menu button::after {
   content: attr(data-tip);
   position: absolute;
@@ -338,8 +404,6 @@
   font-size: 0.82rem;
   color: #374151;
   animation: previewFade 120ms ease;
-  /* Captures the pointer while visible so hovering toward the card never
-     crosses an underlying employee image and swaps the popup. */
   pointer-events: auto;
 }
 
@@ -403,7 +467,6 @@
   font-weight: 700;
 }
 
-/* Typography mirrors the record-details modal standard across the app. */
 .preview-title h3 {
   margin: 0;
   font-size: 1.05rem;
@@ -487,10 +550,8 @@
   transform: scale(0.97);
 }
 
-/* Sliding underline draws attention to the link on hover. */
 .cta-text {
   position: relative;
-  /* Text glides in sync with the arrow so the whole CTA feels alive. */
   animation: ctaTextSlide 1.4s ease-in-out infinite;
 }
 
@@ -510,7 +571,6 @@
   width: 100%;
 }
 
-/* Arrow loops left-to-right so the CTA feels clickable at a glance. */
 .cta-arrow {
   display: inline-block;
   font-size: 1.3rem;

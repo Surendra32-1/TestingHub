@@ -1,0 +1,92 @@
+<section *ngIf="departmentHead as head" class="department-head-section" aria-labelledby="department-head-heading">
+  <h2 id="department-head-heading">Department Head</h2>
+  <article
+    class="department-head-card"
+    [attr.role]="canViewEmployeeDetails ? 'button' : null"
+    [attr.tabindex]="canViewEmployeeDetails ? 0 : null"
+    [attr.aria-label]="canViewEmployeeDetails ? 'View details for ' + head.name : null"
+    (click)="viewDetails(head.id)"
+    (keydown)="onCardKeydown($event, head.id)"
+  >
+    <div class="department-head-photo">
+      <img *ngIf="head.imageBase64; else headPhotoPlaceholder" [src]="head.imageBase64" [alt]="head.name + ' photo'">
+      <ng-template #headPhotoPlaceholder>
+        <span class="department-avatar-fallback" aria-hidden="true">{{ head.name.charAt(0) }}</span>
+      </ng-template>
+    </div>
+
+    <div class="department-head-body">
+      <h3>{{ head.name }}</h3>
+      <p class="department-head-designation">
+        {{ head.designation || 'Designation not specified' }}<span *ngIf="head.eNumber"> ({{ head.eNumber }})
+        </span>
+      </p>
+
+      <dl class="department-head-meta">
+        <div *ngIf="head.department">
+          <dt>Department</dt>
+          <dd>{{ head.department }}</dd>
+        </div>
+        <div *ngIf="head.teamName">
+          <dt>Team</dt>
+          <dd>{{ head.teamName }}</dd>
+        </div>
+        <div *ngIf="departmentHeadDetails?.email">
+          <dt>Email</dt>
+          <dd>{{ departmentHeadDetails?.email }}</dd>
+        </div>
+        <div *ngIf="departmentHeadDetails?.phoneNumber || departmentHeadDetails?.extensionNumber">
+          <dt>Contact</dt>
+          <dd>
+            {{ departmentHeadDetails?.phoneNumber || '—' }}
+            <span *ngIf="departmentHeadDetails?.extensionNumber"> (ext {{ departmentHeadDetails?.extensionNumber }})</span>
+          </dd>
+        </div>
+        <div *ngIf="departmentHeadDetails?.stationNumber">
+          <dt>Station</dt>
+          <dd>{{ departmentHeadDetails?.stationNumber }}</dd>
+        </div>
+        <div>
+          <dt>Reports To</dt>
+          <dd>{{ head.reportsToEmployee || departmentHeadDetails?.reportsToEmployeeName || '—' }}</dd>
+        </div>
+      </dl>
+    </div>
+  </article>
+</section>
+
+<div *ngIf="members.length > 0" class="department-members-count" aria-hidden="true">
+  <span class="department-count-dots">⋮</span>
+  <span class="department-count-badge">{{ members.length }}</span>
+</div>
+
+<section *ngIf="members.length > 0" class="department-members-section" aria-labelledby="department-members-heading">
+  <h2 id="department-members-heading">{{ departmentName }}</h2>
+  <ul class="department-member-grid" aria-label="Department members">
+    <li *ngFor="let member of members; trackBy: trackByEmployeeId">
+      <article
+        class="department-member-card"
+        [attr.role]="canViewEmployeeDetails ? 'button' : null"
+        [attr.tabindex]="canViewEmployeeDetails ? 0 : null"
+        [attr.aria-label]="canViewEmployeeDetails ? 'View details for ' + member.name : null"
+        (click)="viewDetails(member.id)"
+        (keydown)="onCardKeydown($event, member.id)"
+      >
+        <div class="department-member-photo">
+          <img *ngIf="member.imageBase64; else memberPhotoPlaceholder" [src]="member.imageBase64" [alt]="member.name + ' photo'">
+          <ng-template #memberPhotoPlaceholder>
+            <span class="department-avatar-fallback" aria-hidden="true">{{ member.name.charAt(0) }}</span>
+          </ng-template>
+        </div>
+        <div class="department-member-body">
+          <h3>{{ member.name }}</h3>
+          <p>{{ member.designation || 'Designation not specified' }}</p>
+        </div>
+      </article>
+    </li>
+  </ul>
+</section>
+
+<p *ngIf="!departmentHead && members.length === 0" class="department-no-head">
+  No employees with a designation rank were found in this department.
+</p>

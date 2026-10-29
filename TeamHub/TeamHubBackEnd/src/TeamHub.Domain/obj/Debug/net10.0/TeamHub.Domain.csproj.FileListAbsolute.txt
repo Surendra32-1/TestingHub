@@ -71,3 +71,57 @@ E:\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\ref\TeamHub.Domai
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Domain.deps.json
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Domain.dll
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.Domain.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\bin\Debug\net10.0\TeamHub.Domain.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\bin\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\bin\Debug\net10.0\TeamHub.Domain.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\TeamHub.Domain.GeneratedMSBuildEditorConfig.editorconfig
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\TeamHub.Domain.AssemblyInfoInputs.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\TeamHub.Domain.AssemblyInfo.cs
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\TeamHub.Domain.csproj.CoreCompileInputs.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\TeamHub.Domain.sourcelink.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\refint\TeamHub.Domain.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\TeamHub.Domain.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.Domain\obj\Debug\net10.0\ref\TeamHub.Domain.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Domain.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Domain.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.Domain.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Domain.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Domain.dll
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.Domain.pdb
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Domain.deps.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.Domain.pdb
+E:\TEST\.tmp\TeamHubUnitTests\Debug\net10.0\TeamHub.Domain.deps.json
+E:\TEST\.tmp\TeamHubUnitTests\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\.tmp\TeamHubUnitTests\Debug\net10.0\TeamHub.Domain.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Domain.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Domain.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.Domain.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Domain.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Domain.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.Domain.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Domain.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Domain.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.Domain.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Domain.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.Domain.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Domain.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Domain.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.Domain.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Domain.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Domain.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.Domain.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-unit\TeamHub.Domain.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-unit\TeamHub.Domain.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-unit\TeamHub.Domain.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Domain.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Domain.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Domain.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Domain.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Domain.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Domain.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Domain.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Domain.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Domain.pdb

@@ -339,6 +339,15 @@ lifecycle form clearance section
 
 `GET /api/releases?page=&pageSize=&search=&department=&status=&releaseType=` → `GetPagedAsync` (:35-87): dynamic WHERE built from non-empty filters; `OFFSET/FETCH`; **COUNT only executed when the page is exactly full** (`if (items.Count == pageSize)`, :71-78) — a short page reports `TotalCount = items.Count`. Same heuristic in terminations (:65-74). Consequences documented in docs 11/14.
 
+### 7.5 Interim succession gate on `Released` — REMOVED
+
+The interim-succession gate (blocking a `Released` transition while the departing employee still had
+active direct reports, the handover dialog, the `Successions` audit table and the
+`successions.view/add/manage` codes) was removed from backend and frontend on 2026-10-27.
+`POST /api/releases/{releasedId}/status` now takes `{ status }` only: `TransitionStatusAsync` runs
+the §7.2 graph + clearance gates, updates `EmployeeReleases` and sets `Employees.IsActive = 0` on
+`Released`. Repointing an ex-manager's active reports is a normal employee edit afterwards.
+
 ---
 
 ## 8. Termination workflow
@@ -438,7 +447,7 @@ Verified notes across the 15 datasets:
 
 ## 11. Verified cross-workflow observations
 
-1. **Transaction usage is selective and verified per method**: transactional — `EmployeeRepository.CreateAsync`/`UpdateAsync`, `UserRoleRepository.SaveAsync`, (pattern-equivalent) `RolePermissionRepository.SaveAsync`; NOT transactional despite multi-statement batches — both lifecycle repositories' Create/Update/Transition (two statements each, roles-deactivation coupling), and everything read-side.
+1. **Transaction usage is selective and verified per method**: transactional — `EmployeeRepository.CreateAsync`/`UpdateAsync`, `UserRoleRepository.SaveAsync`, (pattern-equivalent) `RolePermissionRepository.SaveAsync`; NOT transactional despite multi-statement batches — both lifecycle repositories' Create/Update (two statements each, roles-deactivation coupling), release and termination transitions (the release `Released` edge lost its `BeginTransaction` when the succession gate was removed, §7.5), and everything read-side.
 2. **POST runs an extra "Create" ruleset; PUT relies on auto-validation of "default" only** (§5 vs §6): the create-only rule is `JoinedDate ≥ today`. Verified via `Program.cs:90 AddFluentValidationAutoValidation()` + `RulesetValidatorSelector` in the POST action. Not a validation *absence* — a deliberate ruleset asymmetry.
 3. **Audit columns never record a human**: `CreatedBy`/`LastModifiedBy` are the constants `"System"` (services) or the actor's first role name (UserRoles save). The authenticated user identity is available (claims) but not plumbed into writes.
 4. **EmployeeImages is append-only**: every save with a photo INSERTs a new row; all readers choose the newest via `ImageId DESC` (OUTER APPLY / index). No delete path exists anywhere (grep verified, doc 11 §9).

@@ -90,7 +90,7 @@ public class RbacServiceTests
         await Assert.ThrowsAsync<PrivilegeEscalationException>(() => service.SaveAsync(
             new SaveRolePermissionsRequest
             {
-                Assignments = [new RolePermissionAssignmentDto { RoleId = 5, PermissionIds = [2] }]
+                Assignments = [new RolePermissionAssignmentDto { PermissionId = 2, RoleIds = [5] }]
             },
             actingPermissionCodes: new[] { "roles.view" },
             isSuperAdmin: false));
@@ -108,7 +108,7 @@ public class RbacServiceTests
         await service.SaveAsync(
             new SaveRolePermissionsRequest
             {
-                Assignments = [new RolePermissionAssignmentDto { RoleId = 5, PermissionIds = [2] }]
+                Assignments = [new RolePermissionAssignmentDto { PermissionId = 2, RoleIds = [5] }]
             },
             actingPermissionCodes: Array.Empty<string>(),
             isSuperAdmin: true);
@@ -161,7 +161,7 @@ public class RbacServiceTests
         public bool SaveCalled { get; private set; }
         public IReadOnlyList<UserRoleAssignmentDto> LastAssignments { get; private set; } = [];
 
-        public Task<EmployeeRoleMatrixDto> GetMatrixAsync(CancellationToken cancellationToken = default) =>
+        public Task<EmployeeRoleMatrixDto> GetMatrixAsync(int pageNumber, int pageSize, string? search, CancellationToken cancellationToken = default) =>
             Task.FromResult(new EmployeeRoleMatrixDto());
 
         public Task SaveAsync(IReadOnlyList<UserRoleAssignmentDto> assignments, string modifiedBy, CancellationToken cancellationToken = default)
@@ -176,7 +176,7 @@ public class RbacServiceTests
     {
         public bool SaveCalled { get; private set; }
 
-        public Task<RolePermissionMatrixDto> GetMatrixAsync(CancellationToken cancellationToken = default) =>
+        public Task<RolePermissionMatrixDto> GetMatrixAsync(int pageNumber, int pageSize, string? search, CancellationToken cancellationToken = default) =>
             Task.FromResult(new RolePermissionMatrixDto());
 
         public Task SaveAsync(IReadOnlyList<RolePermissionAssignmentDto> assignments, string modifiedBy, CancellationToken cancellationToken = default)

@@ -5,7 +5,7 @@ export interface EmployeeHierarchyPerson {
   designationName: string | null;
   departmentName: string | null;
   imagePath: string | null;
-  employeeNumber: number;
+  employeeNumber: number | null;
   source: 'Employee';
   level: number;
 }

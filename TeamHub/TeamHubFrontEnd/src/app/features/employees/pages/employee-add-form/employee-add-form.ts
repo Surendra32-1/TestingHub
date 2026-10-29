@@ -10,12 +10,13 @@ import {
 import { Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 type NepaliDateConstructor = typeof import('nepali-date-converter').default;
 import { ToastService } from '../../../../shared/services/toast.service';
 import { getApiErrorMessage } from '../../../../shared/services/api-error-message';
 
 import { CreateEmployeeRequest, EmployeeEditResponse, EmployeeService } from '../../services/employee.service';
+import { EmployeeProfile, EmployeeProfileEmployee, EmployeeProfilePatch, ProfileService } from '../../../profile/profile.service';
 import { TopbarComponent } from '../../../../shared/components/topbar/topbar.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -44,6 +45,7 @@ export class EmployeeAddFormComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private employeeService = inject(EmployeeService);
+  private profileService = inject(ProfileService);
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -60,6 +62,8 @@ export class EmployeeAddFormComponent implements OnInit {
   currentImageBase64: string | null = null;
   imageFileName = '';
   employeeId: number | null = null;
+  isProfileMode = false;
+  profileData: EmployeeProfile | null = null;
   readonly today = new Date(new Date().setHours(0, 0, 0, 0));
   readonly latestDateOfBirth = new Date(this.today.getTime() - 24 * 60 * 60 * 1000);
   readonly maxDateOfBirth = this.getLatestPastDate();
@@ -80,14 +84,49 @@ export class EmployeeAddFormComponent implements OnInit {
   addressTypes: any[] = [];
   skillLevels: Record<number, number> = {};
 
+  get profileHasChanges(): boolean {
+    if (!this.isProfileMode || !this.profileData) {
+      return false;
+    }
+
+    const employee = this.profileData.employee;
+    const values = this.employeeForm.getRawValue();
+    const address = employee.addresses.find((item) => item.isPrimary) ?? employee.addresses[0] ?? null;
+    const selectedSkillIds = (values.skillIds as Array<number | string> ?? []).map(Number).sort((a, b) => a - b);
+    const currentSkillIds = employee.skills.map((skill) => skill.skillId).sort((a, b) => a - b);
+    const selectedDressIds = (values.dressIds as Array<number | string> ?? []).map(Number).sort((a, b) => a - b);
+    const currentDressIds = employee.dressSizes.map((dress) => dress.dressId).sort((a, b) => a - b);
+    const skillsChanged = !this.sameIds(selectedSkillIds, currentSkillIds)
+      || employee.skills.some((skill) =>
+        selectedSkillIds.includes(skill.skillId) && this.skillLevelFor(skill.skillId) !== skill.skillLevel);
+    return this.imageBase64 !== null
+      || values.alternateEmail !== (employee.alternateEmail ?? '')
+      || Number(values.bloodGroupId) !== employee.bloodGroupId
+      || values.mobileNumber !== (employee.mobileNumber ?? '')
+      || values.emergencyContactNumber !== (employee.emergencyContactNumber ?? '')
+      || values.motherName !== (employee.motherName ?? '')
+      || values.spouseName !== (employee.spouseName ?? '')
+      || values.latitude !== address?.latitude
+      || values.longitude !== address?.longitude
+      || skillsChanged
+      || !this.sameIds(selectedDressIds, currentDressIds);
+  }
+
   ngOnInit(): void {
     this.initializeForm();
-    this.loadNepaliDateConverter();
+    this.isProfileMode = this.route.snapshot.data['mode'] === 'profile';
+    if (!this.isProfileMode) {
+      this.loadNepaliDateConverter();
+    }
     const employeeId = Number(this.route.snapshot.paramMap.get('employeeId'));
     if (Number.isInteger(employeeId) && employeeId > 0) {
       this.employeeId = employeeId;
     }
-    this.loadMasters(this.employeeId ?? undefined);
+    if (this.isProfileMode) {
+      this.loadMyProfile();
+    } else {
+      this.loadMasters(this.employeeId ?? undefined);
+    }
   }
 
   initializeForm(): void {
@@ -140,6 +179,8 @@ export class EmployeeAddFormComponent implements OnInit {
       cotivityEmployeeId: [''],
       skillIds: [[]],
       dressIds: [[]],
+      latitude: [null as number | null, [Validators.min(-90), Validators.max(90)]],
+      longitude: [null as number | null, [Validators.min(-180), Validators.max(180)]],
       isActive: [true],
       createLoginAccount: [false],
       username: [''],
@@ -158,7 +199,7 @@ export class EmployeeAddFormComponent implements OnInit {
   }
 
   private loadEmployee(employeeId: number): void {
-    this.employeeService.getEmployeeById(employeeId).subscribe({
+    this.employeeService.getActiveInactiveEmployeeById(employeeId).subscribe({
       next: ({ data }) => {
         this.patchEmployee(data);
         this.changeDetectorRef.markForCheck();
@@ -171,7 +212,7 @@ export class EmployeeAddFormComponent implements OnInit {
     });
   }
 
-  private patchEmployee(data: EmployeeEditResponse): void {
+  private patchEmployee(data: EmployeeEditResponse | EmployeeProfileEmployee): void {
     const joinedDate = this.parseApiDate(data.joinedDate);
     const dateOfBirth = data.dateOfBirth ? this.parseApiDate(data.dateOfBirth) : null;
     const addresses = data.addresses ?? [];
@@ -229,6 +270,133 @@ export class EmployeeAddFormComponent implements OnInit {
     this.currentImageBase64 = data.imageBase64;
   }
 
+  private loadMyProfile(): void {
+    forkJoin({
+      profile: this.profileService.getMyProfile(),
+      masters: this.employeeService.getEmployeeMasters()
+    }).subscribe({
+      next: ({ profile, masters: response }) => {
+        const masters = response.data;
+        this.profileData = profile;
+        this.bloodGroups = profile.bloodGroups;
+        const employee = profile.employee;
+        const skillOptions = masters.skills ?? profile.skillOptions;
+        const dressSizeOptions = masters.dressSizes ?? profile.dressSizeOptions;
+        this.skills = this.mergeById(
+          skillOptions,
+          employee.skills.map((skill) => ({
+            skillId: skill.skillId,
+            skillName: skill.skillName,
+            isActive: false
+          })),
+          'skillId'
+        );
+        this.dressSizes = this.mergeById(dressSizeOptions, employee.dressSizes, 'dressId');
+        this.departments = employee.departmentName
+          ? [{ departmentId: employee.departmentId, departmentName: employee.departmentName }]
+          : [];
+        this.designations = employee.designationName
+          ? [{ designationId: employee.designationId, designationName: employee.designationName }]
+          : [];
+        this.jobTypes = employee.jobTypeName
+          ? [{ jobTypeId: employee.jobTypeId, jobTypeName: employee.jobTypeName }]
+          : [];
+        this.genders = employee.genderName
+          ? [{ genderId: employee.genderId, genderName: employee.genderName }]
+          : [];
+        this.teams = employee.teamName
+          ? [{ teamId: employee.teamId, teamName: employee.teamName }]
+          : [];
+        this.recruitments = employee.recruitmentName && employee.recruitmentId
+          ? [{ recruitmentId: employee.recruitmentId, recruitmentName: employee.recruitmentName }]
+          : [];
+        this.employees = [
+          ...(employee.leadEmployeeId && employee.leadEmployeeName
+            ? [{ reportingManagerId: employee.leadEmployeeId, reportingManagerName: employee.leadEmployeeName }]
+            : []),
+          ...(employee.reportsToEmployeeId && employee.reportsToEmployeeName
+            ? [{ reportingManagerId: employee.reportsToEmployeeId, reportingManagerName: employee.reportsToEmployeeName }]
+            : [])
+        ].filter((item, index, list) =>
+          list.findIndex((candidate) => candidate.reportingManagerId === item.reportingManagerId) === index);
+        this.cotivityEmployees = employee.cotivityEmployeeId && employee.cotivityEmployeeName
+          ? [{ reportingManagerId: employee.cotivityEmployeeId, reportingManagerName: employee.cotivityEmployeeName }]
+          : [];
+        const assignedRoleIds = new Set([
+          ...(employee.roleIds ?? []),
+          ...(profile.roles ?? []).map((role) => role.roleId)
+        ]);
+        const assignedRoleOptions = (masters.roles ?? []).filter((role: { roleId: number }) =>
+          assignedRoleIds.has(role.roleId));
+        this.roles = this.mergeById(assignedRoleOptions, profile.roles ?? [], 'roleId');
+        this.addressTypes = employee.addresses.length
+          ? [{ addressTypeId: employee.addresses[0].addressTypeId, addressTypeName: employee.addresses[0].addressTypeName }]
+          : [];
+        this.skillLevels = Object.fromEntries(employee.skills.map((skill) => [skill.skillId, skill.skillLevel]));
+        this.patchEmployee(profile.employee);
+        const primaryAddress = profile.employee.addresses.find((address) => address.isPrimary)
+          ?? profile.employee.addresses[0]
+          ?? null;
+        this.employeeForm.patchValue({
+          latitude: primaryAddress?.latitude ?? null,
+          longitude: primaryAddress?.longitude ?? null
+        }, { emitEvent: false });
+        this.setProfileModeControlState();
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.errorMessage = getApiErrorMessage(error, 'Could not load your profile and employee options.');
+        this.toastService.error(this.errorMessage);
+        this.changeDetectorRef.markForCheck();
+      }
+    });
+  }
+
+  private mergeById<T extends object>(
+    primary: T[],
+    additional: T[],
+    idField: keyof T
+  ): T[] {
+    const options = new Map<unknown, T>();
+    for (const option of [...primary, ...additional]) {
+      options.set(option[idField], option);
+    }
+    return [...options.values()];
+  }
+
+  private setProfileModeControlState(): void {
+    const editableFields = new Set([
+      'alternateEmail',
+      'bloodGroupId',
+      'mobileNumber',
+      'emergencyContactNumber',
+      'motherName',
+      'spouseName',
+      'latitude',
+      'longitude',
+      'skillIds',
+      'dressIds'
+    ]);
+
+    for (const controlName of Object.keys(this.employeeForm.controls)) {
+      const control = this.employeeForm.get(controlName);
+      if (editableFields.has(controlName)) {
+        control?.enable({ emitEvent: false });
+      } else {
+        control?.disable({ emitEvent: false });
+      }
+    }
+    this.employeeForm.get('mobileNumber')?.setValidators([
+      Validators.maxLength(20),
+      Validators.pattern(/^\+?[0-9][0-9\s().-]{5,19}$/)
+    ]);
+    this.employeeForm.get('emergencyContactNumber')?.setValidators([
+      Validators.maxLength(20),
+      Validators.pattern(/^\+?[0-9][0-9\s().-]{5,19}$/)
+    ]);
+    this.employeeForm.updateValueAndValidity({ emitEvent: false });
+  }
+
   loadMasters(employeeId?: number): void {
     this.employeeService.getEmployeeMasters().subscribe({
       next: (response: any) => {
@@ -274,6 +442,11 @@ export class EmployeeAddFormComponent implements OnInit {
   onSubmit(): void {
     this.errorMessage = '';
     if (this.isSubmitting) {
+      return;
+    }
+
+    if (this.isProfileMode) {
+      this.saveMyProfile();
       return;
     }
 
@@ -360,7 +533,7 @@ export class EmployeeAddFormComponent implements OnInit {
     this.isSubmitting = true;
     const saveRequest = this.employeeId === null
       ? this.employeeService.createEmployee(request).pipe(map(() => {}))
-      : this.employeeService.updateEmployee(this.employeeId, request);
+      : this.employeeService.updateActiveInactiveEmployee(this.employeeId, request);
     saveRequest.subscribe({
       next: () => {
         this.toastService.success(`Employee ${this.employeeId === null ? 'created' : 'updated'} successfully.`);
@@ -370,6 +543,116 @@ export class EmployeeAddFormComponent implements OnInit {
         this.errorMessage = getApiErrorMessage(error, 'Could not save the employee. Please try again.');
         this.toastService.error(this.errorMessage);
         this.isSubmitting = false;
+      }
+    });
+  }
+
+  private saveMyProfile(): void {
+    if (!this.profileData) {
+      return;
+    }
+
+    const value = this.employeeForm.getRawValue();
+    this.employeeForm.markAllAsTouched();
+    const editableFields = [
+      'alternateEmail',
+      'bloodGroupId',
+      'mobileNumber',
+      'emergencyContactNumber',
+      'motherName',
+      'spouseName',
+      'latitude',
+      'longitude'
+    ];
+    const invalidMessages = editableFields
+      .map((field) => this.validationMessage(field))
+      .filter((message): message is string => message !== null);
+    if (invalidMessages.length > 0) {
+      this.showValidationMessages(invalidMessages);
+      return;
+    }
+
+    const employee = this.profileData.employee;
+    const primaryAddress = employee.addresses.find((address) => address.isPrimary)
+      ?? employee.addresses[0]
+      ?? null;
+    const patch: EmployeeProfilePatch = {};
+    if (value.alternateEmail !== (employee.alternateEmail ?? '')) {
+      patch.alternateEmail = value.alternateEmail?.trim() || null;
+    }
+    if (Number(value.bloodGroupId) !== employee.bloodGroupId) {
+      patch.bloodGroupId = Number(value.bloodGroupId);
+    }
+    if (value.mobileNumber !== (employee.mobileNumber ?? '')) {
+      patch.mobileNumber = value.mobileNumber?.trim() || null;
+    }
+    if (value.emergencyContactNumber !== (employee.emergencyContactNumber ?? '')) {
+      patch.emergencyContactNumber = value.emergencyContactNumber?.trim() || null;
+    }
+    if (value.motherName !== (employee.motherName ?? '')) {
+      patch.motherName = value.motherName?.trim() || null;
+    }
+    if (value.spouseName !== (employee.spouseName ?? '')) {
+      patch.spouseName = value.spouseName?.trim() || null;
+    }
+    if (value.latitude !== primaryAddress?.latitude && value.latitude !== null) {
+      patch.latitude = value.latitude;
+    }
+    if (value.longitude !== primaryAddress?.longitude && value.longitude !== null) {
+      patch.longitude = value.longitude;
+    }
+    const selectedSkillIds = (value.skillIds as Array<number | string> ?? []).map(Number);
+    const currentSkillIds = employee.skills.map((skill) => skill.skillId);
+    if (!this.sameIds(selectedSkillIds, currentSkillIds)
+      || employee.skills.some((skill) =>
+        selectedSkillIds.includes(skill.skillId) && this.skillLevelFor(skill.skillId) !== skill.skillLevel)) {
+      patch.skills = selectedSkillIds.map((skillId) => {
+        return {
+          skillId,
+          skillLevel: this.skillLevelFor(skillId)
+        };
+      });
+    }
+    const selectedDressIds = (value.dressIds as Array<number | string> ?? []).map(Number);
+    const currentDressIds = employee.dressSizes.map((dress) => dress.dressId);
+    if (!this.sameIds(selectedDressIds, currentDressIds)) {
+      patch.dressIds = selectedDressIds;
+    }
+    if (this.imageBase64) {
+      patch.imageBase64 = this.imageBase64;
+    }
+    if (Object.keys(patch).length === 0) {
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.profileService.updateMyProfile(patch).subscribe({
+      next: (profile) => {
+        this.profileData = profile;
+        this.bloodGroups = profile.bloodGroups;
+        this.skills = profile.skillOptions;
+        this.dressSizes = profile.dressSizeOptions;
+        this.imageBase64 = null;
+        this.imageFileName = '';
+        this.patchEmployee(profile.employee);
+        const updatedAddress = profile.employee.addresses.find((address) => address.isPrimary)
+          ?? profile.employee.addresses[0]
+          ?? null;
+        this.employeeForm.patchValue({
+          latitude: updatedAddress?.latitude ?? null,
+          longitude: updatedAddress?.longitude ?? null
+        }, { emitEvent: false });
+        this.setProfileModeControlState();
+        this.employeeForm.markAsPristine();
+        this.isSubmitting = false;
+        this.toastService.success('Profile updated successfully.');
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.errorMessage = getApiErrorMessage(error, 'Could not update your profile.');
+        this.toastService.error(this.errorMessage);
+        this.isSubmitting = false;
+        this.changeDetectorRef.markForCheck();
       }
     });
   }
@@ -398,6 +681,8 @@ export class EmployeeAddFormComponent implements OnInit {
       dateOfBirthBS: 'Date of birth (B.S.)',
       phoneNumber: 'Phone number',
       mobileNumber: 'Mobile number',
+      latitude: 'Latitude',
+      longitude: 'Longitude',
       emergencyContactNumber: 'Emergency contact number',
       emergencyContactPerson: 'Emergency contact person',
       fatherName: 'Father name',
@@ -511,6 +796,16 @@ export class EmployeeAddFormComponent implements OnInit {
       : currentIds.filter((currentId) => currentId !== id);
     control?.setValue(nextIds.map(String));
     control?.markAsDirty();
+  }
+
+  private sameIds(first: number[], second: number[]): boolean {
+    if (first.length !== second.length) {
+      return false;
+    }
+
+    const sortedFirst = [...first].sort((a, b) => a - b);
+    const sortedSecond = [...second].sort((a, b) => a - b);
+    return sortedFirst.every((id, index) => id === sortedSecond[index]);
   }
 
   private showValidationMessages(messages: string[]): void {

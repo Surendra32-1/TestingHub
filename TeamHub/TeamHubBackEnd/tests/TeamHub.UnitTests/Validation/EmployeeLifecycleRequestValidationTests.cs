@@ -10,7 +10,7 @@ namespace TeamHub.UnitTests.Validation;
 public class EmployeeLifecycleRequestValidationTests
 {
     [Fact]
-    public void ReleaseRequiresResignationDateLastWorkingDateAndReason()
+    public void ReleaseRequiresResignationDateLastWorkingDateAndNoticePeriod()
     {
         var request = new EmployeeReleaseRequest
         {
@@ -22,7 +22,8 @@ public class EmployeeLifecycleRequestValidationTests
 
         Assert.Contains(results, result => result.ErrorMessage == "Resignation Date is required.");
         Assert.Contains(results, result => result.ErrorMessage == "Last Working Day is required.");
-        Assert.Contains(results, result => result.ErrorMessage == "Reason is required.");
+        Assert.Contains(results, result =>
+            result.ErrorMessage == "Notice Period Days is required so early release can be detected.");
     }
 
     [Fact]
@@ -33,6 +34,7 @@ public class EmployeeLifecycleRequestValidationTests
             ReleaseType = "Resignation",
             ResignationDate = new DateOnly(2026, 10, 10),
             LastWorkingDate = new DateOnly(2026, 10, 9),
+            NoticePeriodDays = 0,
             Reason = "Employee requested release",
             Status = "Draft"
         };
@@ -51,13 +53,15 @@ public class EmployeeLifecycleRequestValidationTests
             ReleaseType = "Resignation",
             ResignationDate = new DateOnly(2026, 10, 10),
             LastWorkingDate = new DateOnly(2026, 10, 10),
+            NoticePeriodDays = 0,
             Reason = "     short     ",
             Status = "Draft"
         };
 
         var results = Validate(request);
 
-        Assert.Contains(results, result => result.ErrorMessage == "Reason must be at least 10 characters.");
+        Assert.Contains(results, result =>
+            result.ErrorMessage == "Provide either a Reason (at least 10 characters) or an Early Release Reason.");
     }
 
     [Theory]
@@ -155,7 +159,7 @@ public class EmployeeLifecycleRequestValidationTests
             Task.FromResult<PagedResult<EmployeeReleaseResponse>>(PagedResult<EmployeeReleaseResponse>.Create(Array.Empty<EmployeeReleaseResponse>(), page, pageSize));
 
         public Task<EmployeeReleaseResponse?> TransitionStatusAsync(
-            int releasedId, string status, string actorName, CancellationToken cancellationToken) =>
+            int releasedId, UpdateReleaseStatusRequest request, string actorName, CancellationToken cancellationToken) =>
             Task.FromResult<EmployeeReleaseResponse?>(null);
 
         public Task<EmployeeReleaseResponse?> UpdateClearanceAsync(

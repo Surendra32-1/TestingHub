@@ -48,7 +48,7 @@ export class RolePermissionMatrixComponent implements OnInit {
   }
 
   get canEdit(): boolean {
-    return this.auth.hasPermission('role-permissions.manage');
+    return this.auth.hasPermission('setting.gear.RolePermission');
   }
 
   ngOnInit(): void {
@@ -60,6 +60,10 @@ export class RolePermissionMatrixComponent implements OnInit {
   }
 
   toggle(permissionId: number, roleId: number, event: Event): void {
+    if (!this.canEdit || this.isSaving) {
+      return;
+    }
+
     const checked = (event.target as HTMLInputElement).checked;
     const set = this.selections.get(permissionId);
     if (!set) {
@@ -75,7 +79,7 @@ export class RolePermissionMatrixComponent implements OnInit {
   }
 
   save(): void {
-    if (this.isSaving || !this.hasPendingChanges) {
+    if (!this.canEdit || this.isSaving || !this.hasPendingChanges) {
       return;
     }
 

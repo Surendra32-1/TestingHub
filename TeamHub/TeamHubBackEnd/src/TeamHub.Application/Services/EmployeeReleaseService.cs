@@ -52,9 +52,10 @@ public sealed class EmployeeReleaseService(IEmployeeReleaseRepository repository
 
     public async Task<EmployeeReleaseResponse?> TransitionStatusAsync(
         int releasedId,
-        string newStatus,
+        UpdateReleaseStatusRequest request,
         CancellationToken cancellationToken)
     {
+        var newStatus = request.Status;
         var current = await repository.GetByIdAsync(releasedId, cancellationToken);
         if (current is null)
         {
@@ -70,7 +71,7 @@ public sealed class EmployeeReleaseService(IEmployeeReleaseRepository repository
                 "and experience letter must all be completed first.");
         }
 
-        return await repository.TransitionStatusAsync(releasedId, newStatus, ActorName, cancellationToken);
+        return await repository.TransitionStatusAsync(releasedId, request, ActorName, cancellationToken);
     }
 
     public Task<EmployeeReleaseResponse?> UpdateClearanceAsync(

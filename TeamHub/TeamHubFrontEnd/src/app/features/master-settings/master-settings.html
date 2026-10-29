@@ -2,8 +2,8 @@
 	<app-topbar />
 
 	<main class="settings-panel" *ngIf="config as master">
-		<div class="heading-row">
-			<h1 class="page-label">{{ master.title }}</h1>
+		<div class="page-header">
+			<h1 class="page-title">{{ master.title }}</h1>
 			<button class="back-button" type="button" (click)="goBack()">‹ Back</button>
 		</div>
 

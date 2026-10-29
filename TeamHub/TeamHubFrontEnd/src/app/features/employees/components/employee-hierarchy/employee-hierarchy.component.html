@@ -44,7 +44,10 @@
                 <app-hierarchy-node
                   *ngFor="let manager of visibleManagers(); trackBy: trackByEmployeeId"
                   [attr.data-node-id]="'employee-' + manager.employeeId"
+                  [employeeId]="manager.employeeId"
                   [person]="employeeNode(manager)"
+                  [selectable]="true"
+                  (selectEmployee)="selectEmployee($event)"
                 />
               </div>
             </section>
@@ -54,8 +57,11 @@
               <app-hierarchy-node
                 class="selected-node"
                 [attr.data-node-id]="'employee-' + data.selectedEmployee.employeeId"
+                [employeeId]="data.selectedEmployee.employeeId"
                 [person]="employeeNode(data.selectedEmployee)"
                 [selected]="true"
+                [selectable]="true"
+                (selectEmployee)="selectEmployee($event)"
               />
             </section>
 
@@ -70,7 +76,10 @@
                   <li class="report-node">
                     <app-hierarchy-node
                       [attr.data-node-id]="'employee-' + node.employeeId"
+                      [employeeId]="node.employeeId"
                       [person]="employeeNode(node)"
+                      [selectable]="true"
+                      (selectEmployee)="selectEmployee($event)"
                     />
                     <ul class="report-tree" *ngIf="node.reports.length > 0">
                       <ng-container *ngFor="let report of node.reports; trackBy: trackByEmployeeId">

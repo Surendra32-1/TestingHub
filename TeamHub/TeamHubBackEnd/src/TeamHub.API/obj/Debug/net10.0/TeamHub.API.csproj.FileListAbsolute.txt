@@ -535,3 +535,290 @@ E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.deps.json
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.runtimeconfig.json
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.dll
 E:\TeamHub\TeamHubBackEnd\.tmpbuild\TeamHub.API.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.Development.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\appsettings.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.exe
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.API.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Core.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Azure.Identity.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\BCrypt.Net-Next.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Dapper.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.AspNetCore.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\MediatR.Contracts.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Data.SqlClient.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.Identity.Client.Extensions.Msal.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.OpenApi.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Microsoft.SqlServer.Server.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\SixLabors.ImageSharp.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.ClientModel.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.IO.Hashing.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Memory.Data.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\cs\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\de\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\es\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\fr\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\it\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ja\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ko\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pl\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\pt-BR\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\ru\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\tr\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hans\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Application.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Auth.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Infrastructure.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Shared.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\bin\Debug\net10.0\TeamHub.Domain.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.AssemblyReference.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rpswa.dswa.cache.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.GeneratedMSBuildEditorConfig.editorconfig
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfoInputs.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.AssemblyInfo.cs
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.csproj.CoreCompileInputs.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cs
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.MvcApplicationPartsAssemblyInfo.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.sourcelink.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjimswa.dswa.cache.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\scopedcss\bundle\TeamHub.API.styles.css
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.json.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.development.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\swae.build.ex.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub..BF2B9330.Up2Date
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\refint\TeamHub.API.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\TeamHub.API.genruntimeconfig.cache
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\Debug\net10.0\ref\TeamHub.API.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\appsettings.Development.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\appsettings.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.API.staticwebassets.runtime.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.API.exe
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.API.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.API.runtimeconfig.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.API.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-verify-build\TeamHub.API.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\appsettings.Development.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\appsettings.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\TeamHub.API.staticwebassets.runtime.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\TeamHub.API.exe
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\TeamHub.API.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\TeamHub.API.runtimeconfig.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\TeamHub.API.dll
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubApiBuild\TeamHub.API.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\appsettings.Development.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\appsettings.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\bin\Debug\net10.0\appsettings.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\bin\Debug\net10.0\TeamHub.API.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.API.staticwebassets.runtime.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.API.exe
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.API.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.API.runtimeconfig.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.API.dll
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildDebug\net10.0\TeamHub.API.pdb
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\appsettings.Development.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\appsettings.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\bin\Debug\net10.0\appsettings.Development.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\bin\Debug\net10.0\appsettings.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.deps.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.API.exe
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.API.deps.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.API.runtimeconfig.json
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.API.dll
+E:\TEST\.tmp\TeamHubApiBuild\Debug\net10.0\TeamHub.API.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\appsettings.Development.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\appsettings.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.API.staticwebassets.runtime.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.API.exe
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.API.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.API.runtimeconfig.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.API.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-validation\TeamHub.API.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\appsettings.Development.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\appsettings.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.API.staticwebassets.runtime.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.API.exe
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.API.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.API.runtimeconfig.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.API.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-profile-skills-validation\TeamHub.API.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\appsettings.Development.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\appsettings.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.API.staticwebassets.runtime.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.API.staticwebassets.endpoints.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.API.exe
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.API.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.API.runtimeconfig.json
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.API.dll
+C:\Users\Dell Suren\AppData\Local\Temp\teamhub-gear-build\TeamHub.API.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\appsettings.Development.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\appsettings.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\bin\Debug\net10.0\appsettings.Development.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\bin\Debug\net10.0\appsettings.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.runtimeconfig.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\bin\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.API.staticwebassets.runtime.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.API.staticwebassets.endpoints.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.API.exe
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.API.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.API.runtimeconfig.json
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.API.dll
+E:\TEST\TeamHub\TeamHubBackEnd\_buildvalidation\Debug\net10.0\TeamHub.API.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\appsettings.Development.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\appsettings.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.API.staticwebassets.runtime.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.API.staticwebassets.endpoints.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.API.exe
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.API.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.API.runtimeconfig.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.API.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-int\TeamHub.API.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\appsettings.Development.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\appsettings.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.API.staticwebassets.runtime.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.API.staticwebassets.endpoints.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.API.exe
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.API.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.API.runtimeconfig.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.API.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild-check\TeamHub.API.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\appsettings.Development.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\appsettings.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.API.staticwebassets.runtime.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.API.staticwebassets.endpoints.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.API.exe
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.API.deps.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.API.runtimeconfig.json
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.API.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.API.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Azure.Core.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Azure.Identity.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\BCrypt.Net-Next.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Dapper.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\FluentValidation.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\FluentValidation.AspNetCore.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\FluentValidation.DependencyInjectionExtensions.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\MediatR.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\MediatR.Contracts.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.AspNetCore.OpenApi.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.Bcl.AsyncInterfaces.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.Bcl.Cryptography.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.Data.SqlClient.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.Identity.Client.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.Identity.Client.Extensions.Msal.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.IdentityModel.Abstractions.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.IdentityModel.JsonWebTokens.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.IdentityModel.Logging.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.IdentityModel.Protocols.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.IdentityModel.Tokens.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.OpenApi.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Microsoft.SqlServer.Server.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\SixLabors.ImageSharp.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Swashbuckle.AspNetCore.Swagger.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Swashbuckle.AspNetCore.SwaggerGen.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\Swashbuckle.AspNetCore.SwaggerUI.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\System.ClientModel.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\System.Configuration.ConfigurationManager.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\System.IdentityModel.Tokens.Jwt.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\System.IO.Hashing.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\System.Memory.Data.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\System.Security.Cryptography.ProtectedData.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\cs\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\de\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\es\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\fr\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\it\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\ja\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\ko\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\pl\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\pt-BR\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\ru\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\tr\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\zh-Hans\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\zh-Hant\Microsoft.Data.SqlClient.resources.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\runtimes\unix\lib\net9.0\Microsoft.Data.SqlClient.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\runtimes\win\lib\net9.0\Microsoft.Data.SqlClient.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Application.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Auth.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Infrastructure.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Shared.pdb
+E:\TEST\TeamHub\TeamHubBackEnd\src\TeamHub.API\obj\verify\TeamHub.Domain.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\appsettings.Development.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\appsettings.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.API.staticwebassets.runtime.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.API.staticwebassets.endpoints.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.API.exe
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.API.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.API.runtimeconfig.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.API.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.API.pdb
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\appsettings.Development.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\appsettings.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.staticwebassets.runtime.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.staticwebassets.endpoints.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.exe
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.deps.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.runtimeconfig.json
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.dll
+e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.pdb

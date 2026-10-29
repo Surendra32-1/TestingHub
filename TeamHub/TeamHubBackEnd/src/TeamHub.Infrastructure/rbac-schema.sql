@@ -119,12 +119,17 @@ BEGIN TRANSACTION;
 INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
 SELECT v.PermissionCode, v.PermissionName, v.Module, v.Description, 1, 'permission-seed', SYSUTCDATETIME()
 FROM (VALUES
+    ('profile.view',            N'View Own Profile',          N'Profile',      N'View the authenticated employee''s own employee record and related profile data.'),
+    ('profile.edit',            N'Edit Own Profile',          N'Profile',      N'Update the authenticated employee''s own permitted profile fields and profile picture.'),
     ('people.view',             N'View Employees',          N'People',       N'View the employee directory and profiles.'),
     ('people.create',           N'Add Employee',            N'People',       N'Create new employee records.'),
     ('people.update',           N'Update Employee',         N'People',       N'Edit existing employee records.'),
+    ('people.delete',           N'Delete Employee',         N'People',       N'Soft-delete employee records while retaining history.'),
+    ('people.cardview',         N'View Employee Cards',     N'People',       N'Open employee card views from the People module.'),
     ('people.release',          N'Release Employee',        N'People',       N'Release an employee from the organization.'),
     ('people.terminate',        N'Terminate Employee',      N'People',       N'Terminate an employee record.'),
     ('people.hierarchy.view',   N'View Hierarchy',          N'People',       N'View the organization hierarchy chart.'),
+    ('resignations.button',     N'Show Resignations Navigation', N'Resignations', N'Show the Resignations navigation button.'),
     ('resignations.view',       N'View Resignations',       N'Resignations', N'View resignation records.'),
     ('resignations.manage',     N'Manage Resignations',     N'Resignations', N'Create and update resignation records.'),
     ('resignations.add',                    N'File Resignation',        N'Resignations', N'File a self-service resignation (locked to the logged-in employee).'),
@@ -135,9 +140,15 @@ FROM (VALUES
     ('resignations.action.cancel',          N'Cancel Resignation',      N'Resignations', N'Cancel a resignation.'),
     ('resignations.action.exitchecklist',   N'Manage Exit Checklist',   N'Resignations', N'Update the resignation exit-clearance checklist.'),
     ('resignations.action.release',         N'Release Resignation',     N'Resignations', N'Move an approved, cleared resignation to Released.'),
+    ('resignations.search',            N'Search Resignations',            N'Resignations', N'Search resignation records.'),
+    ('resignations.search.status',     N'Search Resignations by Status',  N'Resignations', N'Filter resignation records by status.'),
+    ('resignations.search.department', N'Search Resignations by Department', N'Resignations', N'Filter resignation records by department.'),
     ('terminations.view',       N'View Terminations',       N'Terminations', N'View termination records.'),
     ('terminations.add',        N'Add Termination',         N'Terminations', N'File a new termination record for an employee.'),
     ('terminations.manage',     N'Manage Terminations',     N'Terminations', N'Update and transition termination records.'),
+    ('terminations.search',            N'Search Terminations',            N'Terminations', N'Search termination records.'),
+    ('terminations.search.status',     N'Search Terminations by Status',  N'Terminations', N'Filter termination records by status.'),
+    ('terminations.search.department', N'Search Terminations by Department', N'Terminations', N'Filter termination records by department.'),
     ('master.department',           N'Master: Department',          N'Settings',     N'Maintain the Department master data.'),
     ('master.designation',          N'Master: Designation',         N'Settings',     N'Maintain the Designation master data.'),
     ('master.business-unit',        N'Master: Business Unit',       N'Settings',     N'Maintain the Business Unit master data.'),
@@ -156,6 +167,10 @@ FROM (VALUES
     ('permissions.manage',      N'Manage Permissions',      N'RBAC',         N'Create and maintain permission definitions.'),
     ('user-roles.assign',       N'Assign User Roles',       N'RBAC',         N'Assign roles to employees in the matrix.'),
     ('role-permissions.manage', N'Manage Role Permissions', N'RBAC',         N'Grant permissions to roles in the matrix.')
+    ('role-permissions.manage', N'Manage Role Permissions', N'RBAC',         N'Grant permissions to roles in the matrix.'),
+    ('setting.gear', N'Show Settings Gear', N'Settings', N'Show the settings gear menu.'),
+    ('setting.gear.EmployeeRole', N'Open Employee Role Matrix', N'Settings',  N'Open the Employee Role Matrix from the settings gear menu.'),
+    ('setting.gear.RolePermission', N'Open Role Permission Matrix', N'Settings', N'Open the Role Permission Matrix from the settings gear menu.')
 ) v(PermissionCode, PermissionName, Module, Description)
 WHERE NOT EXISTS (
     SELECT 1 FROM dbo.Permissions p WHERE p.PermissionCode = v.PermissionCode

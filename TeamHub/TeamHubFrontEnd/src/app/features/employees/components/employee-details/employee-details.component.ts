@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } fro
 
 import { getApiErrorMessage } from '../../../../shared/services/api-error-message';
 import { ToastService } from '../../../../shared/services/toast.service';
-import { EmployeeDetails, EmployeeService } from '../../services/employee.service';
+import { EmployeeDetails, EmployeeService, PublicEmployeeDetails } from '../../services/employee.service';
 
 @Component({
   selector: 'app-employee-details',
@@ -14,9 +14,11 @@ import { EmployeeDetails, EmployeeService } from '../../services/employee.servic
 })
 export class EmployeeDetailsComponent implements OnInit {
   @Input({ required: true }) employeeId!: number;
+  @Input() readOnlyHome = false;
   @Output() back = new EventEmitter<void>();
 
   employee: EmployeeDetails | null = null;
+  publicEmployee: PublicEmployeeDetails | null = null;
   isLoading = true;
   errorMessage = '';
 
@@ -27,19 +29,33 @@ export class EmployeeDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.employeeService.getEmployeeDetails(this.employeeId).subscribe({
+    if (this.readOnlyHome) {
+      this.employeeService.getPublicEmployeeDetails(this.employeeId).subscribe({
+        next: ({ data }) => {
+          this.publicEmployee = data;
+          this.isLoading = false;
+          this.changeDetectorRef.markForCheck();
+        },
+        error: (error) => this.handleLoadError(error)
+      });
+      return;
+    }
+
+    this.employeeService.getActiveInactiveEmployeeDetails(this.employeeId).subscribe({
       next: ({ data }) => {
         this.employee = data;
         this.isLoading = false;
         this.changeDetectorRef.markForCheck();
       },
-      error: (error) => {
-        this.errorMessage = getApiErrorMessage(error, 'Could not load employee details.');
-        this.isLoading = false;
-        this.toastService.error(this.errorMessage);
-        this.changeDetectorRef.markForCheck();
-      }
+      error: (error) => this.handleLoadError(error)
     });
+  }
+
+  private handleLoadError(error: unknown): void {
+    this.errorMessage = getApiErrorMessage(error, 'Could not load employee details.');
+    this.isLoading = false;
+    this.toastService.error(this.errorMessage);
+    this.changeDetectorRef.markForCheck();
   }
 
   trackByAddressId(_index: number, address: EmployeeDetails['addresses'][number]): number {

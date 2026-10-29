@@ -450,14 +450,54 @@ GO
 ========================================================= */
 IF OBJECT_ID(N'dbo.RolePermissions', N'U') IS NOT NULL AND OBJECT_ID(N'dbo.Permissions', N'U') IS NOT NULL
 BEGIN
+    INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
+    SELECT 'resignations.button', N'Show Resignations Navigation', N'Resignations',
+           N'Show the Resignations navigation button.', 1, 'seed', SYSUTCDATETIME()
+    WHERE NOT EXISTS (
+        SELECT 1 FROM dbo.Permissions
+        WHERE PermissionCode = 'resignations.button'
+    );
+
+    INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
+    SELECT permissions.PermissionCode, permissions.PermissionName, N'Settings', permissions.Description, 1, 'seed', SYSUTCDATETIME()
+    FROM (VALUES
+        ('setting.gear', N'Show Settings Gear', N'Show the settings gear menu.'),
+        ('setting.gear.EmployeeRole', N'Open Employee Role Matrix', N'Open the Employee Role Matrix from the settings gear menu.'),
+        ('setting.gear.RolePermission', N'Open Role Permission Matrix', N'Open the Role Permission Matrix from the settings gear menu.')
+    ) permissions(PermissionCode, PermissionName, Description)
+    WHERE NOT EXISTS (
+        SELECT 1 FROM dbo.Permissions existing
+        WHERE existing.PermissionCode = permissions.PermissionCode
+    );
+
+    INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
+    SELECT permissions.PermissionCode, permissions.PermissionName, N'People', permissions.Description, 1, 'seed', SYSUTCDATETIME()
+    FROM (VALUES
+        ('people.delete', N'Delete Employee', N'Soft-delete employee records while retaining history.'),
+        ('people.cardview', N'View Employee Cards', N'Open employee card views from the People module.')
+    ) permissions(PermissionCode, PermissionName, Description)
+    WHERE NOT EXISTS (
+        SELECT 1 FROM dbo.Permissions existing
+        WHERE existing.PermissionCode = permissions.PermissionCode
+    );
+
     INSERT INTO dbo.RolePermissions (RoleId, PermissionId, CreatedBy, CreatedDate)
     SELECT r.RoleId, p.PermissionId, 'seed', SYSUTCDATETIME()
     FROM (VALUES
         -- NormalUser: a plain employee. "People" needs no code (authenticatedGuard only),
         -- so this single grant is what makes the "Apply Resignation" entry appear.
+        (N'NormalUser', N'profile.view'),
+        (N'NormalUser', N'profile.edit'),
+        (N'Admin', N'resignations.button'),
+        (N'Admin', N'resignations.view'),
         (N'NormalUser', N'resignations.add'),
 
         -- Manager: runs the resignation queue for their team (no termination writes).
+        (N'Admin', N'setting.gear'),
+        (N'Admin', N'setting.gear.EmployeeRole'),
+        (N'Admin', N'setting.gear.RolePermission'),
+
+        (N'Manager', N'resignations.button'),
         (N'Manager', N'resignations.view'),
         (N'Manager', N'resignations.add'),
         (N'Manager', N'resignations.action.submit'),
@@ -469,10 +509,17 @@ BEGIN
 
         -- HR: people master data + offboarding (the "Add Termination" capability) and the
         -- operational resignation steps; approval/rejection stay with the Manager.
+        (N'Manager', N'people.view'),
+        (N'HR', N'people.view'),
         (N'HR', N'people.create'),
         (N'HR', N'people.update'),
         (N'HR', N'people.release'),
+        (N'Admin', N'people.delete'),
+        (N'HR', N'people.delete'),
+        (N'Admin', N'people.cardview'),
+        (N'HR', N'people.cardview'),
         (N'HR', N'master.recruitment'),
+        (N'HR', N'resignations.button'),
         (N'HR', N'resignations.view'),
         (N'HR', N'resignations.add'),
         (N'HR', N'resignations.action.submit'),

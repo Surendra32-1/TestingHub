@@ -62,6 +62,8 @@ builder.Services.AddScoped<ICotivityDepartmentService, CotivityDepartmentService
 builder.Services.AddScoped<ICotivityDesignationService, CotivityDesignationService>();
 builder.Services.AddScoped<ICotivityEmployeeService, CotivityEmployeeService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IEmployeeSearchService, EmployeeSearchService>();
+builder.Services.AddScoped<IEmployeeProfileService, EmployeeProfileService>();
 builder.Services.AddScoped<IEmployeeReleaseService, EmployeeReleaseService>();
 builder.Services.AddScoped<IEmployeeTerminationService, EmployeeTerminationService>();
 builder.Services.AddMediatR(options =>

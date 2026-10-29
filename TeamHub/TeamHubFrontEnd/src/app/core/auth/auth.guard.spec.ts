@@ -13,7 +13,15 @@ import { Observable, isObservable, of, throwError } from 'rxjs';
 
 import { AuthResponse } from './auth.models';
 import { AuthService } from './auth.service';
-import { authenticatedGuard, masterGuard, rolePermissionMatrixGuard, signedInLandingGuard, terminationAddGuard } from './auth.guard';
+import {
+  anonymousHomeGuard,
+  authenticatedGuard,
+  masterGuard,
+  peopleViewGuard,
+  rolePermissionMatrixGuard,
+  signedInLandingGuard,
+  terminationAddGuard
+} from './auth.guard';
 
 const routeSnapshot = (params: Record<string, string> = {}): ActivatedRouteSnapshot =>
   ({ paramMap: convertToParamMap(params) }) as unknown as ActivatedRouteSnapshot;
@@ -66,7 +74,7 @@ describe('route guards', () => {
     authService.storeSession({ accessToken: 'token', expiresIn: 900, roles: ['HR'], permissions });
 
   it('lets a user through when the permission code is granted', () => {
-    signIn(['role-permissions.manage']);
+    signIn(['setting.gear.RolePermission']);
 
     expect(guardResult(() => rolePermissionMatrixGuard(routeSnapshot(), stateSnapshot('/settings/role-permission-matrix')))).toBe(true);
   });
@@ -83,7 +91,7 @@ describe('route guards', () => {
   });
 
   it('re-checks the session on every navigation, so a logout cannot leave a window open', () => {
-    signIn(['role-permissions.manage']);
+    signIn(['setting.gear.RolePermission']);
     expect(guardResult(() => rolePermissionMatrixGuard(routeSnapshot(), stateSnapshot('/settings/role-permission-matrix')))).toBe(true);
 
     authService.clearSession();
@@ -100,6 +108,22 @@ describe('route guards', () => {
     expect(result instanceof UrlTree).toBe(true);
     expect((result as UrlTree).toString()).toContain('/login');
     expect((result as UrlTree).toString()).toContain('returnUrl');
+  });
+
+  it('allows a signed-out visitor to remain on the public Home landing page', async () => {
+    const result = await resolveGuard(() => signedInLandingGuard(routeSnapshot(), stateSnapshot('/')));
+
+    expect(result).toBe(true);
+  });
+
+  it('requires people.view to open the employee management page', () => {
+    signIn(['people.view']);
+    expect(guardResult(() => peopleViewGuard(routeSnapshot(), stateSnapshot('/people')))).toBe(true);
+
+    signIn([]);
+    const result = guardResult(() => peopleViewGuard(routeSnapshot(), stateSnapshot('/people')));
+    expect(result instanceof UrlTree).toBe(true);
+    expect((result as UrlTree).toString()).toBe('/home');
   });
 
   it('restores an expired session before activating a guarded route', async () => {
@@ -137,12 +161,43 @@ describe('route guards', () => {
     )).toBe(true);
   });
 
-  it('sends a signed-in visitor from the landing page to the directory', () => {
-    signIn([]);
+  it('sends a signed-in visitor to the Employee page when they may open it', () => {
+    signIn(['allemployee.search.view', 'people.view']);
 
     const result = guardResult(() => signedInLandingGuard(routeSnapshot(), stateSnapshot('/')));
 
     expect(result instanceof UrlTree).toBe(true);
-    expect((result as UrlTree).toString()).toBe('/people');
+    expect((result as UrlTree).toString()).toBe('/employee');
+  });
+
+  it('falls back to People, then to Home, when the Employee page is not granted', () => {
+    signIn(['people.view']);
+    expect((guardResult(() => signedInLandingGuard(routeSnapshot(), stateSnapshot('/'))) as UrlTree).toString())
+      .toBe('/people');
+
+    signIn([]);
+    expect((guardResult(() => signedInLandingGuard(routeSnapshot(), stateSnapshot('/'))) as UrlTree).toString())
+      .toBe('/home');
+  });
+
+  it('keeps a signed-in account out of the public Home directory', () => {
+    signIn(['allemployee.search.view']);
+
+    const result = guardResult(() => anonymousHomeGuard(routeSnapshot(), stateSnapshot('/home')));
+
+    expect(result instanceof UrlTree).toBe(true);
+    expect((result as UrlTree).toString()).toBe('/employee');
+
+    authService.clearSession();
+    expect(guardResult(() => anonymousHomeGuard(routeSnapshot(), stateSnapshot('/home')))).toBe(true);
+  });
+
+  it('sends a denied People visit to the Employee page when that is the only page allowed', () => {
+    signIn(['allemployee.search.view']);
+
+    const result = guardResult(() => peopleViewGuard(routeSnapshot(), stateSnapshot('/people')));
+
+    expect(result instanceof UrlTree).toBe(true);
+    expect((result as UrlTree).toString()).toBe('/employee');
   });
 });

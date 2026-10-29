@@ -27,7 +27,7 @@ public class EmployeeRequestValidatorTests
             JobTypeId = 1,
             BloodGroupId = 1,
             GenderId = 1,
-            RoleId = 1,
+            RoleIds = [1],
             TeamId = 1
         };
 
@@ -65,7 +65,7 @@ public class EmployeeRequestValidatorTests
             JobTypeId = 1,
             BloodGroupId = 1,
             GenderId = 1,
-            RoleId = 1,
+            RoleIds = [1],
             TeamId = 1,
             DateOfBirth = DateOnly.FromDateTime(DateTime.Today)
         };
@@ -93,7 +93,7 @@ public class EmployeeRequestValidatorTests
             JobTypeId = 1,
             BloodGroupId = 1,
             GenderId = 1,
-            RoleId = 1,
+            RoleIds = [1],
             TeamId = 1
         };
 
@@ -124,7 +124,7 @@ public class EmployeeRequestValidatorTests
             JobTypeId = 1,
             BloodGroupId = 1,
             GenderId = 1,
-            RoleId = 1,
+            RoleIds = [1],
             TeamId = 1
         };
 

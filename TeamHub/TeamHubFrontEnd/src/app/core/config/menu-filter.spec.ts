@@ -97,7 +97,7 @@ describe('filterMenu', () => {
       {
         id: 'resignations',
         label: 'Resignations',
-        permission: 'resignations.view'
+        permission: 'resignations.button'
       },
       {
         id: 'apply',
@@ -108,8 +108,11 @@ describe('filterMenu', () => {
     ];
 
     expect(labels(filterMenu(tree, context(['resignations.add'])))).toEqual(['Apply Resignation']);
-    expect(labels(filterMenu(tree, context(['resignations.view'])))).toEqual(['Resignations']);
-    expect(labels(filterMenu(tree, context(['resignations.add', 'resignations.view'])))).toEqual(['Resignations']);
+    expect(labels(filterMenu(tree, context(['resignations.button'])))).toEqual(['Resignations']);
+    expect(labels(filterMenu(tree, context(['resignations.add', 'resignations.button']))))
+      .toEqual(['Resignations', 'Apply Resignation']);
+    expect(labels(filterMenu(tree, context(['resignations.add', 'resignations.button', 'resignations.view']))))
+      .toEqual(['Resignations']);
   });
 
   it('gates items on the session state, never on a role name', () => {
@@ -132,10 +135,9 @@ describe('filterMenu', () => {
   });
 
   it('filters the real application menu down to a single-module grant', () => {
-    const visible = filterMenu(APP_MENU, context(['master.department', 'user-roles.assign']));
+    const visible = filterMenu(APP_MENU, context(['people.view', 'master.department', 'setting.gear.EmployeeRole']));
 
-    expect(labels(visible)).toEqual(['People', 'Manage', 'Settings']);
+    expect(labels(visible)).toEqual(['People', 'Manage']);
     expect(labels(visible[1].children!)).toEqual(['Department']);
-    expect(labels(visible[2].children!)).toEqual(['Employee Role Matrix']);
   });
 });

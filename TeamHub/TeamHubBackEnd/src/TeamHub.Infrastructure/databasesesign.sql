@@ -385,6 +385,12 @@ END
 GO
 IF COL_LENGTH('dbo.Employees', 'JoinedDateBS') IS NULL
     ALTER TABLE dbo.Employees ADD JoinedDateBS VARCHAR(10) NULL;
+IF COL_LENGTH('dbo.Employees', 'IsDeleted') IS NULL
+    ALTER TABLE dbo.Employees ADD IsDeleted BIT NOT NULL CONSTRAINT DF_Employees_IsDeleted DEFAULT (0);
+IF COL_LENGTH('dbo.Employees', 'DeletedDate') IS NULL
+    ALTER TABLE dbo.Employees ADD DeletedDate DATETIME2 NULL;
+IF COL_LENGTH('dbo.Employees', 'DeletedBy') IS NULL
+    ALTER TABLE dbo.Employees ADD DeletedBy VARCHAR(100) NULL;
 IF COL_LENGTH('dbo.Employees', 'DateOfBirthBS') IS NULL
     ALTER TABLE dbo.Employees ADD DateOfBirthBS VARCHAR(10) NULL;
 IF COL_LENGTH('dbo.Employees', 'PhoneNumber') IS NULL

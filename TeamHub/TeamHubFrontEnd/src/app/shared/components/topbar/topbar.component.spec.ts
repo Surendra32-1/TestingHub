@@ -53,15 +53,89 @@ describe('TopbarComponent', () => {
 
   it('renders the signed-out entries and no management shortcuts', () => {
     expect(itemLabels()).toEqual(['Home', 'Login']);
-    expect(host().querySelector('.sign-out')).toBeNull();
+    expect(host().querySelector('.profile-trigger')).toBeNull();
   });
 
   it('renders only the entries the signed-in permissions allow', () => {
-    signIn(['master.department', 'user-roles.assign']);
+    signIn(['people.view', 'master.department', 'user-roles.assign']);
     fixture.detectChanges();
 
-    expect(itemLabels()).toEqual(['People', 'Manage', 'Settings']);
-    expect(host().querySelector('.sign-out')).not.toBeNull();
+    expect(itemLabels()).toEqual(['People', 'Manage']);
+    expect(host().querySelector('.profile-trigger')).not.toBeNull();
+  });
+
+  it('shows only permitted matrix links in the gear dropdown', () => {
+    signIn(['setting.gear', 'setting.gear.EmployeeRole', 'setting.gear.RolePermission']);
+    fixture.detectChanges();
+
+    host().querySelector<HTMLButtonElement>('.settings-trigger')!.click();
+    fixture.detectChanges();
+
+    const dropdown = host().querySelector('.settings-dropdown');
+    expect(dropdown?.textContent).toContain('Employee Role');
+    expect(dropdown?.textContent).toContain('Role Permission');
+    expect(dropdown?.textContent).not.toContain('Matrix');
+  });
+
+  it('shows the gear only when the setting.gear permission is granted', () => {
+    signIn(['setting.gear.EmployeeRole']);
+    fixture.detectChanges();
+    expect(host().querySelector('.settings-trigger')).toBeNull();
+
+    signIn(['setting.gear']);
+    fixture.detectChanges();
+    expect(host().querySelector('.settings-trigger')).not.toBeNull();
+  });
+
+  it('navigates to the employee role matrix from the gear menu', async () => {
+    signIn(['setting.gear', 'setting.gear.EmployeeRole']);
+    fixture.detectChanges();
+
+    host().querySelector<HTMLButtonElement>('.settings-trigger')!.click();
+    fixture.detectChanges();
+    host().querySelector<HTMLButtonElement>('.settings-dropdown button')!.click();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/settings/employee-role-matrix');
+  });
+
+  it('navigates to the role permission matrix from the gear menu', async () => {
+    signIn(['setting.gear', 'setting.gear.RolePermission']);
+    fixture.detectChanges();
+
+    host().querySelector<HTMLButtonElement>('.settings-trigger')!.click();
+    fixture.detectChanges();
+    host().querySelector<HTMLButtonElement>('.settings-dropdown button')!.click();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/settings/role-permission-matrix');
+  });
+
+  it('opens the profile menu and closes it when clicking outside', () => {
+    signIn(['master.department', 'profile.view', 'profile.edit']);
+    fixture.detectChanges();
+
+    host().querySelector<HTMLButtonElement>('.profile-trigger')!.click();
+    fixture.detectChanges();
+    expect(host().querySelector('.profile-dropdown')?.textContent).toContain('Update Profile');
+    expect(host().querySelector('.profile-dropdown')?.textContent).not.toContain('View Profile');
+    expect(host().querySelector('.profile-dropdown')?.textContent).toContain('Logout');
+
+    document.body.click();
+    fixture.detectChanges();
+    expect(host().querySelector('.profile-dropdown')).toBeNull();
+  });
+
+  it('allows users with profile.edit to open the self-service editor', async () => {
+    signIn(['profile.edit']);
+    fixture.detectChanges();
+
+    host().querySelector<HTMLButtonElement>('.profile-trigger')!.click();
+    fixture.detectChanges();
+    host().querySelector<HTMLButtonElement>('.profile-dropdown button')!.click();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/profile/edit');
   });
 
   it('removes every protected entry when the user signs out', async () => {
@@ -69,7 +143,9 @@ describe('TopbarComponent', () => {
     fixture.detectChanges();
     expect(itemLabels()).toContain('Manage');
 
-    host().querySelector<HTMLButtonElement>('.sign-out')!.click();
+    host().querySelector<HTMLButtonElement>('.profile-trigger')!.click();
+    fixture.detectChanges();
+    host().querySelector<HTMLButtonElement>('.profile-dropdown button')!.click();
     await fixture.whenStable();
     await new Promise<void>((resolve) => setTimeout(resolve, 0));
     fixture.detectChanges();
@@ -79,13 +155,15 @@ describe('TopbarComponent', () => {
   });
 
   it('re-renders the navigation when another account takes over the session', () => {
-    signIn(['user-roles.assign']);
+    signIn(['people.view', 'setting.gear', 'setting.gear.EmployeeRole']);
     fixture.detectChanges();
-    expect(itemLabels()).toEqual(['People', 'Settings']);
+    expect(itemLabels()).toEqual(['People']);
+    expect(host().querySelector('.settings-trigger')).not.toBeNull();
 
-    signIn(['terminations.view']);
+    signIn(['people.view', 'terminations.view']);
     fixture.detectChanges();
 
     expect(itemLabels()).toEqual(['People', 'Terminations']);
+    expect(host().querySelector('.settings-trigger')).toBeNull();
   });
 });

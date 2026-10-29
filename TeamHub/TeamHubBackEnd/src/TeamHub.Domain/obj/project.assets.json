@@ -13,14 +13,14 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj",
+      "projectUniqueName": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj",
       "projectName": "TeamHub.Domain",
-      "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj",
+      "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj",
       "packagesPath": "C:\\Users\\Dell Suren\\.nuget\\packages\\",
-      "outputPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\obj\\",
+      "outputPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "E:\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
+        "E:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
         "C:\\Users\\Dell Suren\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"

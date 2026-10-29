@@ -1,17 +1,26 @@
 <div class="page-shell">
   <app-topbar />
   <main class="directory-panel">
-    <div class="heading-row">
-      <h1 class="page-label">{{ employeeId === null ? 'Add Employee' : 'Update Employee' }}</h1>
+    <header class="page-header">
+      <h1 class="page-title">{{ isProfileMode ? 'Update Profile' : employeeId === null ? 'Add Employee' : 'Update Employee' }}</h1>
       <button class="back-button" type="button" (click)="goBack()">‹ Back</button>
-    </div>
+    </header>
+
+    @if (isProfileMode) {
+      <p class="profile-edit-guidance">
+        Editable: profile photo, alternate email, blood group, mobile and emergency contact numbers, mother and spouse
+        names, location coordinates, skills, and dress sizes. Other details and roles are read-only.
+      </p>
+    }
 
     <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
       <section class="image-upload" aria-label="Employee profile image">
-        <img *ngIf="imageBase64 || currentImageBase64" class="image-preview" [src]="imageBase64 || currentImageBase64" alt="Employee profile preview">
+        <img *ngIf="imageBase64 || currentImageBase64 || isProfileMode" class="image-preview"
+          [src]="imageBase64 || currentImageBase64 || 'assets/default-avatar.svg'" alt="Employee profile preview">
         <div class="image-upload-controls">
           <label for="employeeImage">Profile image</label>
-          <input #imageInput id="employeeImage" type="file" accept="image/jpeg,image/png,image/gif" (change)="onImageSelected($event)">
+          <input #imageInput id="employeeImage" type="file" accept="image/jpeg,image/png,image/gif"
+            [disabled]="isSubmitting || isReadingImage" (change)="onImageSelected($event)">
           <span class="image-help" *ngIf="isReadingImage">Preparing image...</span>
           <span class="image-help" *ngIf="!isReadingImage && imageFileName">{{ imageFileName }}</span>
           <span class="image-help" *ngIf="!isReadingImage && !imageFileName">JPEG, PNG, or GIF up to 5 MB</span>
@@ -228,6 +237,18 @@
             <input id="state" type="text" maxlength="100" formControlName="state" (input)="normalizeNullInput($event, 'state')" (blur)="showFieldError('state')">
           </div>
         </div>
+        @if (isProfileMode) {
+          <div class="row">
+            <div class="field">
+              <label for="latitude">Latitude</label>
+              <input id="latitude" type="number" step="any" formControlName="latitude" (blur)="showFieldError('latitude')">
+            </div>
+            <div class="field">
+              <label for="longitude">Longitude</label>
+              <input id="longitude" type="number" step="any" formControlName="longitude" (blur)="showFieldError('longitude')">
+            </div>
+          </div>
+        }
       </section>
 
       <section class="form-section team-section">
@@ -267,7 +288,7 @@
             <div id="roleIds" class="selection-list" role="group" aria-label="Employee roles">
               @for(item of roles; track item.roleId){
                 <label class="selection-row selection-label">
-                  <input type="checkbox" [checked]="isRoleSelected(item.roleId)" (change)="toggleRole(item.roleId, $event)">
+                  <input type="checkbox" [checked]="isRoleSelected(item.roleId)" [disabled]="isProfileMode" (change)="toggleRole(item.roleId, $event)">
                   <span>{{ item.roleName }}</span>
                 </label>
               }
@@ -329,7 +350,7 @@
         </div>
       </section>
 
-      <section class="form-section account-section" *ngIf="employeeId === null">
+      <section class="form-section account-section" *ngIf="employeeId === null && !isProfileMode">
         <h2>Login Account</h2>
         <div class="row">
           <label class="active-field" for="createLoginAccount">
@@ -354,8 +375,8 @@
         </div>
       </section>
 
-      <button type="submit" [disabled]="isSubmitting || isReadingImage">
-        {{ isReadingImage ? 'Preparing Image...' : isSubmitting ? 'Saving...' : employeeId === null ? 'Create Employee' : 'Update Employee' }}
+      <button class="primary-button" type="submit" [disabled]="isSubmitting || isReadingImage || (isProfileMode && (!profileHasChanges || employeeForm.invalid))">
+        {{ isReadingImage ? 'Preparing Image...' : isSubmitting ? 'Saving...' : 'Save' }}
       </button>
     </form>
   </main>

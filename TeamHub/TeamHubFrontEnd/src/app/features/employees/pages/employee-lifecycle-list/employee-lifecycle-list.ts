@@ -61,6 +61,18 @@ export class EmployeeLifecycleListComponent implements OnInit {
     return this.can('resignations.add');
   }
 
+  get canSearch(): boolean {
+    return this.can(this.isResignation ? 'resignations.search' : 'terminations.search');
+  }
+
+  get canFilterByStatus(): boolean {
+    return this.can(this.isResignation ? 'resignations.search.status' : 'terminations.search.status');
+  }
+
+  get canFilterByDepartment(): boolean {
+    return this.can(this.isResignation ? 'resignations.search.department' : 'terminations.search.department');
+  }
+
   get canManageClearance(): boolean {
     return this.can('resignations.action.exitchecklist');
   }

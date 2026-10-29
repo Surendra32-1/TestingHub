@@ -5,7 +5,7 @@ import { EmployeeAddFormComponent } from  './features/employees/pages/employee-a
 import { EmployeeLifecycleFormComponent } from './features/employees/pages/employee-lifecycle-form/employee-lifecycle-form';
 import { EmployeeLifecycleListComponent } from './features/employees/pages/employee-lifecycle-list/employee-lifecycle-list';
 import { MasterSettings } from './features/master-settings/master-settings';
-import { authGuard, authenticatedGuard, employeeRoleMatrixGuard, masterGuard, peopleCreateGuard, peopleReleaseGuard, peopleUpdateGuard, resignationAddGuard, resignationViewGuard, rolePermissionMatrixGuard, signedInLandingGuard, terminationAddGuard, terminationViewGuard } from './core/auth/auth.guard';
+import { authGuard, allemployeeSearchViewGuard, anonymousHomeGuard, authenticatedGuard, employeeRoleMatrixGuard, masterGuard, peopleCreateGuard, peopleReleaseGuard, peopleUpdateGuard, peopleViewGuard, profileEditGuard, resignationAddGuard, resignationViewGuard, rolePermissionMatrixGuard, signedInLandingGuard, terminationAddGuard, terminationViewGuard } from './core/auth/auth.guard';
 import { LoginComponent } from './features/auth/login/login.component';
 
 
@@ -26,15 +26,30 @@ export const routes: Routes = [
   },
   {
     path: 'people',
-    component: EmployeeDirectoryComponent,
-    canActivate: [authenticatedGuard],
+    loadComponent: () => import('./features/employees/pages/employee-management/employee-management.component')
+      .then((m) => m.EmployeeManagementComponent),
+    canActivate: [authenticatedGuard, peopleViewGuard],
     data: { layout: 'table' },
     title: 'Employees | TeamHub'
   },
   {
+    path: 'employee',
+    loadComponent: () => import('./features/employees/pages/employee-search/employee-search.component')
+      .then((m) => m.EmployeeSearchComponent),
+    canActivate: [authGuard, allemployeeSearchViewGuard],
+    title: 'Employee | TeamHub'
+  },
+  {
+    path: 'profile/edit',
+    component: EmployeeAddFormComponent,
+    canActivate: [authGuard, profileEditGuard],
+    data: { mode: 'profile' },
+    title: 'Update Profile | TeamHub'
+  },
+  {
     path: 'home',
     component: EmployeeDirectoryComponent,
-    canActivate: [signedInLandingGuard],
+    canActivate: [anonymousHomeGuard],
     data: { readOnlyHome: true },
     title: 'Home | TeamHub'
   },
@@ -104,14 +119,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/rbac/employee-role-matrix/employee-role-matrix.component')
       .then((m) => m.EmployeeRoleMatrixComponent),
     canActivate: [authGuard, employeeRoleMatrixGuard],
-    title: 'Employee Role Matrix | TeamHub'
+    title: 'Employee Role | TeamHub'
   },
   {
     path: 'settings/role-permission-matrix',
     loadComponent: () => import('./features/rbac/role-permission-matrix/role-permission-matrix.component')
       .then((m) => m.RolePermissionMatrixComponent),
     canActivate: [authGuard, rolePermissionMatrixGuard],
-    title: 'Role Permission Matrix | TeamHub'
+    title: 'Role Permission | TeamHub'
   },
 
   {

@@ -1,7 +1,6 @@
 <div class="menu-level" [class.menu-level--root]="level() === 0" [class.menu-level--submenu]="level() > 0">
   @for (item of items(); track item.id) {
     @if (item.children && item.children.length > 0) {
-      <!-- Group: the label toggles a panel rendered by another instance of this component. -->
       <div
         class="menu-branch"
         [class.menu-branch--root]="level() === 0"
@@ -16,7 +15,6 @@
         </div>
       </div>
     } @else {
-      <!-- Leaf: real router navigation, never a component dynamically built from the JSON. -->
       <a
         class="nav-item"
         [class.menu-row]="level() > 0"

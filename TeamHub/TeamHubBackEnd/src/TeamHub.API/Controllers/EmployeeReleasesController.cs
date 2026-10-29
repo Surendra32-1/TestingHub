@@ -186,7 +186,7 @@ public sealed class EmployeeReleasesController(
                 HttpContext.Request.Path));
         }
 
-        var record = await service.TransitionStatusAsync(releasedId, request.Status, cancellationToken);
+        var record = await service.TransitionStatusAsync(releasedId, request, cancellationToken);
         return record is null
             ? NotFound(ApiProblemDetailsFactory.NotFound(
                 "Release record not found",

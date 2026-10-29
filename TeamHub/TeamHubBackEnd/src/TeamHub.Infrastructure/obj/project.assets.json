@@ -1734,14 +1734,14 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\TeamHub.Infrastructure.csproj",
+      "projectUniqueName": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\TeamHub.Infrastructure.csproj",
       "projectName": "TeamHub.Infrastructure",
-      "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\TeamHub.Infrastructure.csproj",
+      "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\TeamHub.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\Dell Suren\\.nuget\\packages\\",
-      "outputPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\obj\\",
+      "outputPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "E:\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
+        "e:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
         "C:\\Users\\Dell Suren\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -1758,11 +1758,11 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj": {
-              "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj"
+            "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj": {
+              "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj"
             },
-            "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj": {
-              "projectPath": "E:\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj"
+            "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj": {
+              "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj"
             }
           }
         }

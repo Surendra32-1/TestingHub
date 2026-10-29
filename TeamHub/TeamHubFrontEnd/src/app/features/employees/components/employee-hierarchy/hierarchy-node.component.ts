@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { HierarchyNodeView } from './models';
 
 @Component({
@@ -7,7 +7,15 @@ import { HierarchyNodeView } from './models';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <article class="node-card" [class.highlighted]="selected()">
+    <article
+      class="node-card"
+      [class.highlighted]="selected()"
+      [class.clickable]="selectable()"
+      [attr.role]="selectable() ? 'button' : null"
+      [attr.tabindex]="selectable() ? 0 : null"
+      (click)="select()"
+      (keydown.enter)="selectWithKeyboard($event)"
+      (keydown.space)="selectWithKeyboard($event)">
       <div class="avatar">
         <img *ngIf="person().imageUrl; else initialsTemplate" [src]="person().imageUrl" [alt]="person().name">
         <ng-template #initialsTemplate>
@@ -47,6 +55,9 @@ import { HierarchyNodeView } from './models';
       background: linear-gradient(135deg, #fff 35%, #f5f8ff);
       box-shadow: 0 5px 16px rgb(66 99 235 / 14%);
     }
+    .node-card.clickable { cursor: pointer; transition: border-color 120ms ease, background-color 120ms ease; }
+    .node-card.clickable:not(.highlighted):hover { border-color: #8da2c2; background-color: #f8faff; }
+    .node-card.clickable:focus-visible { outline: 2px solid #4263eb; outline-offset: 2px; }
     .avatar {
       display: grid;
       width: 40px;
@@ -79,8 +90,23 @@ import { HierarchyNodeView } from './models';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HierarchyNodeComponent {
+  readonly employeeId = input<number | null>(null);
   readonly person = input.required<HierarchyNodeView>();
   readonly selected = input(false);
+  readonly selectable = input(false);
+  readonly selectEmployee = output<number>();
+
+  select(): void {
+    const employeeId = this.employeeId();
+    if (this.selectable() && employeeId !== null) {
+      this.selectEmployee.emit(employeeId);
+    }
+  }
+
+  selectWithKeyboard(event: Event): void {
+    event.preventDefault();
+    this.select();
+  }
 
   initials(): string {
     return this.person()

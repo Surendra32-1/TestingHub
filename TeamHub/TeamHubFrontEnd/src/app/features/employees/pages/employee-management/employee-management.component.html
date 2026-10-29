@@ -1,0 +1,91 @@
+<div class="page-shell">
+  <app-topbar />
+
+  <main class="management-panel">
+    <header class="page-header" *ngIf="activeView === 'directory'">
+      <h1 class="page-title">Employees</h1>
+      <button *ngIf="canAddEmployee" class="add-btn" type="button" routerLink="/employees/add">
+        <span aria-hidden="true">+</span>
+        Add Employee
+      </button>
+    </header>
+
+    <form class="filter-row" *ngIf="activeView === 'directory'" (ngSubmit)="applyFilters()">
+      <label class="search-box">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          type="search"
+          name="searchTerm"
+          placeholder="Search Employee"
+          aria-label="Search employees"
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchInput($event)"
+        />
+      </label>
+
+      <label class="select-label">
+        <span class="visually-hidden">Department</span>
+        <select name="department" aria-label="Filter by department" [ngModel]="selectedDepartmentId" (ngModelChange)="onDepartmentChange($event)">
+          <option [ngValue]="null">All Departments</option>
+          <option *ngFor="let department of departments" [ngValue]="department.departmentId">
+            {{ department.departmentName }}
+          </option>
+        </select>
+      </label>
+
+      <label class="select-label">
+        <span class="visually-hidden">Employment status</span>
+        <select name="status" aria-label="Filter by employment status" [ngModel]="selectedStatus" (ngModelChange)="onStatusChange($event)">
+          <option value="all">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </label>
+
+      <button class="clear-btn" type="button" (click)="clearFilters()">Clear</button>
+    </form>
+
+    <p *ngIf="errorMessage && activeView === 'directory'" class="error-state" role="alert">{{ errorMessage }}</p>
+
+    <app-directory-view
+      *ngIf="activeView === 'directory'"
+      [employees]="employees"
+      [tableLayout]="true"
+      [managementLayout]="true"
+      [canEditEmployee]="canEditEmployee"
+      [canDeleteEmployee]="canDeleteEmployee"
+      [canViewCard]="canViewEmployeeCard"
+      [canViewEmployeeDetails]="canViewEmployeeCard"
+      [canViewHierarchy]="canViewHierarchy"
+      [canReleaseEmployee]="canReleaseEmployee"
+      [canTerminateEmployee]="canTerminateEmployee"
+      [showAddButton]="false"
+      [showControls]="false"
+      [isLoading]="isLoading"
+      [pageNumber]="pageNumber"
+      [pageSize]="pageSize"
+      [totalCount]="totalCount"
+      [resultsLabel]="resultsLabel"
+      (pageChange)="changePage($event)"
+      (pageSizeChange)="changePageSize($event)"
+      (editEmployee)="editEmployee($event)"
+      (deleteEmployee)="deleteEmployee($event)"
+      (releaseEmployee)="releaseEmployee($event)"
+      (terminateEmployee)="terminateEmployee($event)"
+      (viewEmployeeHierarchy)="showEmployeeHierarchy($event)"
+      (viewEmployeeDirectHierarchy)="showEmployeeHierarchy($event, true)"
+      (viewEmployeeDetails)="showEmployeeDetails($event)"
+    />
+    <app-employee-hierarchy
+      *ngIf="activeView === 'hierarchy' && hierarchyEmployeeId !== null"
+      [employeeId]="hierarchyEmployeeId"
+      [directOnly]="hierarchyDirect"
+      (back)="returnToDirectory()"
+    />
+    <app-employee-details
+      *ngIf="activeView === 'details' && selectedEmployeeId !== null"
+      [employeeId]="selectedEmployeeId"
+      (back)="returnToDirectory()"
+    />
+  </main>
+</div>

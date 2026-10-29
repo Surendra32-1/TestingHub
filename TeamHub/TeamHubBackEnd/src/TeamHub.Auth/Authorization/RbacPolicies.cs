@@ -5,10 +5,19 @@ public static class RbacPolicies
     public const string ManagePermissions = "rbac:permissions.manage";
     public const string AssignUserRoles = "rbac:user-roles.assign";
     public const string ManageRolePermissions = "rbac:role-permissions.manage";
+    public const string SettingsGearEmployeeRole = "setting.gear.EmployeeRole";
+    public const string SettingsGearRolePermission = "setting.gear.RolePermission";
 
     public const string PeopleCreate = "people.create";
     public const string PeopleUpdate = "people.update";
     public const string PeopleRelease = "people.release";
+    public const string PeopleView = "people.view";
+    public const string PeopleDelete = "people.delete";
+    public const string PeopleCardView = "people.cardview";
+    public const string AllemployeeSearchView = "allemployee.search.view";
+    public const string ProfileView = "profile.view";
+    public const string ProfileEdit = "profile.edit";
+    public const string ProfileViewOrEdit = "profile.view-or-edit";
 
     public const string TerminationView = "terminations.view";
     public const string TerminationAdd = "terminations.add";
@@ -43,11 +52,17 @@ public static class RbacPolicies
     public static readonly IReadOnlyDictionary<string, string> PolicyPermissions = new Dictionary<string, string>
     {
         [ManagePermissions] = "permissions.manage",
-        [AssignUserRoles] = "user-roles.assign",
-        [ManageRolePermissions] = "role-permissions.manage",
+        [AssignUserRoles] = SettingsGearEmployeeRole,
+        [ManageRolePermissions] = SettingsGearRolePermission,
         [PeopleCreate] = "people.create",
         [PeopleUpdate] = "people.update",
         [PeopleRelease] = "people.release",
+        [PeopleView] = "people.view",
+        [PeopleDelete] = "people.delete",
+        [PeopleCardView] = "people.cardview",
+        [AllemployeeSearchView] = "allemployee.search.view",
+        [ProfileView] = "profile.view",
+        [ProfileEdit] = "profile.edit",
         [TerminationView] = "terminations.view",
         [TerminationAdd] = "terminations.add",
         [TerminationManage] = "terminations.manage",

@@ -12,6 +12,7 @@ import {
   effect,
   inject,
   input,
+  model,
   output,
   signal
 } from '@angular/core';
@@ -41,8 +42,9 @@ import { environment } from '../../../../../environments/environment';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmployeeHierarchyComponent implements AfterViewInit {
-  readonly employeeId = input.required<number>();
+  readonly employeeId = model.required<number>();
   readonly directOnly = input(false);
+  readonly publicDirectory = input(false);
   readonly back = output<void>();
   readonly hierarchy = signal<EmployeeHierarchyResponse | null>(null);
   readonly isLoading = signal(false);
@@ -84,7 +86,7 @@ export class EmployeeHierarchyComponent implements AfterViewInit {
       this.errorMessage.set(null);
       this.isLoading.set(true);
 
-      const request: Subscription = this.hierarchyService.getHierarchy(employeeId).subscribe({
+      const request: Subscription = this.hierarchyService.getHierarchy(employeeId, this.publicDirectory()).subscribe({
         next: (hierarchy) => {
           this.hierarchy.set(hierarchy);
           this.isLoading.set(false);
@@ -132,6 +134,12 @@ export class EmployeeHierarchyComponent implements AfterViewInit {
 
   trackByNodeId(_: number, node: HierarchyNodeView): string {
     return node.id;
+  }
+
+  selectEmployee(employeeId: number): void {
+    if (employeeId !== this.employeeId()) {
+      this.employeeId.set(employeeId);
+    }
   }
 
   trackByConnectorId(_: number, connector: HierarchyConnectorPath): string {

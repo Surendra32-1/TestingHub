@@ -89,7 +89,7 @@ public sealed class CotivityEmployeeRepository(IDbConnectionFactory connectionFa
 
     public async Task<bool> UpdateAsync(CotivityEmployee employee, CancellationToken cancellationToken = default)
     {
-        const string sql =@"
+        const string sql = """
             UPDATE CotivityEmployees
             SET CotivityEmployeeName = @CotivityEmployeeName,
                 CotivityDepartmentId = @CotivityDepartmentId,
@@ -99,17 +99,20 @@ public sealed class CotivityEmployeeRepository(IDbConnectionFactory connectionFa
                 LastModifiedDate = @LastModifiedDate,
                 LastModifiedBy = @LastModifiedBy
             WHERE CotivityEmployeeId = @CotivityEmployeeId;
-            ";
+            IF @IsActive = 0
+                UPDATE Employees SET CotivityEmployeeId = NULL WHERE CotivityEmployeeId = @CotivityEmployeeId;
+            """;
         using var connection = connectionFactory.CreateConnection();
         return await connection.ExecuteAsync(new CommandDefinition(sql, employee, cancellationToken: cancellationToken)) > 0;
     }
 
     public async Task<bool> DeleteAsync(int cotivityEmployeeId, CancellationToken cancellationToken = default)
     {
-        const string sql =@"
+        const string sql = """
             UPDATE CotivityEmployees SET IsActive = 0
             WHERE CotivityEmployeeId = @CotivityEmployeeId;
-            ";
+            UPDATE Employees SET CotivityEmployeeId = NULL WHERE CotivityEmployeeId = @CotivityEmployeeId;
+            """;
         using var connection = connectionFactory.CreateConnection();
         return await connection.ExecuteAsync(new CommandDefinition(sql, new { CotivityEmployeeId = cotivityEmployeeId }, cancellationToken: cancellationToken)) > 0;
     }

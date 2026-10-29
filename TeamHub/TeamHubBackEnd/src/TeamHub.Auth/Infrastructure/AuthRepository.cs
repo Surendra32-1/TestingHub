@@ -12,7 +12,8 @@ internal sealed class AuthRepository(IDbConnectionFactory connectionFactory) : I
         using var connection = connectionFactory.CreateConnection();
         const string sql = """
             SELECT u.UserId, u.EmployeeId, u.Username, u.Email,
-                   u.IsActive, e.IsActive AS IsEmployeeActive, e.DepartmentId, e.DesignationId
+                   u.IsActive, CASE WHEN e.IsActive = 1 AND e.IsDeleted = 0 THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsEmployeeActive,
+                   e.DepartmentId, e.DesignationId
             FROM dbo.Users u
             INNER JOIN dbo.Employees e ON e.EmployeeId = u.EmployeeId
             WHERE u.UserId = @UserId;
@@ -27,7 +28,8 @@ internal sealed class AuthRepository(IDbConnectionFactory connectionFactory) : I
         using var connection = connectionFactory.CreateConnection();
         const string sql = """
             SELECT u.UserId, u.EmployeeId, u.Username, u.Email,
-                   u.IsActive, e.IsActive AS IsEmployeeActive, e.DepartmentId, e.DesignationId
+                   u.IsActive, CASE WHEN e.IsActive = 1 AND e.IsDeleted = 0 THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsEmployeeActive,
+                   e.DepartmentId, e.DesignationId
             FROM dbo.Users u
             INNER JOIN dbo.Employees e ON e.EmployeeId = u.EmployeeId
             WHERE u.EntraTenantId = @TenantId AND u.EntraObjectId = @ObjectId;
@@ -52,7 +54,7 @@ internal sealed class AuthRepository(IDbConnectionFactory connectionFactory) : I
                    CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName) AS DisplayName
             FROM dbo.Users u
             INNER JOIN dbo.Employees e ON e.EmployeeId = u.EmployeeId
-            WHERE u.IsActive = 1 AND e.IsActive = 1
+            WHERE u.IsActive = 1 AND e.IsActive = 1 AND e.IsDeleted = 0
             ORDER BY u.Username;
             """;
         var rows = (await connection.QueryAsync<DevSignInRow>(
@@ -143,7 +145,8 @@ internal sealed class AuthRepository(IDbConnectionFactory connectionFactory) : I
         const string sql = """
             SELECT rt.RefreshTokenId, rt.UserId, rt.Token AS TokenHash, rt.ExpiryDate,
                    rt.RevokedDate, rt.LoginHistoryId, u.Username, u.Email, u.IsActive,
-                   e.IsActive AS IsEmployeeActive, u.EmployeeId, e.DepartmentId, e.DesignationId
+                   CASE WHEN e.IsActive = 1 AND e.IsDeleted = 0 THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsEmployeeActive,
+                   u.EmployeeId, e.DepartmentId, e.DesignationId
             FROM dbo.RefreshTokens rt
             INNER JOIN dbo.Users u ON u.UserId = rt.UserId
             INNER JOIN dbo.Employees e ON e.EmployeeId = u.EmployeeId

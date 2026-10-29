@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIf } from '@angular/common';
 
@@ -12,5 +12,8 @@ import { NgIf } from '@angular/common';
 export class ResultsHeaderComponent {
   @Input() isLoading = false;
   @Input() count = 0;
+  @Input() label = 'All Employees';
+  @Input() filterLabel: string | null = null;
   @Input() showAddButton = true;
+  @Output() clearFilter = new EventEmitter<void>();
 }

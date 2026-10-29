@@ -14,7 +14,8 @@ public interface IEmployeeReleaseRepository
     Task<EmployeeReleaseResponse?> CreateAsync(int employeeId, EmployeeReleaseRequest request, string actorName, CancellationToken cancellationToken);
     Task<bool> UpdateAsync(int releasedId, EmployeeReleaseRequest request, string actorName, CancellationToken cancellationToken);
 
-    Task<EmployeeReleaseResponse?> TransitionStatusAsync(int releasedId, string status, string actorName, CancellationToken cancellationToken);
+    Task<EmployeeReleaseResponse?> TransitionStatusAsync(
+        int releasedId, UpdateReleaseStatusRequest request, string actorName, CancellationToken cancellationToken);
 
     Task<EmployeeReleaseResponse?> UpdateClearanceAsync(int releasedId, UpdateReleaseClearanceRequest request, string actorName, CancellationToken cancellationToken);
 }
