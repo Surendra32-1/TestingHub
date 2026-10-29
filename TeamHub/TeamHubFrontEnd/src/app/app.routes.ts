@@ -8,7 +8,6 @@ import { MasterSettings } from './features/master-settings/master-settings';
 import { authGuard, allemployeeSearchViewGuard, anonymousHomeGuard, authenticatedGuard, employeeRoleMatrixGuard, masterGuard, peopleCreateGuard, peopleReleaseGuard, peopleUpdateGuard, peopleViewGuard, profileEditGuard, resignationAddGuard, resignationViewGuard, rolePermissionMatrixGuard, signedInLandingGuard, terminationAddGuard, terminationViewGuard } from './core/auth/auth.guard';
 import { LoginComponent } from './features/auth/login/login.component';
 
-
 export const routes: Routes = [
   {
     path: 'login',
@@ -30,14 +29,14 @@ export const routes: Routes = [
       .then((m) => m.EmployeeManagementComponent),
     canActivate: [authenticatedGuard, peopleViewGuard],
     data: { layout: 'table' },
-    title: 'Employees | TeamHub'
+    title: 'Employee List | TeamHub'
   },
   {
     path: 'employee',
     loadComponent: () => import('./features/employees/pages/employee-search/employee-search.component')
       .then((m) => m.EmployeeSearchComponent),
     canActivate: [authGuard, allemployeeSearchViewGuard],
-    title: 'Employee | TeamHub'
+    title: 'Employee List | TeamHub'
   },
   {
     path: 'profile/edit',

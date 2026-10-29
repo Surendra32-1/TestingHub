@@ -8,9 +8,9 @@ public int ImageId { get; set; }
         get => ImageId;
         set => ImageId = value;
     }
-    
+
      public int EmployeeId { get; set; }
  
      public string ImagePath { get; set; }=string.Empty;
-    
+
 }

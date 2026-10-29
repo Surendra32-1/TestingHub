@@ -131,3 +131,6 @@ e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Shared.pdb
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Shared.deps.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Shared.dll
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Shared.pdb
+e:\TEST\TeamHub\_buildcheck\TeamHub.Shared.deps.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.Shared.dll
+e:\TEST\TeamHub\_buildcheck\TeamHub.Shared.pdb

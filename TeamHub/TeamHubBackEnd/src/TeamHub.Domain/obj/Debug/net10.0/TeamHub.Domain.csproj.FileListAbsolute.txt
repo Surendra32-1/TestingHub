@@ -125,3 +125,6 @@ e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Domain.pdb
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Domain.deps.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Domain.dll
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Domain.pdb
+e:\TEST\TeamHub\_buildcheck\TeamHub.Domain.deps.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.Domain.dll
+e:\TEST\TeamHub\_buildcheck\TeamHub.Domain.pdb

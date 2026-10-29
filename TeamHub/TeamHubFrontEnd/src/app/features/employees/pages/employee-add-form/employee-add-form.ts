@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -23,7 +23,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NepaliDatePickerComponent } from '../../components/nepali-date-picker/nepali-date-picker.component';
-
 
 @Component({
   selector: 'app-employee-add-form',
@@ -84,6 +83,20 @@ export class EmployeeAddFormComponent implements OnInit {
   addressTypes: any[] = [];
   skillLevels: Record<number, number> = {};
 
+  newSkillLevel = 1;
+
+  readonly levelOptions = [1, 2, 3, 4, 5];
+
+  openSkillLevelId: number | null = null;
+
+  levelRowOpen = false;
+
+  @HostListener('document:click')
+  closeLevelMenus(): void {
+    this.openSkillLevelId = null;
+    this.levelRowOpen = false;
+  }
+
   get profileHasChanges(): boolean {
     if (!this.isProfileMode || !this.profileData) {
       return false;
@@ -110,6 +123,44 @@ export class EmployeeAddFormComponent implements OnInit {
       || values.longitude !== address?.longitude
       || skillsChanged
       || !this.sameIds(selectedDressIds, currentDressIds);
+  }
+
+  get employeeDisplayName(): string {
+    if (!this.employeeForm) {
+      return '';
+    }
+
+    const values = this.employeeForm.getRawValue();
+    return [values.firstName, values.middleName, values.lastName]
+      .filter((part): part is string => typeof part === 'string' && part.trim().length > 0)
+      .map((part) => part.trim())
+      .join(' ');
+  }
+
+  get selectedDesignationName(): string {
+    return this.selectedOptionName(this.designations, 'designationId', 'designationName', 'designationId');
+  }
+
+  get selectedDepartmentName(): string {
+    return this.selectedOptionName(this.departments, 'departmentId', 'departmentName', 'departmentId');
+  }
+
+  get levelRowValue(): number {
+    const levels = this.selectedIds('skillIds').map((skillId) => this.skillLevelFor(skillId));
+    return levels.length > 0 && levels.every((level) => level === levels[0])
+      ? levels[0]
+      : this.newSkillLevel;
+  }
+
+  private selectedOptionName(
+    options: any[],
+    idField: string,
+    nameField: string,
+    controlName: string
+  ): string {
+    const selectedId = this.employeeForm?.get(controlName)?.value;
+    const match = (options ?? []).find((option) => String(option[idField]) === String(selectedId ?? ''));
+    return match?.[nameField] ?? '';
   }
 
   ngOnInit(): void {
@@ -201,6 +252,7 @@ export class EmployeeAddFormComponent implements OnInit {
   private loadEmployee(employeeId: number): void {
     this.employeeService.getActiveInactiveEmployeeById(employeeId).subscribe({
       next: ({ data }) => {
+        this.mergeAssignedEmployeeOptions(data);
         this.patchEmployee(data);
         this.changeDetectorRef.markForCheck();
       },
@@ -210,6 +262,64 @@ export class EmployeeAddFormComponent implements OnInit {
         this.changeDetectorRef.markForCheck();
       }
     });
+  }
+
+  private mergeAssignedEmployeeOptions(data: EmployeeEditResponse): void {
+    this.skills = this.mergeById(
+      this.skills ?? [],
+      (data.skills ?? []).map((skill) => ({
+        skillId: skill.skillId,
+        skillName: skill.skillName,
+        isActive: false
+      })),
+      'skillId'
+    );
+    this.dressSizes = this.mergeById(this.dressSizes ?? [], data.dressSizes ?? [], 'dressId');
+
+    this.departments = this.withCurrentOption(
+      this.departments, 'departmentId', data.departmentId, 'departmentName', data.departmentName);
+    this.designations = this.withCurrentOption(
+      this.designations, 'designationId', data.designationId, 'designationName', data.designationName);
+    this.jobTypes = this.withCurrentOption(
+      this.jobTypes, 'jobTypeId', data.jobTypeId, 'jobTypeName', data.jobTypeName);
+    this.bloodGroups = this.withCurrentOption(
+      this.bloodGroups, 'bloodGroupId', data.bloodGroupId, 'bloodGroupName', data.bloodGroupName);
+    this.genders = this.withCurrentOption(
+      this.genders, 'genderId', data.genderId, 'genderName', data.genderName);
+    this.teams = this.withCurrentOption(
+      this.teams, 'teamId', data.teamId, 'teamName', data.teamName);
+    this.recruitments = this.withCurrentOption(
+      this.recruitments, 'recruitmentId', data.recruitmentId, 'recruitmentName', data.recruitmentName);
+    this.employees = this.withCurrentOption(
+      this.withCurrentOption(
+        this.employees, 'reportingManagerId', data.reportsToEmployeeId, 'reportingManagerName', data.reportsToEmployeeName),
+      'reportingManagerId', data.leadEmployeeId, 'reportingManagerName', data.leadEmployeeName);
+    this.cotivityEmployees = this.withCurrentOption(
+      this.cotivityEmployees, 'reportingManagerId', data.cotivityEmployeeId, 'reportingManagerName', data.cotivityEmployeeName);
+
+    const primaryAddress = (data.addresses ?? [])[0];
+    this.addressTypes = this.withCurrentOption(
+      this.addressTypes, 'addressTypeId', primaryAddress?.addressTypeId, 'addressTypeName', primaryAddress?.addressTypeName);
+  }
+
+  private withCurrentOption(
+    options: any[],
+    idField: string,
+    id: number | null | undefined,
+    nameField: string,
+    name: string | null | undefined
+  ): any[] {
+    const list = options ?? [];
+    const optionId = Number(id);
+    const optionName = name?.trim();
+    if (!Number.isInteger(optionId) || optionId <= 0 || !optionName) {
+      return list;
+    }
+    if (list.some((option) => Number(option[idField]) === optionId)) {
+      return list;
+    }
+
+    return [...list, { [idField]: optionId, [nameField]: optionName }];
   }
 
   private patchEmployee(data: EmployeeEditResponse | EmployeeProfileEmployee): void {
@@ -267,6 +377,7 @@ export class EmployeeAddFormComponent implements OnInit {
       isActive: data.isActive
     }, { emitEvent: false });
     this.skillLevels = Object.fromEntries(skills.map((skill) => [skill.skillId, skill.skillLevel]));
+    this.newSkillLevel = skills[0]?.skillLevel ?? 1;
     this.currentImageBase64 = data.imageBase64;
   }
 
@@ -750,24 +861,85 @@ export class EmployeeAddFormComponent implements OnInit {
       .some((selectedId) => Number(selectedId) === skillId);
   }
 
-  toggleSkill(skillId: number, event: Event): void {
-    const selected = (event.target as HTMLInputElement).checked;
-    this.toggleSelectedId('skillIds', skillId, selected);
-    if (selected && this.skillLevels[skillId] === undefined) {
-      this.skillLevels[skillId] = 1;
-    } else if (!selected) {
-      const { [skillId]: removed, ...remaining } = this.skillLevels;
-      void removed;
-      this.skillLevels = remaining;
+  get selectedSkills(): Array<{ skillId: number; skillName: string; skillLevel: number }> {
+    const selectedIds = this.selectedIds('skillIds');
+    return (this.skills ?? [])
+      .filter((skill) => selectedIds.includes(Number(skill.skillId)))
+      .map((skill) => ({
+        skillId: Number(skill.skillId),
+        skillName: skill.skillName,
+        skillLevel: this.skillLevelFor(Number(skill.skillId))
+      }));
+  }
+
+  get availableSkills(): Array<{ skillId: number; skillName: string }> {
+    const selectedIds = this.selectedIds('skillIds');
+    return (this.skills ?? [])
+      .filter((skill) => !selectedIds.includes(Number(skill.skillId)))
+      .map((skill) => ({ skillId: Number(skill.skillId), skillName: skill.skillName }));
+  }
+
+  addSkill(event: Event): void {
+    const skillId = this.consumeOptionId(event);
+    if (skillId === null) {
+      return;
     }
+
+    this.toggleSelectedId('skillIds', skillId, true);
+    if (this.skillLevels[skillId] === undefined) {
+      this.skillLevels[skillId] = this.newSkillLevel;
+    }
+  }
+
+  toggleSkillLevelMenu(skillId: number, event: Event): void {
+    event.stopPropagation();
+    this.levelRowOpen = false;
+    this.openSkillLevelId = this.openSkillLevelId === skillId ? null : skillId;
+  }
+
+  chooseSkillLevel(skillId: number, level: number, event: Event): void {
+    event.stopPropagation();
+    this.openSkillLevelId = null;
+    this.skillLevels[skillId] = level;
+    this.newSkillLevel = level;
+    this.employeeForm.get('skillIds')?.markAsDirty();
+  }
+
+  toggleLevelRow(event: Event): void {
+    event.stopPropagation();
+    this.openSkillLevelId = null;
+    this.levelRowOpen = !this.levelRowOpen;
+  }
+
+  chooseLevelRow(level: number, event: Event): void {
+    event.stopPropagation();
+    this.levelRowOpen = false;
+    this.updateNewSkillLevel(level);
+  }
+
+  updateNewSkillLevel(level: number): void {
+    this.newSkillLevel = Number.isInteger(level) && level >= 1 && level <= 5 ? level : 1;
+
+    const selectedSkillIds = this.selectedIds('skillIds');
+    if (!selectedSkillIds.length) {
+      return;
+    }
+
+    selectedSkillIds.forEach((skillId) => {
+      this.skillLevels[skillId] = this.newSkillLevel;
+    });
+    this.employeeForm.get('skillIds')?.markAsDirty();
+  }
+
+  removeSkill(skillId: number): void {
+    this.toggleSelectedId('skillIds', skillId, false);
+    const { [skillId]: removed, ...remaining } = this.skillLevels;
+    void removed;
+    this.skillLevels = remaining;
   }
 
   skillLevelFor(skillId: number): number {
     return this.skillLevels[skillId] ?? 1;
-  }
-
-  updateSkillLevel(skillId: number, event: Event): void {
-    this.skillLevels[skillId] = Number((event.target as HTMLSelectElement).value);
   }
 
   isDressSelected(dressId: number): boolean {
@@ -775,17 +947,69 @@ export class EmployeeAddFormComponent implements OnInit {
       .some((selectedId) => Number(selectedId) === dressId);
   }
 
-  isRoleSelected(roleId: number): boolean {
-    return (this.employeeForm.get('roleIds')?.value as Array<number | string> ?? [])
-      .some((selectedId) => Number(selectedId) === roleId);
+  get selectedDressSizes(): Array<{ dressId: number; dressName: string; size: string }> {
+    const selectedIds = this.selectedIds('dressIds');
+    return (this.dressSizes ?? [])
+      .filter((dress) => selectedIds.includes(Number(dress.dressId)))
+      .map((dress) => ({ dressId: Number(dress.dressId), dressName: dress.dressName, size: dress.size }));
   }
 
-  toggleRole(roleId: number, event: Event): void {
-    this.toggleSelectedId('roleIds', roleId, (event.target as HTMLInputElement).checked);
+  get availableDressSizes(): Array<{ dressId: number; dressName: string; size: string }> {
+    const selectedIds = this.selectedIds('dressIds');
+    return (this.dressSizes ?? [])
+      .filter((dress) => !selectedIds.includes(Number(dress.dressId)))
+      .map((dress) => ({ dressId: Number(dress.dressId), dressName: dress.dressName, size: dress.size }));
   }
 
-  toggleDress(dressId: number, event: Event): void {
-    this.toggleSelectedId('dressIds', dressId, (event.target as HTMLInputElement).checked);
+  addDress(event: Event): void {
+    const dressId = this.consumeOptionId(event);
+    if (dressId === null) {
+      return;
+    }
+
+    this.toggleSelectedId('dressIds', dressId, true);
+  }
+
+  removeDress(dressId: number): void {
+    this.toggleSelectedId('dressIds', dressId, false);
+  }
+
+  get selectedRoles(): Array<{ roleId: number; roleName: string }> {
+    const selectedIds = this.selectedIds('roleIds');
+    return (this.roles ?? [])
+      .filter((role) => selectedIds.includes(Number(role.roleId)))
+      .map((role) => ({ roleId: Number(role.roleId), roleName: role.roleName }));
+  }
+
+  get availableRoles(): Array<{ roleId: number; roleName: string }> {
+    const selectedIds = this.selectedIds('roleIds');
+    return (this.roles ?? [])
+      .filter((role) => !selectedIds.includes(Number(role.roleId)))
+      .map((role) => ({ roleId: Number(role.roleId), roleName: role.roleName }));
+  }
+
+  addRole(event: Event): void {
+    const roleId = this.consumeOptionId(event);
+    if (roleId === null) {
+      return;
+    }
+
+    this.toggleSelectedId('roleIds', roleId, true);
+  }
+
+  removeRole(roleId: number): void {
+    this.toggleSelectedId('roleIds', roleId, false);
+  }
+
+  private selectedIds(controlName: string): number[] {
+    return (this.employeeForm?.get(controlName)?.value as Array<number | string> ?? []).map(Number);
+  }
+
+  private consumeOptionId(event: Event): number | null {
+    const select = event.target as HTMLSelectElement;
+    const id = Number(select.value);
+    select.value = '';
+    return Number.isInteger(id) && id > 0 ? id : null;
   }
 
   private toggleSelectedId(controlName: string, id: number, selected: boolean): void {

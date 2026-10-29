@@ -822,3 +822,12 @@ e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.deps.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.runtimeconfig.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.dll
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.API.pdb
+e:\TEST\TeamHub\_buildcheck\appsettings.Development.json
+e:\TEST\TeamHub\_buildcheck\appsettings.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.API.staticwebassets.runtime.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.API.staticwebassets.endpoints.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.API.exe
+e:\TEST\TeamHub\_buildcheck\TeamHub.API.deps.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.API.runtimeconfig.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.API.dll
+e:\TEST\TeamHub\_buildcheck\TeamHub.API.pdb

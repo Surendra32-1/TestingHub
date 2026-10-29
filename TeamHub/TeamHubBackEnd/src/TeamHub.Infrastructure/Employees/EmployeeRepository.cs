@@ -429,13 +429,15 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                    employeeSkill.SkillLevel, employeeSkill.IsPrimary
             FROM EmployeeSkills employeeSkill
             INNER JOIN Skills skill ON skill.SkillId = employeeSkill.SkillId
-            WHERE employeeSkill.EmployeeId = @EmployeeId;
+            WHERE employeeSkill.EmployeeId = @EmployeeId
+            ORDER BY employeeSkill.IsPrimary DESC, skill.SkillName;
             ";
         const string dressSql = @"
             SELECT dress.DressId, dress.DressName, dress.Size, dress.IsActive
             FROM EmployeeDresses employeeDress
             INNER JOIN DressSizes dress ON dress.DressId = employeeDress.DressId
-            WHERE employeeDress.EmployeeId = @EmployeeId;
+            WHERE employeeDress.EmployeeId = @EmployeeId
+            ORDER BY dress.DressName, dress.Size;
             ";
         const string roleIdSql = @"
             SELECT ur.RoleId

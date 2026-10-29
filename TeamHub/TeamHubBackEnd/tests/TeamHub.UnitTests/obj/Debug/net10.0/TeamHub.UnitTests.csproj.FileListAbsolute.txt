@@ -484,3 +484,11 @@ e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.UnitTests.deps.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.UnitTests.runtimeconfig.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.UnitTests.dll
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.UnitTests.pdb
+e:\TEST\TeamHub\_buildcheck\testhost.dll
+e:\TEST\TeamHub\_buildcheck\xunit.abstractions.dll
+e:\TEST\TeamHub\_buildcheck\testhost.exe
+e:\TEST\TeamHub\_buildcheck\xunit.runner.visualstudio.testadapter.dll
+e:\TEST\TeamHub\_buildcheck\TeamHub.UnitTests.deps.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.UnitTests.runtimeconfig.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.UnitTests.dll
+e:\TEST\TeamHub\_buildcheck\TeamHub.UnitTests.pdb

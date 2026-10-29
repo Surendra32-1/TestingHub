@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -12,8 +12,9 @@ import { NepaliDateAdapter, NEPALI_DATE_FORMATS } from './nepali-date-adapter';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatDatepickerModule, MatFormFieldModule, MatInputModule],
   template: `
-    <mat-form-field appearance="outline" class="nepali-date-picker">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="nepali-date-picker">
       <input matInput [matDatepicker]="picker" [formControl]="dateControl" [placeholder]="placeholder"
+        [attr.aria-label]="ariaLabel"
         (dateChange)="onDateChange($event.value)" (blur)="markTouched()">
       <mat-datepicker-toggle matSuffix [for]="picker" aria-label="Open Nepali calendar"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
@@ -35,6 +36,7 @@ import { NepaliDateAdapter, NEPALI_DATE_FORMATS } from './nepali-date-adapter';
 })
 export class NepaliDatePickerComponent implements ControlValueAccessor {
   readonly dateControl = new FormControl<Date | null>(null);
+  @Input() ariaLabel = 'Nepali date';
   placeholder = 'YYYY-MM-DD';
   private onChange: (value: string | null) => void = () => {};
   private onTouched: () => void = () => {};

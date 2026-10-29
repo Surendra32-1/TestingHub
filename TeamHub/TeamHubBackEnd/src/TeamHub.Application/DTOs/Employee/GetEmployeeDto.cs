@@ -3,7 +3,7 @@ namespace TeamHub.Application.DTOs.Employee;
 public class GetEmployeeDto
 {
     public int EmployeeId { get; set; }
-    public int ENumber { get; set; } 
+    public int ENumber { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string? MiddleName { get; set; }
     public string LastName { get; set; } = string.Empty;

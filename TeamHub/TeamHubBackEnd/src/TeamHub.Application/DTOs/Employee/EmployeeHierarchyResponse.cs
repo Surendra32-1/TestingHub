@@ -8,7 +8,6 @@ public sealed class EmployeeHierarchyResponse
     public IReadOnlyList<EmployeeHierarchyNodeDto> ReportingHierarchy { get; set; } = [];
 }
 
-
 public sealed class EmployeeHierarchyNodeDto
 {
     public int EmployeeId { get; set; }

@@ -21,7 +21,7 @@ export const APP_MENU: readonly MenuItem[] = [
   { id: 'people', label: 'People', route: '/people', exact: true, permission: 'people.view', visibility: 'authenticated' },
   {
     id: 'employee',
-    label: 'Employee',
+    label: 'Employee List',
     route: '/employee',
     exact: true,
     permission: 'allemployee.search.view',

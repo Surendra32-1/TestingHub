@@ -161,3 +161,6 @@ e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Application.pdb
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Application.deps.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Application.dll
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Application.pdb
+e:\TEST\TeamHub\_buildcheck\TeamHub.Application.deps.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.Application.dll
+e:\TEST\TeamHub\_buildcheck\TeamHub.Application.pdb

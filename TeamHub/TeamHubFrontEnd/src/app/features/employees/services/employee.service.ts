@@ -303,7 +303,6 @@ interface EmployeeApiRecord {
   imageBase64: string | null;
 }
 
-
 @Injectable({
   providedIn: 'root'
 })

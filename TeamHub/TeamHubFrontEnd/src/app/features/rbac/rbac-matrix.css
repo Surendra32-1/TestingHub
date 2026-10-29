@@ -28,13 +28,6 @@
 	margin-bottom: 1.25rem;
 }
 
-.page-title {
-	margin: 0;
-	color: var(--th-text);
-	font-size: var(--th-page-title-font);
-	font-weight: 700;
-}
-
 .back-button {
 	display: inline-flex;
 	align-items: center;

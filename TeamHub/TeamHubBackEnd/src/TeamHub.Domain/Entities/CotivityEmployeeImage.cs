@@ -8,9 +8,9 @@ public int CotivityImageId { get; set; }
         get => CotivityImageId;
         set => CotivityImageId = value;
     }
-    
+
      public int CotivityEmployeeId { get; set; }
  
      public string CotivityImagePath { get; set; }=string.Empty;
-    
+
 }

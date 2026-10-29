@@ -65,7 +65,7 @@ describe('MenuService', () => {
     signIn(FULL_CATALOG);
 
     const visible = menuService.visibleMenu();
-    expect(labels(visible)).toEqual(['People', 'Employee', 'Resignations', 'Terminations', 'Manage']);
+    expect(labels(visible)).toEqual(['People', 'Employee List', 'Resignations', 'Terminations', 'Manage']);
 
     const manage = visible.find((item) => item.id === 'manage')!;
     expect(labels(manage.children!)).toEqual([
@@ -105,12 +105,12 @@ describe('MenuService', () => {
     expect(labels(menuService.visibleMenu())).toEqual(['People']);
   });
 
-  it('shows the Employee page only to accounts with allemployee.search.view', () => {
+  it('shows the Employee List page only to accounts with allemployee.search.view', () => {
     signIn(['people.view']);
     expect(labels(menuService.visibleMenu())).toEqual(['People']);
 
     signIn(['allemployee.search.view']);
-    expect(labels(menuService.visibleMenu())).toEqual(['Employee']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Employee List']);
   });
 
   it('merges the permissions coming from several roles into one menu', () => {

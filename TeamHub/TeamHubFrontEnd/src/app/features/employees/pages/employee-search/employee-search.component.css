@@ -24,13 +24,6 @@
   margin-bottom: 1.1rem;
 }
 
-.page-title {
-  margin: 0;
-  font-size: var(--th-page-title-font);
-  font-weight: 700;
-  color: var(--th-text-strong);
-}
-
 .result-count {
   font-size: 0.82rem;
   font-weight: 600;

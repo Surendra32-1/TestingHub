@@ -164,3 +164,6 @@ e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Infrastructure.pdb
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Infrastructure.deps.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Infrastructure.dll
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Infrastructure.pdb
+e:\TEST\TeamHub\_buildcheck\TeamHub.Infrastructure.deps.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.Infrastructure.dll
+e:\TEST\TeamHub\_buildcheck\TeamHub.Infrastructure.pdb

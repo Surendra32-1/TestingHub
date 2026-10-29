@@ -174,3 +174,6 @@ e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify\TeamHub.Auth.pdb
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Auth.deps.json
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Auth.dll
 e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Auth.pdb
+e:\TEST\TeamHub\_buildcheck\TeamHub.Auth.deps.json
+e:\TEST\TeamHub\_buildcheck\TeamHub.Auth.dll
+e:\TEST\TeamHub\_buildcheck\TeamHub.Auth.pdb

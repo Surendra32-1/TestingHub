@@ -130,12 +130,6 @@
   margin: 0.25rem 0 0;
 }
 
-.related-item.compact {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
 .muted,
 .state-message {
   color: #6b7280;
@@ -154,10 +148,5 @@
   .profile-placeholder {
     width: 4.25rem;
     height: 4.25rem;
-  }
-
-  .related-item.compact {
-    flex-direction: column;
-    gap: 0.25rem;
   }
 }

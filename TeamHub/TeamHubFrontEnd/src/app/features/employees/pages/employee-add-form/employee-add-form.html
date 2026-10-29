@@ -6,97 +6,98 @@
       <button class="back-button" type="button" (click)="goBack()">‹ Back</button>
     </header>
 
-    @if (isProfileMode) {
-      <p class="profile-edit-guidance">
-        Editable: profile photo, alternate email, blood group, mobile and emergency contact numbers, mother and spouse
-        names, location coordinates, skills, and dress sizes. Other details and roles are read-only.
-      </p>
-    }
+    <form class="profile-sheet" [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+      <aside class="identity-column" aria-label="Employee photo and identity">
+        <figure class="photo-frame">
+          <img class="photo-image"
+            [class.photo-placeholder]="!imageBase64 && !currentImageBase64"
+            [src]="imageBase64 || currentImageBase64 || 'assets/default-avatar.svg'" alt="Employee profile preview">
+          <figcaption class="photo-caption">Employee photo</figcaption>
+        </figure>
 
-    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
-      <section class="image-upload" aria-label="Employee profile image">
-        <img *ngIf="imageBase64 || currentImageBase64 || isProfileMode" class="image-preview"
-          [src]="imageBase64 || currentImageBase64 || 'assets/default-avatar.svg'" alt="Employee profile preview">
-        <div class="image-upload-controls">
-          <label for="employeeImage">Profile image</label>
-          <input #imageInput id="employeeImage" type="file" accept="image/jpeg,image/png,image/gif"
+        <div class="photo-controls">
+          <label class="photo-upload" for="employeeImage">{{ isReadingImage ? 'Preparing image...' : (imageBase64 || currentImageBase64 ? 'Change photo' : 'Upload photo') }}</label>
+          <input #imageInput id="employeeImage" class="photo-input" type="file" accept="image/jpeg,image/png,image/gif"
             [disabled]="isSubmitting || isReadingImage" (change)="onImageSelected($event)">
-          <span class="image-help" *ngIf="isReadingImage">Preparing image...</span>
-          <span class="image-help" *ngIf="!isReadingImage && imageFileName">{{ imageFileName }}</span>
-          <span class="image-help" *ngIf="!isReadingImage && !imageFileName">JPEG, PNG, or GIF up to 5 MB</span>
+          <p class="photo-hint" *ngIf="isReadingImage">Preparing image...</p>
+          <p class="photo-hint" *ngIf="!isReadingImage && imageFileName">{{ imageFileName }}</p>
+          <p class="photo-hint" *ngIf="!isReadingImage && !imageFileName">JPEG, PNG, or GIF up to 5 MB</p>
+          <button *ngIf="imageBase64" class="photo-remove" type="button" (click)="clearImage(imageInput)">Remove photo</button>
         </div>
-        <button *ngIf="imageBase64" class="remove-image" type="button" (click)="clearImage(imageInput)">Remove image</button>
-      </section>
 
-      <section class="form-section personal-section">
-        <h2>Personal Information</h2>
-        <div class="row">
+        <dl class="identity-summary">
+          <dt>Name</dt>
+          <dd>{{ employeeDisplayName || '—' }}</dd>
+          <dt>Employee no.</dt>
+          <dd>{{ employeeForm.get('eNumber')?.value || '—' }}</dd>
+          <dt>Designation</dt>
+          <dd>{{ selectedDesignationName || '—' }}</dd>
+          <dt>Department</dt>
+          <dd>{{ selectedDepartmentName || '—' }}</dd>
+        </dl>
+
+        <span class="status-pill" [class.inactive]="!employeeForm.get('isActive')?.value">
+          {{ employeeForm.get('isActive')?.value ? 'Active' : 'Inactive' }}
+        </span>
+      </aside>
+
+      <div class="sheet-body">
+        <section class="form-section personal-section">
+          <h2 class="section-title">Personal Information</h2>
           <div class="field">
-            <label for="eNumber">Employee Number</label>
+            <label class="field-label" for="eNumber">Employee Number</label>
             <input id="eNumber" type="number" min="1" max="2147483647" step="1" formControlName="eNumber" required (input)="normalizeNullInput($event, 'eNumber')" (blur)="showFieldError('eNumber')">
           </div>
           <div class="field">
-            <label for="firstName">First Name</label>
+            <label class="field-label" for="firstName">First Name</label>
             <input id="firstName" type="text" maxlength="100" formControlName="firstName" required (input)="normalizeNullInput($event, 'firstName')" (blur)="showFieldError('firstName')">
           </div>
-        </div>
-        <div class="row">
           <div class="field">
-            <label for="middleName">Middle Name</label>
+            <label class="field-label" for="middleName">Middle Name</label>
             <input id="middleName" type="text" maxlength="100" formControlName="middleName" (input)="normalizeNullInput($event, 'middleName')" (blur)="showFieldError('middleName')">
           </div>
           <div class="field">
-            <label for="lastName">Last Name</label>
+            <label class="field-label" for="lastName">Last Name</label>
             <input id="lastName" type="text" maxlength="100" formControlName="lastName" required (input)="normalizeNullInput($event, 'lastName')" (blur)="showFieldError('lastName')">
           </div>
-        </div>
-        <div class="row">
           <div class="field">
-            <label for="email">Email</label>
+            <label class="field-label" for="email">Email</label>
             <input id="email" type="email" maxlength="150" formControlName="email" required (input)="normalizeNullInput($event, 'email')" (blur)="showFieldError('email')">
           </div>
           <div class="field">
-            <label for="alternateEmail">Alternate Email</label>
+            <label class="field-label" for="alternateEmail">Alternate Email</label>
             <input id="alternateEmail" type="email" maxlength="150" formControlName="alternateEmail" (input)="normalizeNullInput($event, 'alternateEmail')" (blur)="showFieldError('alternateEmail')">
           </div>
-        </div>
-        <div class="row">
           <div class="field">
-            <label for="phoneNumber">Phone Number</label>
+            <label class="field-label" for="phoneNumber">Phone Number</label>
             <input id="phoneNumber" type="tel" maxlength="20" formControlName="phoneNumber" (input)="normalizeNullInput($event, 'phoneNumber')" (blur)="showFieldError('phoneNumber')">
           </div>
           <div class="field">
-            <label for="mobileNumber">Mobile Number</label>
+            <label class="field-label" for="mobileNumber">Mobile Number</label>
             <input id="mobileNumber" type="tel" maxlength="20" formControlName="mobileNumber" (input)="normalizeNullInput($event, 'mobileNumber')" (blur)="showFieldError('mobileNumber')">
           </div>
           <div class="field">
-            <label for="emergencyContactNumber">Emergency Contact Number</label>
+            <label class="field-label" for="emergencyContactNumber">Emergency Contact Number</label>
             <input id="emergencyContactNumber" type="tel" maxlength="20" formControlName="emergencyContactNumber" (input)="normalizeNullInput($event, 'emergencyContactNumber')" (blur)="showFieldError('emergencyContactNumber')">
           </div>
           <div class="field">
-            <label for="emergencyContactPerson">Emergency Contact Person *</label>
+            <label class="field-label" for="emergencyContactPerson">Emergency Contact Person *</label>
             <input id="emergencyContactPerson" type="text" maxlength="150" formControlName="emergencyContactPerson" required (input)="normalizeNullInput($event, 'emergencyContactPerson')" (blur)="showFieldError('emergencyContactPerson')">
           </div>
           <div class="field">
-            <label for="fatherName">Father Name *</label>
+            <label class="field-label" for="fatherName">Father Name *</label>
             <input id="fatherName" type="text" maxlength="150" formControlName="fatherName" required (input)="normalizeNullInput($event, 'fatherName')" (blur)="showFieldError('fatherName')">
           </div>
           <div class="field">
-            <label for="motherName">Mother Name</label>
+            <label class="field-label" for="motherName">Mother Name</label>
             <input id="motherName" type="text" maxlength="150" formControlName="motherName" (input)="normalizeNullInput($event, 'motherName')" (blur)="showFieldError('motherName')">
           </div>
           <div class="field">
-            <label for="spouseName">Spouse (Optional)</label>
+            <label class="field-label" for="spouseName">Spouse (Optional)</label>
             <input id="spouseName" type="text" maxlength="150" formControlName="spouseName" (input)="normalizeNullInput($event, 'spouseName')" (blur)="showFieldError('spouseName')">
           </div>
-        </div>
-        <div class="row">
           <div class="field">
-            <label for="extensionNumber">Extension Number</label>
-            <input id="extensionNumber" type="number" min="0" max="2147483647" step="1" formControlName="extensionNumber" required (input)="normalizeNullInput($event, 'extensionNumber')" (blur)="showFieldError('extensionNumber')">
-          </div>
-          <div class="field">
-            <label for="genderId">Gender</label>
+            <label class="field-label" for="genderId">Gender</label>
             <select id="genderId" formControlName="genderId" required (blur)="showFieldError('genderId')">
               <option value="">Select Gender</option>
               @for(item of genders; track item.genderId){
@@ -104,10 +105,8 @@
               }
             </select>
           </div>
-        </div>
-        <div class="row">
           <div class="field">
-            <label for="bloodGroupId">Blood Group</label>
+            <label class="field-label" for="bloodGroupId">Blood Group</label>
             <select id="bloodGroupId" formControlName="bloodGroupId" required (blur)="showFieldError('bloodGroupId')">
               <option value="">Select Blood Group</option>
               @for(item of bloodGroups; track item.bloodGroupId){
@@ -116,101 +115,72 @@
             </select>
           </div>
           <div class="field">
-            <label for="stationNumber">Station Number</label>
+            <label class="field-label" for="extensionNumber">Extension Number</label>
+            <input id="extensionNumber" type="number" min="0" max="2147483647" step="1" formControlName="extensionNumber" required (input)="normalizeNullInput($event, 'extensionNumber')" (blur)="showFieldError('extensionNumber')">
+          </div>
+          <div class="field">
+            <label class="field-label" for="stationNumber">Station Number</label>
             <input id="stationNumber" type="text" maxlength="20" formControlName="stationNumber" (input)="normalizeNullInput($event, 'stationNumber')" (blur)="showFieldError('stationNumber')">
           </div>
           <div class="field">
-            <label for="lockerNumber">Locker Number</label>
+            <label class="field-label" for="lockerNumber">Locker Number</label>
             <input id="lockerNumber" type="text" maxlength="20" formControlName="lockerNumber" (input)="normalizeNullInput($event, 'lockerNumber')" (blur)="showFieldError('lockerNumber')">
           </div>
-        </div>
-        <div class="date-pair">
-          <div class="field">
-            <label for="joinedDate">Joined Date (A.D.)</label>
-            <mat-form-field appearance="outline">
-              <input id="joinedDate" matInput [matDatepicker]="joinedPicker" [min]="employeeId === null ? today : null" formControlName="joinedDate" required (blur)="showFieldError('joinedDate')">
-              <mat-datepicker-toggle matSuffix [for]="joinedPicker"></mat-datepicker-toggle>
-              <mat-datepicker #joinedPicker></mat-datepicker>
-            </mat-form-field>
-          </div>
-          <div class="field">
-            <label for="joinedDateBS">Joined Date (B.S.)</label>
-            <app-nepali-date-picker formControlName="joinedDateBS" />
-          </div>
-        </div>
-        <div class="date-pair">
-          <div class="field">
-            <label for="dateOfBirth">Date of Birth (A.D.)</label>
-            <mat-form-field appearance="outline">
-              <input id="dateOfBirth" matInput [matDatepicker]="dobPicker" [max]="maxDateOfBirth" formControlName="dateOfBirth" (blur)="showFieldError('dateOfBirth')">
-              <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
-              <mat-datepicker #dobPicker></mat-datepicker>
-            </mat-form-field>
-          </div>
-          <div class="field">
-            <label for="dateOfBirthBS">Date of Birth (B.S.)</label>
-            <app-nepali-date-picker formControlName="dateOfBirthBS" />
-          </div>
-        </div>
-      </section>
 
-      <section class="form-section certificate-section">
-        <h2>Certificate &amp; Identification</h2>
-        <div class="row">
+          <div class="date-grid">
+            <div class="date-group">
+              <span class="field-label">Joined Date</span>
+              <div class="date-controls">
+                <div class="date-control">
+                  <span class="date-caption">A.D. (English)</span>
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <input id="joinedDate" matInput aria-label="Joined date in A.D." [matDatepicker]="joinedPicker" [min]="employeeId === null ? today : null" formControlName="joinedDate" required (blur)="showFieldError('joinedDate')">
+                    <mat-datepicker-toggle matSuffix [for]="joinedPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #joinedPicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="date-control">
+                  <span class="date-caption">B.S. (Nepali)</span>
+                  <app-nepali-date-picker formControlName="joinedDateBS" ariaLabel="Joined date in B.S." />
+                </div>
+              </div>
+            </div>
+            <div class="date-group">
+              <span class="field-label">Date of Birth</span>
+              <div class="date-controls">
+                <div class="date-control">
+                  <span class="date-caption">A.D. (English)</span>
+                  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                    <input id="dateOfBirth" matInput aria-label="Date of birth in A.D." [matDatepicker]="dobPicker" [max]="maxDateOfBirth" formControlName="dateOfBirth" (blur)="showFieldError('dateOfBirth')">
+                    <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #dobPicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="date-control">
+                  <span class="date-caption">B.S. (Nepali)</span>
+                  <app-nepali-date-picker formControlName="dateOfBirthBS" ariaLabel="Date of birth in B.S." />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section certificate-section">
+          <h2 class="section-title">Certificate &amp; Identification</h2>
           <div class="field">
-            <label for="citizenshipNumber">Citizenship Number</label>
+            <label class="field-label" for="citizenshipNumber">Citizenship Number</label>
             <input id="citizenshipNumber" type="text" maxlength="50" formControlName="citizenshipNumber" required (input)="normalizeNullInput($event, 'citizenshipNumber')" (blur)="showFieldError('citizenshipNumber')">
           </div>
           <div class="field">
-            <label for="panNumber">PAN Number</label>
+            <label class="field-label" for="panNumber">PAN Number</label>
             <input id="panNumber" type="text" maxlength="50" formControlName="panNumber" required (input)="normalizeNullInput($event, 'panNumber')" (blur)="showFieldError('panNumber')">
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="form-section skills-section">
-        <h2>Skills</h2>
-        <div class="row">
+        <section class="form-section address-section">
+          <h2 class="section-title">Address</h2>
           <div class="field">
-            <label for="skillIds">Skills</label>
-            <div id="skillIds" class="selection-list" role="group" aria-label="Employee skills">
-              @for(item of skills; track item.skillId){
-                <div class="selection-row skill-row">
-                  <label class="selection-label">
-                    <input type="checkbox" [checked]="isSkillSelected(item.skillId)" (change)="toggleSkill(item.skillId, $event)">
-                    <span>{{ item.skillName }}</span>
-                  </label>
-                  <label class="skill-level-field" *ngIf="isSkillSelected(item.skillId)">
-                    <span>Level</span>
-                    <select [value]="skillLevelFor(item.skillId)" [attr.aria-label]="'Skill level for ' + item.skillName" (change)="updateSkillLevel(item.skillId, $event)">
-                      @for (level of [1, 2, 3, 4, 5]; track level) {
-                        <option [value]="level">{{ level }}</option>
-                      }
-                    </select>
-                  </label>
-                </div>
-              }
-            </div>
-          </div>
-          <div class="field">
-            <label for="dressIds">Dress Sizes</label>
-            <div id="dressIds" class="selection-list" role="group" aria-label="Employee dress sizes">
-              @for(item of dressSizes; track item.dressId){
-                <label class="selection-row selection-label">
-                  <input type="checkbox" [checked]="isDressSelected(item.dressId)" (change)="toggleDress(item.dressId, $event)">
-                  <span>{{ item.dressName }} - {{ item.size }}</span>
-                </label>
-              }
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="form-section address-section">
-        <h2>Address</h2>
-        <div class="row">
-          <div class="field">
-            <label for="addressTypeId">Address Type</label>
+            <label class="field-label" for="addressTypeId">Address Type</label>
             <select id="addressTypeId" formControlName="addressTypeId" (blur)="showFieldError('addressTypeId')">
               <option value="">Select Address Type</option>
               @for(item of addressTypes; track item.addressTypeId){
@@ -219,43 +189,119 @@
             </select>
           </div>
           <div class="field">
-            <label for="address">Address Line 1</label>
+            <label class="field-label" for="address">Address Line 1</label>
             <input id="address" type="text" maxlength="160" formControlName="address" (input)="normalizeNullInput($event, 'address')" (blur)="showFieldError('address')">
           </div>
           <div class="field">
-            <label for="addressLine2">Address Line 2</label>
+            <label class="field-label" for="addressLine2">Address Line 2</label>
             <input id="addressLine2" type="text" maxlength="160" formControlName="addressLine2" (input)="normalizeNullInput($event, 'addressLine2')" (blur)="showFieldError('addressLine2')">
           </div>
-        </div>
-        <div class="row">
           <div class="field">
-            <label for="city">City</label>
+            <label class="field-label" for="city">City</label>
             <input id="city" type="text" maxlength="100" formControlName="city" (input)="normalizeNullInput($event, 'city')" (blur)="showFieldError('city')">
           </div>
           <div class="field">
-            <label for="state">State</label>
+            <label class="field-label" for="state">State</label>
             <input id="state" type="text" maxlength="100" formControlName="state" (input)="normalizeNullInput($event, 'state')" (blur)="showFieldError('state')">
           </div>
-        </div>
-        @if (isProfileMode) {
-          <div class="row">
+          @if (isProfileMode) {
             <div class="field">
-              <label for="latitude">Latitude</label>
+              <label class="field-label" for="latitude">Latitude</label>
               <input id="latitude" type="number" step="any" formControlName="latitude" (blur)="showFieldError('latitude')">
             </div>
             <div class="field">
-              <label for="longitude">Longitude</label>
+              <label class="field-label" for="longitude">Longitude</label>
               <input id="longitude" type="number" step="any" formControlName="longitude" (blur)="showFieldError('longitude')">
             </div>
-          </div>
-        }
-      </section>
+          }
+        </section>
 
-      <section class="form-section team-section">
-        <h2>Team Info</h2>
-        <div class="row">
+        <section class="form-section skills-section">
+          <h2 class="section-title">Skills</h2>
           <div class="field">
-            <label for="departmentId">Department</label>
+            <span class="field-label">Skills</span>
+            <div id="skillIds" class="chip-picker" role="group" aria-label="Employee skills">
+              @if (selectedSkills.length) {
+                <div class="chip-list">
+                  @for (skill of selectedSkills; track skill.skillId) {
+                    <span class="chip">
+                      <span class="chip-text">{{ skill.skillName }}</span>
+                      <span class="chip-level">
+                        <span>Lv</span>
+                        <button type="button" class="level-toggle" [attr.aria-expanded]="openSkillLevelId === skill.skillId" [attr.aria-label]="'Skill level for ' + skill.skillName" (click)="toggleSkillLevelMenu(skill.skillId, $event)">{{ skill.skillLevel }}</button>
+                        @if (openSkillLevelId === skill.skillId) {
+                          <span class="level-menu" role="listbox" [attr.aria-label]="'Pick a level for ' + skill.skillName">
+                            @for (level of levelOptions; track level) {
+                              <button type="button" class="level-option" role="option" [class.selected]="level === skill.skillLevel" [attr.aria-selected]="level === skill.skillLevel" (click)="chooseSkillLevel(skill.skillId, level, $event)">{{ level }}</button>
+                            }
+                          </span>
+                        }
+                      </span>
+                      <button type="button" class="chip-remove" [attr.aria-label]="'Remove skill ' + skill.skillName" (click)="removeSkill(skill.skillId)">×</button>
+                    </span>
+                  }
+                </div>
+              } @else {
+                <p class="chip-empty">No skills selected.</p>
+              }
+              @if (availableSkills.length) {
+                <div class="chip-add-row">
+                  <select class="chip-add" aria-label="Add skill" (change)="addSkill($event)">
+                    <option value="">Add skill…</option>
+                    @for (skill of availableSkills; track skill.skillId) {
+                      <option [value]="skill.skillId">{{ skill.skillName }}</option>
+                    }
+                  </select>
+                  <div class="chip-add-level">
+                    <span>Set level</span>
+                    <button type="button" class="level-toggle" [attr.aria-expanded]="levelRowOpen" aria-label="Set the level for the selected skills" (click)="toggleLevelRow($event)">{{ levelRowValue }}</button>
+                    @if (levelRowOpen) {
+                      <span class="level-menu" role="listbox" aria-label="Pick a level for the selected skills">
+                        @for (level of levelOptions; track level) {
+                          <button type="button" class="level-option" role="option" [class.selected]="level === levelRowValue" [attr.aria-selected]="level === levelRowValue" (click)="chooseLevelRow(level, $event)">{{ level }}</button>
+                        }
+                      </span>
+                    }
+                  </div>
+                </div>
+              } @else if (skills?.length) {
+                <p class="chip-empty">All skills added.</p>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Dress Sizes</span>
+            <div id="dressIds" class="chip-picker" role="group" aria-label="Employee dress sizes">
+              @if (selectedDressSizes.length) {
+                <div class="chip-list">
+                  @for (dress of selectedDressSizes; track dress.dressId) {
+                    <span class="chip">
+                      <span class="chip-text">{{ dress.dressName }} - {{ dress.size }}</span>
+                      <button type="button" class="chip-remove" [attr.aria-label]="'Remove ' + dress.dressName + ' ' + dress.size" (click)="removeDress(dress.dressId)">×</button>
+                    </span>
+                  }
+                </div>
+              } @else {
+                <p class="chip-empty">No dress sizes selected.</p>
+              }
+              @if (availableDressSizes.length) {
+                <select class="chip-add" aria-label="Add dress size" (change)="addDress($event)">
+                  <option value="">Add dress size…</option>
+                  @for (dress of availableDressSizes; track dress.dressId) {
+                    <option [value]="dress.dressId">{{ dress.dressName }} - {{ dress.size }}</option>
+                  }
+                </select>
+              } @else if (dressSizes?.length) {
+                <p class="chip-empty">All dress sizes added.</p>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section team-section">
+          <h2 class="section-title">Team Info</h2>
+          <div class="field">
+            <label class="field-label" for="departmentId">Department</label>
             <select id="departmentId" formControlName="departmentId" required (blur)="showFieldError('departmentId')">
               <option value="">Select Department</option>
               @for(item of departments; track item.departmentId){
@@ -264,7 +310,7 @@
             </select>
           </div>
           <div class="field">
-            <label for="designationId">Designation</label>
+            <label class="field-label" for="designationId">Designation</label>
             <select id="designationId" formControlName="designationId" required (blur)="showFieldError('designationId')">
               <option value="">Select Designation</option>
               @for(item of designations; track item.designationId){
@@ -273,7 +319,7 @@
             </select>
           </div>
           <div class="field">
-            <label for="jobTypeId">Job Type</label>
+            <label class="field-label" for="jobTypeId">Job Type</label>
             <select id="jobTypeId" formControlName="jobTypeId" required (blur)="showFieldError('jobTypeId')">
               <option value="">Select Job Type</option>
               @for(item of jobTypes; track item.jobTypeId){
@@ -281,21 +327,8 @@
               }
             </select>
           </div>
-        </div>
-        <div class="row">
           <div class="field">
-            <label for="roleIds">Role</label>
-            <div id="roleIds" class="selection-list" role="group" aria-label="Employee roles">
-              @for(item of roles; track item.roleId){
-                <label class="selection-row selection-label">
-                  <input type="checkbox" [checked]="isRoleSelected(item.roleId)" [disabled]="isProfileMode" (change)="toggleRole(item.roleId, $event)">
-                  <span>{{ item.roleName }}</span>
-                </label>
-              }
-            </div>
-          </div>
-          <div class="field">
-            <label for="teamId">Team</label>
+            <label class="field-label" for="teamId">Team</label>
             <select id="teamId" formControlName="teamId" required (blur)="showFieldError('teamId')">
               <option value="">Select Team</option>
               @for(item of teams; track item.teamId){
@@ -304,7 +337,7 @@
             </select>
           </div>
           <div class="field">
-            <label for="recruitmentId">Recruitment Source</label>
+            <label class="field-label" for="recruitmentId">Recruitment Source</label>
             <select id="recruitmentId" formControlName="recruitmentId" (blur)="showFieldError('recruitmentId')">
               <option value="">Select Source</option>
               @for(item of recruitments; track item.recruitmentId){
@@ -312,10 +345,8 @@
               }
             </select>
           </div>
-        </div>
-        <div class="row">
           <div class="field">
-            <label for="leadEmployeeId">Team Lead</label>
+            <label class="field-label" for="leadEmployeeId">Team Lead</label>
             <select id="leadEmployeeId" formControlName="leadEmployeeId" (blur)="showFieldError('leadEmployeeId')">
               <option value="">Select Team Lead</option>
               @for(item of employees; track item.reportingManagerId){
@@ -324,7 +355,7 @@
             </select>
           </div>
           <div class="field">
-            <label for="reportToEmployeeId">Report To</label>
+            <label class="field-label" for="reportToEmployeeId">Report To</label>
             <select id="reportToEmployeeId" formControlName="reportToEmployeeId" (blur)="showFieldError('reportToEmployeeId')">
               <option value="">Select Report To</option>
               @for(item of employees; track item.reportingManagerId){
@@ -333,7 +364,7 @@
             </select>
           </div>
           <div class="field">
-            <label for="cotivityEmployeeId">Cotivity Employee</label>
+            <label class="field-label" for="cotivityEmployeeId">Cotivity Employee</label>
             <select id="cotivityEmployeeId" formControlName="cotivityEmployeeId" (blur)="showFieldError('cotivityEmployeeId')">
               <option value="">Select Cotivity Employee</option>
               @for(item of cotivityEmployees; track item.reportingManagerId){
@@ -341,43 +372,54 @@
               }
             </select>
           </div>
-        </div>
-        <div class="row">
-          <label class="active-field" for="isActive">
-            <input id="isActive" type="checkbox" formControlName="isActive" (blur)="showFieldError('isActive')">
-            <span>Active</span>
-          </label>
-        </div>
-      </section>
-
-      <section class="form-section account-section" *ngIf="employeeId === null && !isProfileMode">
-        <h2>Login Account</h2>
-        <div class="row">
-          <label class="active-field" for="createLoginAccount">
-            <input id="createLoginAccount" type="checkbox" formControlName="createLoginAccount">
-            <span>Create login account for this employee</span>
-          </label>
-        </div>
-
-        <div class="row" *ngIf="employeeForm.get('createLoginAccount')?.value">
           <div class="field">
-            <label for="username">Username</label>
-            <input id="username" type="text" formControlName="username" minlength="3" maxlength="100" autocomplete="username">
+            <span class="field-label">Role</span>
+            <div id="roleIds" class="chip-picker" role="group" aria-label="Employee roles">
+              @if (selectedRoles.length) {
+                <div class="chip-list">
+                  @for (role of selectedRoles; track role.roleId) {
+                    <span class="chip">
+                      <span class="chip-text">{{ role.roleName }}</span>
+                      @if (!isProfileMode) {
+                        <button type="button" class="chip-remove" [attr.aria-label]="'Remove role ' + role.roleName" (click)="removeRole(role.roleId)">×</button>
+                      }
+                    </span>
+                  }
+                </div>
+              } @else {
+                <p class="chip-empty">No role assigned.</p>
+              }
+              @if (!isProfileMode) {
+                @if (availableRoles.length) {
+                  <select class="chip-add" aria-label="Add role" (change)="addRole($event)">
+                    <option value="">Add role…</option>
+                    @for (role of availableRoles; track role.roleId) {
+                      <option [value]="role.roleId">{{ role.roleName }}</option>
+                    }
+                  </select>
+                } @else if (roles?.length) {
+                  <p class="chip-empty">All roles assigned.</p>
+                }
+              }
+            </div>
           </div>
           <div class="field">
-            <label for="initialPassword">Initial Password</label>
-            <input id="initialPassword" type="password" formControlName="initialPassword" minlength="12" maxlength="128" autocomplete="new-password">
+            <span class="field-label">Status</span>
+            <label class="active-field" for="isActive">
+              <input id="isActive" type="checkbox" formControlName="isActive" (blur)="showFieldError('isActive')">
+              <span>Active</span>
+            </label>
           </div>
-          <div class="field">
-            <label for="confirmInitialPassword">Confirm Initial Password</label>
-            <input id="confirmInitialPassword" type="password" formControlName="confirmInitialPassword" minlength="12" maxlength="128" autocomplete="new-password">
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <button class="primary-button" type="submit" [disabled]="isSubmitting || isReadingImage || (isProfileMode && (!profileHasChanges || employeeForm.invalid))">
-        {{ isReadingImage ? 'Preparing Image...' : isSubmitting ? 'Saving...' : 'Save' }}
-      </button>
+      </div>
+
+      <footer class="form-actions">
+        <button class="primary-button" type="submit" [disabled]="isSubmitting || isReadingImage || (isProfileMode && (!profileHasChanges || employeeForm.invalid))">
+          {{ isReadingImage ? 'Preparing Image...' : isSubmitting ? 'Saving...' : 'Save' }}
+        </button>
+        <span class="form-hint" *ngIf="isProfileMode && !profileHasChanges">Edit a field to enable saving.</span>
+      </footer>
     </form>
   </main>
 </div>
