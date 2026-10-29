@@ -24,6 +24,7 @@ public sealed class EmployeeSearchRepository(IDbConnectionFactory connectionFact
                 dsg.DesignationName AS Designation,
                 d.DepartmentName AS Department,
                 t.TeamName,
+                bu.BusinessUnitName,
                 ISNULL(e.Email, '') AS Email,
                 e.PhoneNumber,
                 ISNULL(e.ExtensionNumber, 0) AS ExtensionNumber,
@@ -35,6 +36,7 @@ public sealed class EmployeeSearchRepository(IDbConnectionFactory connectionFact
             LEFT JOIN Departments d ON d.DepartmentId = e.DepartmentId
             LEFT JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
             LEFT JOIN Teams t ON t.TeamId = e.TeamId
+            LEFT JOIN BusinessUnits bu ON bu.BusinessUnitId = e.BusinessUnitId
             LEFT JOIN Employees reports ON reports.EmployeeId = e.ReportsToEmployeeId AND reports.IsDeleted = 0
             OUTER APPLY (
                 SELECT TOP (1) ImagePath
@@ -71,6 +73,7 @@ public sealed class EmployeeSearchRepository(IDbConnectionFactory connectionFact
                 Designation = row.Designation,
                 Department = row.Department,
                 TeamName = row.TeamName,
+                BusinessUnitName = row.BusinessUnitName,
                 Email = row.Email,
                 PhoneNumber = row.PhoneNumber,
                 ExtensionNumber = row.ExtensionNumber,
@@ -93,6 +96,7 @@ public sealed class EmployeeSearchRepository(IDbConnectionFactory connectionFact
         public string? Designation { get; set; }
         public string? Department { get; set; }
         public string? TeamName { get; set; }
+        public string? BusinessUnitName { get; set; }
         public string Email { get; set; } = string.Empty;
         public string? PhoneNumber { get; set; }
         public int ExtensionNumber { get; set; }
@@ -109,17 +113,24 @@ public sealed class EmployeeSearchRepository(IDbConnectionFactory connectionFact
             return null;
         }
 
-        var relativePath = imagePath.Replace('\\', '/').TrimStart('/');
-        var base64 = FileHelper.GetBase64StringFromFile(relativePath);
-        var extension = Path.GetExtension(relativePath);
-        var mimeType = extension.ToLowerInvariant() switch
+        try
         {
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png" => "image/png",
-            ".gif" => "image/gif",
-            _ => "application/octet-stream"
-        };
+            var relativePath = imagePath.Replace('\\', '/').TrimStart('/');
+            var base64 = FileHelper.GetBase64StringFromFile(relativePath);
+            var extension = Path.GetExtension(relativePath);
+            var mimeType = extension.ToLowerInvariant() switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                _ => "application/octet-stream"
+            };
 
-        return $"data:{mimeType};base64,{base64}";
+            return $"data:{mimeType};base64,{base64}";
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

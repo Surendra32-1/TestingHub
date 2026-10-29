@@ -45,6 +45,8 @@ public class GetEmployeeDto
     public string? RoleName { get; set; }
     public int TeamId { get; set; }
     public string? TeamName { get; set; }
+    public int? BusinessUnitId { get; set; }
+    public string? BusinessUnitName { get; set; }
     public int? CotivityEmployeeId { get; set; }
     public string? CotivityEmployeeName { get; set; }
     public bool IsActive { get; set; }

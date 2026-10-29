@@ -85,6 +85,9 @@ public sealed class CreateOrUpdateEmployeeRequestValidator : AbstractValidator<C
         RuleForEach(request => request.RoleIds)
             .GreaterThan(0).WithMessage("Select a valid role.");
         RuleFor(request => request.TeamId).GreaterThan(0).WithMessage("Select a team.");
+        RuleFor(request => request.BusinessUnitId)
+                    .GreaterThan(0).WithMessage("Select a valid business unit.")
+                    .When(request => request.BusinessUnitId.HasValue);
         RuleFor(request => request.CotivityEmployeeId)
             .GreaterThan(0).WithMessage("Select a valid Cotivity employee.")
             .When(request => request.CotivityEmployeeId.HasValue);

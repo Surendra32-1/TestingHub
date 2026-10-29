@@ -1,29 +1,139 @@
 /* =========================================================
    TeamHub - SEED DATA
    Standalone seed script for ALL tables.
-   Safe to run against an existing (empty or partially-filled) TeamHub DB:
-     - Master/reference rows are inserted only if the unique name doesn't exist.
-     - Transactional rows (addresses, skills, releases, ...) are inserted only
-       when their target table is still empty, so re-running won't duplicate.
+
+   Section 0 is DESTRUCTIVE: with @ResetMasters = 1 it wipes every
+   master/reference row together with the employee domain that points at
+   it; section 1 then rebuilds the master set from scratch with clean
+   identities (1..N in insert order). With @ResetMasters = 0 nothing is
+   deleted and section 1 falls back to idempotent-by-name inserts.
+   Permissions is never deleted: the Role -> Permission grants are
+   snapshotted by name before the reset and re-applied at the end of
+   section 1, so the Role Permission Matrix survives the new RoleIds.
+
+   Employee-domain rows are REBUILT: section 3 wipes every employee and its
+   dependent rows, then seeds 300 employees (toggle @ResetEmployees there).
+   Sections 4-10 are inserted only when their target table is still empty, so
+   re-running the script does not duplicate anything.
    Run AFTER databasesesign.sql and authentication-schema.sql.
-   Apply with:  sqlcmd -S ".\SQLEXPRESS" -d TeamHub -E -i seed-data.sql
+   Apply with:  sqlcmd -S ".\SQLEXPRESS" -d TeamHub -E -C -b -i seed-data.sql
    ========================================================= */
 USE [TeamHub];
 GO
+
+/* Filtered indexes (EmployeeHierarchy.sql) and computed objects require these
+   options. sqlcmd connects with QUOTED_IDENTIFIER OFF by default, which makes
+   every DELETE/INSERT against dbo.Employees fail with Msg 1934. */
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+GO
+
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 GO
 
 /* =========================================================
-   1) MASTER / REFERENCE TABLES  (idempotent by unique key)
+   0) DESTRUCTIVE MASTER RESET  (toggle @ResetMasters)
+
+      Empties every master/reference table and the employee domain that
+      references it, so section 1 can rebuild the whole master set with
+      clean identities (1..N in insert order) instead of inheriting the
+      drifting ids left behind by earlier runs and manual UI edits.
+
+      Permissions is never touched. The Role -> Permission grants are
+      snapshotted by name first, because a rebuilt Roles table gets new
+      RoleIds, and re-applied at the end of section 1.
+
+      Purge order follows the FK graph (children first):
+        RefreshTokens -> UserLoginHistory -> UserRoles -> RolePermissions
+        -> Users -> Successions -> EmployeeReleases -> EmployeeTerminates
+        -> EmployeeAddresses -> EmployeeSkills -> EmployeeImages
+        -> EmployeeDresses -> Employees -> CotivityEmployeeImages
+        -> CotivityEmployees -> the 14 master tables
+   ========================================================= */
+DECLARE @ResetMasters BIT = 1;   -- 1 = wipe + rebuild masters, 0 = keep existing
+
+IF @ResetMasters = 1
+BEGIN
+    -- the RBAC matrix must survive the RoleId churn, so key it by name
+    CREATE TABLE #RoleGrant
+    (
+        RoleName       VARCHAR(100)  NOT NULL,
+        PermissionCode NVARCHAR(200) NOT NULL
+    );
+
+    INSERT INTO #RoleGrant (RoleName, PermissionCode)
+    SELECT r.RoleName, p.PermissionCode
+    FROM dbo.RolePermissions rp
+    INNER JOIN dbo.Roles r       ON r.RoleId = rp.RoleId
+    INNER JOIN dbo.Permissions p ON p.PermissionId = rp.PermissionId;
+
+    BEGIN TRANSACTION;
+
+    DELETE FROM dbo.RefreshTokens;
+    DELETE FROM dbo.UserLoginHistory;
+    DELETE FROM dbo.UserRoles;
+    DELETE FROM dbo.RolePermissions;
+    DELETE FROM dbo.Users;
+
+    DELETE FROM dbo.Successions;
+    DELETE FROM dbo.EmployeeReleases;
+    DELETE FROM dbo.EmployeeTerminates;
+    DELETE FROM dbo.EmployeeAddresses;
+    DELETE FROM dbo.EmployeeSkills;
+    DELETE FROM dbo.EmployeeImages;
+    DELETE FROM dbo.EmployeeDresses;
+    DELETE FROM dbo.Employees;
+
+    DELETE FROM dbo.CotivityEmployeeImages;
+    DELETE FROM dbo.CotivityEmployees;
+
+    DELETE FROM dbo.Departments;
+    DELETE FROM dbo.Designations;
+    DELETE FROM dbo.CotivityDepartments;
+    DELETE FROM dbo.CotivityDesignations;
+    DELETE FROM dbo.JobTypes;
+    DELETE FROM dbo.BloodGroups;
+    DELETE FROM dbo.Gender;
+    DELETE FROM dbo.AddressType;
+    DELETE FROM dbo.Roles;
+    DELETE FROM dbo.Teams;
+    DELETE FROM dbo.Skills;
+    DELETE FROM dbo.Recruitments;
+    DELETE FROM dbo.BusinessUnits;
+    DELETE FROM dbo.DressSizes;
+
+    -- every master table is empty here, so restart its identity at 1
+    DBCC CHECKIDENT (N'dbo.Departments',            RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.Designations',           RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.CotivityDepartments',    RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.CotivityDesignations',   RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.JobTypes',               RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.BloodGroups',            RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.Gender',                 RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.AddressType',            RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.Roles',                  RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.Teams',                  RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.Skills',                 RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.Recruitments',           RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.BusinessUnits',          RESEED, 0) WITH NO_INFOMSGS;
+    DBCC CHECKIDENT (N'dbo.DressSizes',             RESEED, 0) WITH NO_INFOMSGS;
+
+    COMMIT TRANSACTION;
+END
+GO
+
+/* =========================================================
+   1) MASTER / REFERENCE TABLES
+      Rebuilds the master set after section 0. When section 0 is
+      disabled the inserts stay idempotent by unique name.
    ========================================================= */
 
 -- Departments
 INSERT INTO dbo.Departments (DepartmentName, IsActive, CreatedBy, CreatedDate)
 SELECT v.DepartmentName, 1, 'seed', SYSUTCDATETIME()
 FROM (VALUES
-    ('Engineering'), ('Human Resources'), ('Finance'), ('Sales'),
-    ('Marketing'), ('Operations'), ('IT Support'), ('Quality Assurance')
+    ('Engineering'), ('Human Resources'), ('Finance'),  ('Operations'), ('IT Support')
 ) v(DepartmentName)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.Departments d WHERE d.DepartmentName = v.DepartmentName);
 GO
@@ -32,6 +142,8 @@ GO
 INSERT INTO dbo.CotivityDepartments (CotivityDepartmentName, IsActive, CreatedBy, CreatedDate)
 SELECT v.CotivityDepartmentName, 1, 'seed', SYSUTCDATETIME()
 FROM (VALUES
+    ('Engineering'), ('Human Resources'), ('Finance'),  ('Operations'), ('IT Support'),
+    -- section 2 joins these four by name, so they must exist even after a wipe
     ('Product'), ('Delivery'), ('Platform'), ('Solutions')
 ) v(CotivityDepartmentName)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.CotivityDepartments c WHERE c.CotivityDepartmentName = v.CotivityDepartmentName);
@@ -41,13 +153,17 @@ GO
 INSERT INTO dbo.Designations (DesignationName, [Rank], IsActive, CreatedBy, CreatedDate)
 SELECT v.DesignationName, v.[Rank], 1, 'seed', SYSUTCDATETIME()
 FROM (VALUES
-    ('Chief Executive Officer', 1),  ('Chief Technology Officer', 2),
-    ('VP Engineering',           3),  ('Engineering Manager',     4),
-    ('Senior Developer',         5),  ('Developer',               6),
-    ('QA Lead',                  7),  ('QA Engineer',             8),
-    ('HR Manager',               9),  ('HR Executive',           10),
-    ('Accountant',              11),  ('Sales Manager',          12),
-    ('Support Engineer',        13),  ('Intern',                 14)
+    ('Assistant VICE President', 1),  ('Senior Hr Director', 2),
+    ('Hr Director', 3),  (' Hr Senior Manager', 4),
+    ('Hr Manager', 5), ('Senior  Director  Engineering  ', 2),
+    ('Director Engineering ', 3),  (' Senior Manager Engineering ',4),
+    ('Manager Engineering', 5),  ('Senior Accountant', 6),
+    ('QA Lead Manager', 7),  ('QA Engineer', 8), ('Senior Principal Engineer', 8),
+    ('Senior Engineer', 9),  ('Software Engineer II', 10),
+    ('Senior Engineer Support', 9),  ('Software Engineer Support II', 10),
+    ('Software Engineer Support I', 11), 
+    ('Software Engineer I', 11),  ('Associate Engineer', 12),
+    ('Support', 13),  ('Trainee',14)
 ) v(DesignationName, [Rank])
 WHERE NOT EXISTS (SELECT 1 FROM dbo.Designations d WHERE d.DesignationName = v.DesignationName);
 GO
@@ -65,7 +181,7 @@ GO
 -- JobTypes
 INSERT INTO dbo.JobTypes (JobTypeName, IsActive, CreatedBy, CreatedDate)
 SELECT v.JobTypeName, 1, 'seed', SYSUTCDATETIME()
-FROM (VALUES ('Full-Time'), ('Part-Time'), ('Contract'), ('Internship'), ('Remote')) v(JobTypeName)
+FROM (VALUES ('Full-Time'), ('Part-Time'), ('Contract'), ('Trainee'), ('Remote')) v(JobTypeName)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.JobTypes j WHERE j.JobTypeName = v.JobTypeName);
 GO
 
@@ -93,7 +209,9 @@ GO
 -- Roles  (Admin / NormalUser are required by the auth flow)
 INSERT INTO dbo.Roles (RoleName, IsActive, CreatedBy, CreatedDate)
 SELECT v.RoleName, 1, 'seed', SYSUTCDATETIME()
-FROM (VALUES ('Admin'), ('NormalUser'), ('Manager'), ('HR')) v(RoleName)
+FROM (VALUES ('Super Admin'), ('Admin'), ('Director'),('Manager'), ('HR'),('Developer'),('IT'), ('Trainee'),
+             -- required by the auth flow and by section 11; Admin lands on RoleId 2
+             ('NormalUser')) v(RoleName)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.Roles r WHERE r.RoleName = v.RoleName);
 GO
 
@@ -139,6 +257,26 @@ FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM dbo.DressSizes ds WHERE ds.DressName = v.DressName AND ds.[Size] = v.[Size]);
 GO
 
+/* ---- role -> permission grants restored after the rebuild ----------
+   Section 0 dropped every RolePermissions row because Roles was emptied.
+   Replay the snapshot taken there against the new RoleIds, so custom
+   grants (including the Admin mirror from rbac-schema.sql) are kept. */
+IF OBJECT_ID(N'tempdb..#RoleGrant') IS NOT NULL
+BEGIN
+    INSERT INTO dbo.RolePermissions (RoleId, PermissionId, CreatedBy, CreatedDate)
+    SELECT r.RoleId, p.PermissionId, 'seed', SYSUTCDATETIME()
+    FROM #RoleGrant g
+    INNER JOIN dbo.Roles r       ON r.RoleName = g.RoleName
+    INNER JOIN dbo.Permissions p ON p.PermissionCode = g.PermissionCode
+    WHERE NOT EXISTS (
+        SELECT 1 FROM dbo.RolePermissions rp
+        WHERE rp.RoleId = r.RoleId AND rp.PermissionId = p.PermissionId
+    );
+
+    DROP TABLE #RoleGrant;
+END
+GO
+
 /* =========================================================
    2) COTIVITY EMPLOYEES  (self-hierarchy set after insert)
    ========================================================= */
@@ -173,137 +311,618 @@ END
 GO
 
 /* =========================================================
-   3) EMPLOYEES  (core hierarchy set after insert)
-      Emails / ENumber are unique keys used for idempotency.
+   3) EMPLOYEES  - DESTRUCTIVE RESEED (300 records)
+
+      Master/reference tables are never touched here: this block owns
+      only employee-domain rows. It purges them in FK order, then
+      re-seeds 300 employees from a fixed name list (150 male, then
+      150 female).
+
+      WARNING: every employee is erased, together with the addresses,
+      skills, images, dresses, releases, terminations, logins and role
+      assignments that point at one. Set @ResetEmployees = 0 to keep
+      the current employee data and skip the whole block.
+
+      Purge order follows the FK graph (children first):
+        RefreshTokens -> UserLoginHistory -> UserRoles -> Users
+        -> Successions -> EmployeeReleases -> EmployeeTerminates
+        -> EmployeeAddresses -> EmployeeSkills -> EmployeeImages
+        -> EmployeeDresses -> Employees
+
+      Successions must go before Employees: it holds three FKs into the
+      employee domain (DepartingEmployeeId, InterimSupervisorEmployeeId,
+      InterimSupervisorExternalId) and every one of them is NO ACTION.
+
+      Deterministic layout (ENumber = 5000 + Seq):
+        5001          head of the company       (no manager)
+        5002-5003     executive tier            -> 5001
+        5004-5008     department heads          -> 5001
+        5009-5070     managers                  -> head of own department
+        5071-5300     staff                     -> manager of own department
+        5291-5300     inactive (exit pipeline: 5 resignations, 3 terminations)
    ========================================================= */
-IF NOT EXISTS (SELECT 1 FROM dbo.Employees)
+DECLARE @ResetEmployees BIT = 1;   -- 1 = wipe + reseed employees, 0 = keep existing
+
+IF @ResetEmployees = 1
 BEGIN
+    BEGIN TRANSACTION;
+
+    DELETE FROM dbo.RefreshTokens;
+    DELETE FROM dbo.UserLoginHistory;
+    DELETE FROM dbo.UserRoles;
+    DELETE FROM dbo.Users;
+
+    DELETE FROM dbo.Successions;
+
+    DELETE FROM dbo.EmployeeReleases;
+    DELETE FROM dbo.EmployeeTerminates;
+    DELETE FROM dbo.EmployeeAddresses;
+    DELETE FROM dbo.EmployeeSkills;
+    DELETE FROM dbo.EmployeeImages;
+    DELETE FROM dbo.EmployeeDresses;
+
+    DELETE FROM dbo.Employees;
+
     INSERT INTO dbo.Employees
         (ENumber, FirstName, MiddleName, LastName, JoinedDate, JoinedDateBS,
          Email, AlternateEmail, DesignationId, DepartmentId, JobTypeId, BloodGroupId, GenderId,
          ReportsToEmployeeId, LeadEmployeeId, StationNumber, RecruitmentId, ExtensionNumber,
          CitizenshipNumber, DateOfBirth, DateOfBirthBS, PhoneNumber, MobileNumber,
          EmergencyContactNumber, EmergencyContactPerson, FatherName, MotherName, SpouseName,
-         PANNumber, LockerNumber, RoleId, TeamId, CotivityEmployeeId, IsActive, CreatedBy, CreatedDate)
+         PANNumber, LockerNumber, TeamId, BusinessUnitId, CotivityEmployeeId, IsActive, CreatedBy, CreatedDate)
     SELECT
-        s.ENumber, s.FirstName, s.MiddleName, s.LastName, s.JoinedDate, s.JoinedDateBS,
-        s.Email, NULL, des.DesignationId, dep.DepartmentId, jt.JobTypeId, bg.BloodGroupId, g.GenderId,
-        NULL, NULL, s.StationNumber, rc.RecruitmentId, s.ExtensionNumber,
-        s.CitizenshipNumber, s.DateOfBirth, s.DateOfBirthBS, s.PhoneNumber, s.MobileNumber,
-        s.EmergencyContactNumber, s.EmergencyContactPerson, s.FatherName, s.MotherName, s.SpouseName,
-        s.PANNumber, s.LockerNumber, r.RoleId, t.TeamId, ce.CotivityEmployeeId, 1, NULL, SYSUTCDATETIME()
+        s.Seq + 5000,
+        s.FirstName, s.MiddleName, s.LastName,
+        jd.JoinedDate,
+        FORMAT(DATEADD(YEAR, 56, jd.JoinedDate), 'yyyy-MM-dd'),
+        LOWER(s.FirstName) + '.' + LOWER(s.LastName)
+            + RIGHT('000' + CAST(s.Seq AS VARCHAR(3)), 3) + '@teamhub.com',
+        CASE WHEN s.Seq % 10 = 0 THEN
+            'alt.' + LOWER(s.FirstName) + '.' + LOWER(s.LastName)
+            + RIGHT('000' + CAST(s.Seq AS VARCHAR(3)), 3) + '@teamhub.com'
+        END,
+        COALESCE(des.DesignationId, (SELECT MIN(DesignationId) FROM dbo.Designations)),
+        dep.DepartmentId, jt.JobTypeId, bg.BloodGroupId, g.GenderId,
+        NULL, NULL,
+        'ST-' + RIGHT('000' + CAST(s.Seq AS VARCHAR(3)), 3),
+        rec.RecruitmentId,
+        400 + s.Seq,
+        'NPC-' + RIGHT('0000000' + CAST(100000 + s.Seq AS VARCHAR(10)), 7),
+        dob.DateOfBirth,
+        FORMAT(DATEADD(YEAR, 56, dob.DateOfBirth), 'yyyy-MM-dd'),
+        '01-4' + RIGHT('00000' + CAST(s.Seq AS VARCHAR(5)), 5),
+        '9800' + RIGHT('000000' + CAST(s.Seq AS VARCHAR(3)), 6),
+        '9810' + RIGHT('000000' + CAST(s.Seq AS VARCHAR(3)), 6),
+        fam.MotherName,
+        fam.FatherName,
+        fam.MotherName,
+        fam.SpouseName,
+        'PAN' + RIGHT('0000000' + CAST(500000 + s.Seq AS VARCHAR(10)), 7) + 'N',
+        'LK-' + RIGHT('000' + CAST(s.Seq AS VARCHAR(3)), 3),
+        tm.TeamId,
+        bu.BusinessUnitId,
+        cot.CotivityEmployeeId,
+        CASE WHEN s.Seq > 290 THEN 0 ELSE 1 END,
+        'seed', SYSUTCDATETIME()
     FROM (VALUES
-        -- ENumber, First, Middle, Last, JoinedDate, BS, Email, Designation, Department, JobType, Blood, Gender, Station, Ext, Citizenship, DOB, DOB-BS, Phone, Mobile, Emerg#, EmergPerson, Father, Mother, Spouse, PAN, Locker, Role, Team, Recruitment, CotivityName
-        (1001,'David',   NULL,   'Chen',     '2015-01-10','2071-09-26','david.chen@teamhub.com','Chief Executive Officer','Engineering','Full-Time','O+','Male','ST-01',201,'NPC-100001','1980-03-01','2036-11-17','01-4000001','9800000001','9800001001','Mary Chen','John Chen','Elena Chen','NULL','PAN100001A','LK-01','Admin','Core Platform','Direct','Alice Turner'),
-        (1002,'Sarah',   NULL,   'Wilson',   '2016-05-02','2072-01-19','sarah.wilson@teamhub.com','Chief Technology Officer','Engineering','Full-Time','A+','Female','ST-02',202,'NPC-100002','1982-07-14','2039-04-01','01-4000002','9800000002','9800001002','Tom Wilson','Robert Wilson','Anna Wilson','NULL','PAN100002A','LK-02','Admin','Web','Referral','Bob Cox'),
-        (1003,'Michael', 'A',    'Brown',    '2017-08-15','2074-05-01','michael.brown@teamhub.com','VP Engineering','Engineering','Full-Time','B+','Male','ST-03',203,'NPC-100003','1983-11-22','2040-08-06','01-4000003','9800000003','9800001003','Grace Brown','Paul Brown','Nina Brown','NULL','PAN100003A','LK-03','Manager','Core Platform','LinkedIn','Cara Diaz'),
-        (1004,'Emily',   NULL,   'Davis',    '2018-03-01','2074-11-17','emily.davis@teamhub.com','Engineering Manager','Engineering','Full-Time','AB+','Female','ST-04',204,'NPC-100004','1986-05-30','2043-02-15','01-4000004','9800000004','9800001004','Kevin Davis','Mark Davis',NULL,'NULL','PAN100004A','LK-04','Manager','Payments','Referral',NULL),
-        (1005,'James',   NULL,   'Lee',      '2019-06-11','2076-03-01','james.lee@teamhub.com','Senior Developer','Engineering','Full-Time','O-','Male','ST-05',205,'NPC-100005','1990-09-09','2047-05-26','01-4000005','9800000005','9800001005','Amy Lee','Daniel Lee',NULL,'NULL','PAN100005A','LK-05','NormalUser','Web','Job Portal',NULL),
-        (1006,'Priya',   NULL,   'Sharma',   '2020-02-20','2076-11-07','priya.sharma@teamhub.com','Developer','Engineering','Full-Time','A-','Female','ST-06',206,'NPC-100006','1995-12-05','2052-08-21','01-4000006','9800000006','9800001006','Raj Sharma','Vikram Sharma',NULL,'NULL','PAN100006A','LK-06','NormalUser','Web','Campus',NULL),
-        (1007,'Daniel',  NULL,   'Garcia',   '2018-09-03','2075-05-19','daniel.garcia@teamhub.com','QA Lead','Quality Assurance','Full-Time','B-','Male','ST-07',207,'NPC-100007','1987-01-18','2043-10-02','01-4000007','9800000007','9800001007','Sofia Garcia','Luis Garcia','Ivy Garcia','NULL','PAN100007A','LK-07','Manager','QA','Direct',NULL),
-        (1008,'Lisa',    NULL,   'Anderson', '2021-04-12','2078-01-01','lisa.anderson@teamhub.com','QA Engineer','Quality Assurance','Full-Time','O+','Female','ST-08',208,'NPC-100008','1993-06-27','2050-03-13','01-4000008','9800000008','9800001008','Carl Anderson','Peter Anderson',NULL,'NULL','PAN100008A','LK-08','NormalUser','QA','LinkedIn',NULL),
-        (1009,'Robert',  NULL,   'Martinez', '2017-01-25','2073-10-12','robert.martinez@teamhub.com','HR Manager','Human Resources','Full-Time','A+','Male','ST-09',209,'NPC-100009','1984-08-08','2041-05-05','01-4000009','9800000009','9800001009','Rosa Martinez','Carlos Martinez','Mia Martinez','NULL','PAN100009A','LK-09','HR','People Ops','Referral',NULL),
-        (1010,'Linda',   NULL,   'Wong',     '2019-11-05','2076-07-20','linda.wong@teamhub.com','Accountant','Finance','Full-Time','AB-','Female','ST-10',210,'NPC-100010','1989-02-14','2045-11-03','01-4000010','9800000010','9800001010','Ken Wong','George Wong','Sam Wong','NULL','PAN100010A','LK-10','NormalUser','People Ops','Job Portal',NULL)
-    ) s(ENumber, FirstName, MiddleName, LastName, JoinedDate, JoinedDateBS, Email,
-       DesignationName, DepartmentName, JobTypeName, BloodGroupName, GenderName,
-       StationNumber, ExtensionNumber, CitizenshipNumber, DateOfBirth, DateOfBirthBS,
-       PhoneNumber, MobileNumber, EmergencyContactNumber, EmergencyContactPerson,
-       FatherName, MotherName, SpouseName, PANNumber, LockerNumber,
-       RoleName, TeamName, RecruitmentName, CotivityEmployeeName)
-    INNER JOIN dbo.Designations  des ON des.DesignationName = s.DesignationName
-    INNER JOIN dbo.Departments   dep ON dep.DepartmentName  = s.DepartmentName
-    INNER JOIN dbo.JobTypes      jt  ON jt.JobTypeName      = s.JobTypeName
-    INNER JOIN dbo.BloodGroups   bg  ON bg.BloodGroupName   = s.BloodGroupName
-    INNER JOIN dbo.Gender        g   ON g.GenderName        = s.GenderName
-    INNER JOIN dbo.Roles         r   ON r.RoleName          = s.RoleName
-    INNER JOIN dbo.Teams         t   ON t.TeamName          = s.TeamName
-    LEFT  JOIN dbo.Recruitments  rc  ON rc.RecruitmentName  = s.RecruitmentName
-    LEFT  JOIN dbo.CotivityEmployees ce ON ce.CotivityEmployeeName = s.CotivityEmployeeName;
+        -- Seq, Gender, First, Middle, Last  (1-150 male, 151-300 female)
+        (1, N'Male', N'Aarav', N'Kumar', N'Sharma'),
+        (2, N'Male', N'Aayush', N'Raj', N'Thapa'),
+        (3, N'Male', N'Abhishek', N'Prasad', N'Adhikari'),
+        (4, N'Male', N'Aditya', N'Bahadur', N'Gurung'),
+        (5, N'Male', N'Aman', N'Kumar', N'Yadav'),
+        (6, N'Male', N'Amit', N'Raj', N'Shrestha'),
+        (7, N'Male', N'Anil', N'Prasad', N'Karki'),
+        (8, N'Male', N'Anish', N'Kumar', N'Bhandari'),
+        (9, N'Male', N'Ankit', N'Raj', N'Poudel'),
+        (10, N'Male', N'Arjun', N'Bahadur', N'Rana'),
+        (11, N'Male', N'Ashish', N'Kumar', N'Chaudhary'),
+        (12, N'Male', N'Bibek', N'Raj', N'KC'),
+        (13, N'Male', N'Bikash', N'Prasad', N'Magar'),
+        (14, N'Male', N'Binod', N'Kumar', N'Tamang'),
+        (15, N'Male', N'Bishal', N'Raj', N'Basnet'),
+        (16, N'Male', N'Deepak', N'Bahadur', N'Ghimire'),
+        (17, N'Male', N'Dipesh', N'Kumar', N'Joshi'),
+        (18, N'Male', N'Ganesh', N'Prasad', N'Pandey'),
+        (19, N'Male', N'Gopal', N'Raj', N'Bhattarai'),
+        (20, N'Male', N'Hari', N'Bahadur', N'Oli'),
+        (21, N'Male', N'Hemant', N'Kumar', N'Mishra'),
+        (22, N'Male', N'Ishaan', N'Raj', N'Khadka'),
+        (23, N'Male', N'Karan', N'Kumar', N'Shah'),
+        (24, N'Male', N'Kiran', N'Prasad', N'Rijal'),
+        (25, N'Male', N'Krishna', N'Bahadur', N'Baral'),
+        (26, N'Male', N'Laxman', N'Raj', N'Acharya'),
+        (27, N'Male', N'Manish', N'Kumar', N'Dhakal'),
+        (28, N'Male', N'Milan', N'Raj', N'Koirala'),
+        (29, N'Male', N'Nabin', N'Prasad', N'Gautam'),
+        (30, N'Male', N'Nischal', N'Kumar', N'Pandey'),
+        (31, N'Male', N'Nishan', N'Raj', N'Thakuri'),
+        (32, N'Male', N'Nitesh', N'Kumar', N'Bista'),
+        (33, N'Male', N'Pawan', N'Raj', N'Shahi'),
+        (34, N'Male', N'Prabin', N'Kumar', N'Pokhrel'),
+        (35, N'Male', N'Prakash', N'Bahadur', N'Regmi'),
+        (36, N'Male', N'Pramod', N'Raj', N'Neupane'),
+        (37, N'Male', N'Prashant', N'Kumar', N'Sapkota'),
+        (38, N'Male', N'Pratik', N'Raj', N'Aryal'),
+        (39, N'Male', N'Rajan', N'Kumar', N'Baniya'),
+        (40, N'Male', N'Ramesh', N'Prasad', N'Dahal'),
+        (41, N'Male', N'Ranjan', N'Raj', N'Kandel'),
+        (42, N'Male', N'Roshan', N'Kumar', N'Mahato'),
+        (43, N'Male', N'Sagar', N'Raj', N'Mandal'),
+        (44, N'Male', N'Sameer', N'Kumar', N'Yadav'),
+        (45, N'Male', N'Sandeep', N'Raj', N'Sharma'),
+        (46, N'Male', N'Sandesh', N'Kumar', N'Thapa'),
+        (47, N'Male', N'Santosh', N'Prasad', N'Adhikari'),
+        (48, N'Male', N'Saroj', N'Raj', N'Gurung'),
+        (49, N'Male', N'Saurav', N'Kumar', N'Shrestha'),
+        (50, N'Male', N'Suman', N'Raj', N'Karki'),
+        (51, N'Male', N'Sunil', N'Kumar', N'Bhandari'),
+        (52, N'Male', N'Suraj', N'Prasad', N'Poudel'),
+        (53, N'Male', N'Sujan', N'Raj', N'Rana'),
+        (54, N'Male', N'Sushant', N'Kumar', N'Chaudhary'),
+        (55, N'Male', N'Ujjwal', N'Raj', N'KC'),
+        (56, N'Male', N'Umesh', N'Prasad', N'Magar'),
+        (57, N'Male', N'Vivek', N'Kumar', N'Tamang'),
+        (58, N'Male', N'Yogesh', N'Raj', N'Basnet'),
+        (59, N'Male', N'Ritesh', N'Kumar', N'Ghimire'),
+        (60, N'Male', N'Rohan', N'Raj', N'Joshi'),
+        (61, N'Male', N'Akash', N'Kumar', N'Pandey'),
+        (62, N'Male', N'Alok', N'Raj', N'Bhattarai'),
+        (63, N'Male', N'Amar', N'Prasad', N'Oli'),
+        (64, N'Male', N'Anup', N'Kumar', N'Mishra'),
+        (65, N'Male', N'Arnav', N'Raj', N'Khadka'),
+        (66, N'Male', N'Ashok', N'Bahadur', N'Shah'),
+        (67, N'Male', N'Bimal', N'Kumar', N'Rijal'),
+        (68, N'Male', N'Chandan', N'Raj', N'Baral'),
+        (69, N'Male', N'Dinesh', N'Prasad', N'Acharya'),
+        (70, N'Male', N'Dipak', N'Kumar', N'Dhakal'),
+        (71, N'Male', N'Dhiraj', N'Raj', N'Koirala'),
+        (72, N'Male', N'Eshan', N'Kumar', N'Gautam'),
+        (73, N'Male', N'Firoj', N'Ali', N'Khan'),
+        (74, N'Male', N'Gaurav', N'Raj', N'Thakuri'),
+        (75, N'Male', N'Girish', N'Kumar', N'Bista'),
+        (76, N'Male', N'Hitesh', N'Raj', N'Shahi'),
+        (77, N'Male', N'Jitendra', N'Kumar', N'Pokhrel'),
+        (78, N'Male', N'Kamal', N'Prasad', N'Regmi'),
+        (79, N'Male', N'Kapil', N'Raj', N'Neupane'),
+        (80, N'Male', N'Kushal', N'Kumar', N'Sapkota'),
+        (81, N'Male', N'Lokesh', N'Raj', N'Aryal'),
+        (82, N'Male', N'Madan', N'Bahadur', N'Baniya'),
+        (83, N'Male', N'Mohan', N'Prasad', N'Dahal'),
+        (84, N'Male', N'Mukesh', N'Kumar', N'Kandel'),
+        (85, N'Male', N'Nirmal', N'Raj', N'Mahato'),
+        (86, N'Male', N'Niraj', N'Kumar', N'Mandal'),
+        (87, N'Male', N'Pritam', N'Raj', N'Yadav'),
+        (88, N'Male', N'Rabi', N'Kumar', N'Sharma'),
+        (89, N'Male', N'Rajesh', N'Prasad', N'Thapa'),
+        (90, N'Male', N'Rakesh', N'Raj', N'Adhikari'),
+        (91, N'Male', N'Rishav', N'Kumar', N'Gurung'),
+        (92, N'Male', N'Sachin', N'Raj', N'Shrestha'),
+        (93, N'Male', N'Samir', N'Kumar', N'Karki'),
+        (94, N'Male', N'Shankar', N'Prasad', N'Bhandari'),
+        (95, N'Male', N'Shiva', N'Raj', N'Poudel'),
+        (96, N'Male', N'Shyam', N'Bahadur', N'Rana'),
+        (97, N'Male', N'Siddhant', N'Kumar', N'Chaudhary'),
+        (98, N'Male', N'Srijan', N'Raj', N'KC'),
+        (99, N'Male', N'Subash', N'Kumar', N'Magar'),
+        (100, N'Male', N'Sudip', N'Raj', N'Tamang'),
+        (101, N'Male', N'Surendra', N'Prasad', N'Basnet'),
+        (102, N'Male', N'Tenzing', N'Dorje', N'Sherpa'),
+        (103, N'Male', N'Uday', N'Kumar', N'Ghimire'),
+        (104, N'Male', N'Vikas', N'Raj', N'Joshi'),
+        (105, N'Male', N'Yubraj', N'Bahadur', N'Pandey'),
+        (106, N'Male', N'Aakash', N'Raj', N'Bhattarai'),
+        (107, N'Male', N'Anmol', N'Kumar', N'Oli'),
+        (108, N'Male', N'Ashwin', N'Raj', N'Mishra'),
+        (109, N'Male', N'Bhuvan', N'Kumar', N'Khadka'),
+        (110, N'Male', N'Chirag', N'Raj', N'Shah'),
+        (111, N'Male', N'Dev', N'Kumar', N'Rijal'),
+        (112, N'Male', N'Dhruv', N'Raj', N'Baral'),
+        (113, N'Male', N'Hriday', N'Kumar', N'Acharya'),
+        (114, N'Male', N'Kabir', N'Raj', N'Dhakal'),
+        (115, N'Male', N'Lakshya', N'Kumar', N'Koirala'),
+        (116, N'Male', N'Manav', N'Raj', N'Gautam'),
+        (117, N'Male', N'Neeraj', N'Kumar', N'Thakuri'),
+        (118, N'Male', N'Om', N'Prakash', N'Bista'),
+        (119, N'Male', N'Parth', N'Kumar', N'Shahi'),
+        (120, N'Male', N'Raghav', N'Raj', N'Pokhrel'),
+        (121, N'Male', N'Reyansh', N'Kumar', N'Regmi'),
+        (122, N'Male', N'Rudra', N'Raj', N'Neupane'),
+        (123, N'Male', N'Samarth', N'Kumar', N'Sapkota'),
+        (124, N'Male', N'Shaurya', N'Raj', N'Aryal'),
+        (125, N'Male', N'Shubham', N'Kumar', N'Baniya'),
+        (126, N'Male', N'Tanmay', N'Raj', N'Dahal'),
+        (127, N'Male', N'Utkarsh', N'Kumar', N'Kandel'),
+        (128, N'Male', N'Vedant', N'Raj', N'Mahato'),
+        (129, N'Male', N'Yash', N'Raj', N'Mandal'),
+        (130, N'Male', N'Abhinav', N'Raj', N'Yadav'),
+        (131, N'Male', N'Anurag', N'Kumar', N'Sharma'),
+        (132, N'Male', N'Biraj', N'Raj', N'Thapa'),
+        (133, N'Male', N'Dawa', N'Norbu', N'Sherpa'),
+        (134, N'Male', N'Elish', N'Kumar', N'Adhikari'),
+        (135, N'Male', N'Farhan', N'Ahmed', N'Khan'),
+        (136, N'Male', N'Hammad', N'Ali', N'Ansari'),
+        (137, N'Male', N'Imran', N'Ahmed', N'Siddiqui'),
+        (138, N'Male', N'Junaid', N'Ali', N'Khan'),
+        (139, N'Male', N'Kabir', N'Ahmed', N'Ansari'),
+        (140, N'Male', N'Mahesh', N'Kumar', N'Gurung'),
+        (141, N'Male', N'Nitesh', N'Raj', N'Shrestha'),
+        (142, N'Male', N'Pranav', N'Kumar', N'Karki'),
+        (143, N'Male', N'Rituraj', N'Kumar', N'Bhandari'),
+        (144, N'Male', N'Shashank', N'Raj', N'Poudel'),
+        (145, N'Male', N'Tejas', N'Kumar', N'Rana'),
+        (146, N'Male', N'Utsav', N'Raj', N'Chaudhary'),
+        (147, N'Male', N'Vaibhav', N'Kumar', N'KC'),
+        (148, N'Male', N'Yaman', N'Raj', N'Magar'),
+        (149, N'Male', N'Zaid', N'Ahmed', N'Khan'),
+        (150, N'Male', N'Abhay', N'Kumar', N'Tamang'),
+        (151, N'Female', N'Aaradhya', N'Kumari', N'Sharma'),
+        (152, N'Female', N'Aastha', N'Kumari', N'Thapa'),
+        (153, N'Female', N'Aayushi', N'Kumari', N'Adhikari'),
+        (154, N'Female', N'Abha', N'Kumari', N'Gurung'),
+        (155, N'Female', N'Aditi', N'Kumari', N'Yadav'),
+        (156, N'Female', N'Aisha', N'Noor', N'Shrestha'),
+        (157, N'Female', N'Alisha', N'Kumari', N'Karki'),
+        (158, N'Female', N'Amrita', N'Kumari', N'Bhandari'),
+        (159, N'Female', N'Anisha', N'Kumari', N'Poudel'),
+        (160, N'Female', N'Anjali', N'Kumari', N'Rana'),
+        (161, N'Female', N'Ankita', N'Kumari', N'Chaudhary'),
+        (162, N'Female', N'Anu', N'Kumari', N'KC'),
+        (163, N'Female', N'Anusha', N'Kumari', N'Magar'),
+        (164, N'Female', N'Anushka', N'Kumari', N'Tamang'),
+        (165, N'Female', N'Aparna', N'Kumari', N'Basnet'),
+        (166, N'Female', N'Archana', N'Kumari', N'Ghimire'),
+        (167, N'Female', N'Arpana', N'Kumari', N'Joshi'),
+        (168, N'Female', N'Ashika', N'Kumari', N'Pandey'),
+        (169, N'Female', N'Asmita', N'Kumari', N'Bhattarai'),
+        (170, N'Female', N'Ayusha', N'Kumari', N'Oli'),
+        (171, N'Female', N'Barsha', N'Kumari', N'Mishra'),
+        (172, N'Female', N'Bhumika', N'Kumari', N'Khadka'),
+        (173, N'Female', N'Binita', N'Kumari', N'Shah'),
+        (174, N'Female', N'Bipana', N'Kumari', N'Rijal'),
+        (175, N'Female', N'Brinda', N'Kumari', N'Baral'),
+        (176, N'Female', N'Chandani', N'Kumari', N'Acharya'),
+        (177, N'Female', N'Chanda', N'Kumari', N'Dhakal'),
+        (178, N'Female', N'Deepa', N'Kumari', N'Koirala'),
+        (179, N'Female', N'Deepika', N'Kumari', N'Gautam'),
+        (180, N'Female', N'Diya', N'Kumari', N'Thakuri'),
+        (181, N'Female', N'Elina', N'Kumari', N'Bista'),
+        (182, N'Female', N'Ganga', N'Kumari', N'Shahi'),
+        (183, N'Female', N'Garima', N'Kumari', N'Pokhrel'),
+        (184, N'Female', N'Gita', N'Kumari', N'Regmi'),
+        (185, N'Female', N'Grishma', N'Kumari', N'Neupane'),
+        (186, N'Female', N'Hema', N'Kumari', N'Sapkota'),
+        (187, N'Female', N'Isha', N'Kumari', N'Aryal'),
+        (188, N'Female', N'Ishani', N'Kumari', N'Baniya'),
+        (189, N'Female', N'Janaki', N'Kumari', N'Dahal'),
+        (190, N'Female', N'Jasmine', N'Noor', N'Kandel'),
+        (191, N'Female', N'Jenisha', N'Kumari', N'Mahato'),
+        (192, N'Female', N'Jharana', N'Kumari', N'Mandal'),
+        (193, N'Female', N'Jyoti', N'Kumari', N'Yadav'),
+        (194, N'Female', N'Kabita', N'Kumari', N'Sharma'),
+        (195, N'Female', N'Kalpana', N'Kumari', N'Thapa'),
+        (196, N'Female', N'Karishma', N'Kumari', N'Adhikari'),
+        (197, N'Female', N'Karuna', N'Kumari', N'Gurung'),
+        (198, N'Female', N'Kiran', N'Kumari', N'Shrestha'),
+        (199, N'Female', N'Kriti', N'Kumari', N'Karki'),
+        (200, N'Female', N'Kusum', N'Kumari', N'Bhandari'),
+        (201, N'Female', N'Laxmi', N'Kumari', N'Poudel'),
+        (202, N'Female', N'Manisha', N'Kumari', N'Rana'),
+        (203, N'Female', N'Manju', N'Kumari', N'Chaudhary'),
+        (204, N'Female', N'Maya', N'Kumari', N'KC'),
+        (205, N'Female', N'Menuka', N'Kumari', N'Magar'),
+        (206, N'Female', N'Mina', N'Kumari', N'Tamang'),
+        (207, N'Female', N'Monika', N'Kumari', N'Basnet'),
+        (208, N'Female', N'Muskan', N'Kumari', N'Ghimire'),
+        (209, N'Female', N'Namrata', N'Kumari', N'Joshi'),
+        (210, N'Female', N'Nandini', N'Kumari', N'Pandey'),
+        (211, N'Female', N'Nisha', N'Kumari', N'Bhattarai'),
+        (212, N'Female', N'Nitu', N'Kumari', N'Oli'),
+        (213, N'Female', N'Pabitra', N'Kumari', N'Mishra'),
+        (214, N'Female', N'Pooja', N'Kumari', N'Khadka'),
+        (215, N'Female', N'Pragati', N'Kumari', N'Shah'),
+        (216, N'Female', N'Prakriti', N'Kumari', N'Rijal'),
+        (217, N'Female', N'Pratima', N'Kumari', N'Baral'),
+        (218, N'Female', N'Pratiksha', N'Kumari', N'Acharya'),
+        (219, N'Female', N'Priya', N'Kumari', N'Dhakal'),
+        (220, N'Female', N'Purnima', N'Kumari', N'Koirala'),
+        (221, N'Female', N'Rachana', N'Kumari', N'Gautam'),
+        (222, N'Female', N'Radhika', N'Kumari', N'Thakuri'),
+        (223, N'Female', N'Rajani', N'Kumari', N'Bista'),
+        (224, N'Female', N'Raksha', N'Kumari', N'Shahi'),
+        (225, N'Female', N'Ramita', N'Kumari', N'Pokhrel'),
+        (226, N'Female', N'Ranjana', N'Kumari', N'Regmi'),
+        (227, N'Female', N'Rashmi', N'Kumari', N'Neupane'),
+        (228, N'Female', N'Reema', N'Kumari', N'Sapkota'),
+        (229, N'Female', N'Rekha', N'Kumari', N'Aryal'),
+        (230, N'Female', N'Richa', N'Kumari', N'Baniya'),
+        (231, N'Female', N'Rina', N'Kumari', N'Dahal'),
+        (232, N'Female', N'Ritu', N'Kumari', N'Kandel'),
+        (233, N'Female', N'Riya', N'Kumari', N'Mahato'),
+        (234, N'Female', N'Roshani', N'Kumari', N'Mandal'),
+        (235, N'Female', N'Rubina', N'Noor', N'Yadav'),
+        (236, N'Female', N'Sabina', N'Kumari', N'Sharma'),
+        (237, N'Female', N'Samiksha', N'Kumari', N'Thapa'),
+        (238, N'Female', N'Samjhana', N'Kumari', N'Adhikari'),
+        (239, N'Female', N'Sangita', N'Kumari', N'Gurung'),
+        (240, N'Female', N'Sarita', N'Kumari', N'Shrestha'),
+        (241, N'Female', N'Sarmila', N'Kumari', N'Karki'),
+        (242, N'Female', N'Sashi', N'Kumari', N'Bhandari'),
+        (243, N'Female', N'Shanti', N'Kumari', N'Poudel'),
+        (244, N'Female', N'Sharmila', N'Kumari', N'Rana'),
+        (245, N'Female', N'Shilpa', N'Kumari', N'Chaudhary'),
+        (246, N'Female', N'Shreya', N'Kumari', N'KC'),
+        (247, N'Female', N'Shraddha', N'Kumari', N'Magar'),
+        (248, N'Female', N'Sita', N'Kumari', N'Tamang'),
+        (249, N'Female', N'Smriti', N'Kumari', N'Basnet'),
+        (250, N'Female', N'Sneha', N'Kumari', N'Ghimire'),
+        (251, N'Female', N'Sonam', N'Dolma', N'Sherpa'),
+        (252, N'Female', N'Sunita', N'Kumari', N'Joshi'),
+        (253, N'Female', N'Supriya', N'Kumari', N'Pandey'),
+        (254, N'Female', N'Sushma', N'Kumari', N'Bhattarai'),
+        (255, N'Female', N'Sweta', N'Kumari', N'Oli'),
+        (256, N'Female', N'Tamanna', N'Noor', N'Khan'),
+        (257, N'Female', N'Tanisha', N'Kumari', N'Mishra'),
+        (258, N'Female', N'Trishna', N'Kumari', N'Khadka'),
+        (259, N'Female', N'Uma', N'Kumari', N'Shah'),
+        (260, N'Female', N'Urmila', N'Kumari', N'Rijal'),
+        (261, N'Female', N'Usha', N'Kumari', N'Baral'),
+        (262, N'Female', N'Vandana', N'Kumari', N'Acharya'),
+        (263, N'Female', N'Varsha', N'Kumari', N'Dhakal'),
+        (264, N'Female', N'Vedika', N'Kumari', N'Koirala'),
+        (265, N'Female', N'Yashaswi', N'Kumari', N'Gautam'),
+        (266, N'Female', N'Yogita', N'Kumari', N'Thakuri'),
+        (267, N'Female', N'Zara', N'Noor', N'Khan'),
+        (268, N'Female', N'Zunaira', N'Fatima', N'Ansari'),
+        (269, N'Female', N'Aakriti', N'Kumari', N'Bista'),
+        (270, N'Female', N'Aanchal', N'Kumari', N'Shahi'),
+        (271, N'Female', N'Aarya', N'Kumari', N'Pokhrel'),
+        (272, N'Female', N'Adrija', N'Kumari', N'Regmi'),
+        (273, N'Female', N'Akanksha', N'Kumari', N'Neupane'),
+        (274, N'Female', N'Amisha', N'Kumari', N'Sapkota'),
+        (275, N'Female', N'Anamika', N'Kumari', N'Aryal'),
+        (276, N'Female', N'Anaya', N'Kumari', N'Baniya'),
+        (277, N'Female', N'Anwesha', N'Kumari', N'Dahal'),
+        (278, N'Female', N'Avani', N'Kumari', N'Kandel'),
+        (279, N'Female', N'Bhawana', N'Kumari', N'Mahato'),
+        (280, N'Female', N'Charu', N'Kumari', N'Mandal'),
+        (281, N'Female', N'Disha', N'Kumari', N'Yadav'),
+        (282, N'Female', N'Esha', N'Kumari', N'Sharma'),
+        (283, N'Female', N'Falgun', N'Kumari', N'Thapa'),
+        (284, N'Female', N'Harshita', N'Kumari', N'Adhikari'),
+        (285, N'Female', N'Ira', N'Kumari', N'Gurung'),
+        (286, N'Female', N'Jiya', N'Kumari', N'Shrestha'),
+        (287, N'Female', N'Kalyani', N'Kumari', N'Karki'),
+        (288, N'Female', N'Kashish', N'Kumari', N'Bhandari'),
+        (289, N'Female', N'Khushi', N'Kumari', N'Poudel'),
+        (290, N'Female', N'Lavanya', N'Kumari', N'Rana'),
+        (291, N'Female', N'Mahima', N'Kumari', N'Chaudhary'),
+        (292, N'Female', N'Navya', N'Kumari', N'KC'),
+        (293, N'Female', N'Ojaswi', N'Kumari', N'Magar'),
+        (294, N'Female', N'Palak', N'Kumari', N'Tamang'),
+        (295, N'Female', N'Pari', N'Kumari', N'Basnet'),
+        (296, N'Female', N'Prisha', N'Kumari', N'Ghimire'),
+        (297, N'Female', N'Saanvi', N'Kumari', N'Joshi'),
+        (298, N'Female', N'Shanaya', N'Kumari', N'Pandey'),
+        (299, N'Female', N'Tisha', N'Kumari', N'Bhattarai'),
+        (300, N'Female', N'Vanya', N'Kumari', N'Oli')
+    ) s(Seq, Gender, FirstName, MiddleName, LastName)
+    INNER JOIN dbo.Gender g ON g.GenderName = s.Gender
+    CROSS APPLY (
+        SELECT CAST(DATEADD(DAY, (s.Seq * 37) % 5840, CAST('2010-01-04' AS DATE)) AS DATE) AS JoinedDate
+    ) jd
+    CROSS APPLY (
+        SELECT DATEADD(YEAR, -(22 + s.Seq % 18), jd.JoinedDate) AS DateOfBirth
+    ) dob
+    CROSS APPLY (
+        SELECT CASE WHEN s.Seq = 1 THEN 1 WHEN s.Seq <= 3 THEN 2 WHEN s.Seq <= 8 THEN 3
+                    WHEN s.Seq <= 70 THEN 5 ELSE 8 END AS Lo,
+               CASE WHEN s.Seq = 1 THEN 1 WHEN s.Seq <= 3 THEN 2 WHEN s.Seq <= 8 THEN 3
+                    WHEN s.Seq <= 70 THEN 7 ELSE 14 END AS Hi
+    ) band
+    OUTER APPLY (
+        SELECT TOP (1) d.DesignationId
+        FROM dbo.Designations d
+        WHERE d.IsActive = 1 AND d.[Rank] BETWEEN band.Lo AND band.Hi
+        ORDER BY ((d.DesignationId * 7 + s.Seq) % 11), d.DesignationId
+    ) des
+    CROSS APPLY (
+        SELECT p.DepartmentId
+        FROM (SELECT DepartmentId, ROW_NUMBER() OVER (ORDER BY DepartmentId) AS rn,
+                     COUNT(*) OVER () AS cnt
+              FROM dbo.Departments WHERE IsActive = 1) p
+        WHERE p.rn = ((s.Seq - 1) % p.cnt) + 1
+    ) dep
+    CROSS APPLY (
+        SELECT p.JobTypeId
+        FROM (SELECT JobTypeId, ROW_NUMBER() OVER (ORDER BY JobTypeId) AS rn,
+                     COUNT(*) OVER () AS cnt
+              FROM dbo.JobTypes WHERE IsActive = 1) p
+        WHERE p.rn = ((s.Seq - 1) % p.cnt) + 1
+    ) jt
+    CROSS APPLY (
+        SELECT p.BloodGroupId
+        FROM (SELECT BloodGroupId, ROW_NUMBER() OVER (ORDER BY BloodGroupId) AS rn,
+                     COUNT(*) OVER () AS cnt
+              FROM dbo.BloodGroups WHERE IsActive = 1) p
+        WHERE p.rn = ((s.Seq - 1) % p.cnt) + 1
+    ) bg
+    CROSS APPLY (
+        SELECT p.TeamId
+        FROM (SELECT TeamId, ROW_NUMBER() OVER (ORDER BY TeamId) AS rn,
+                     COUNT(*) OVER () AS cnt
+              FROM dbo.Teams WHERE IsActive = 1) p
+        WHERE p.rn = ((s.Seq - 1) % p.cnt) + 1
+    ) tm
+    OUTER APPLY (
+        -- business units are optional; an empty master leaves the column NULL
+        SELECT p.BusinessUnitId
+        FROM (SELECT BusinessUnitId, ROW_NUMBER() OVER (ORDER BY BusinessUnitId) AS rn,
+                     COUNT(*) OVER () AS cnt
+              FROM dbo.BusinessUnits WHERE COALESCE(IsActive, 1) = 1) p
+        WHERE p.rn = ((s.Seq - 1) % p.cnt) + 1
+    ) bu
+    OUTER APPLY (
+        SELECT p.RecruitmentId
+        FROM (SELECT RecruitmentId, ROW_NUMBER() OVER (ORDER BY RecruitmentId) AS rn,
+                     COUNT(*) OVER () AS cnt
+              FROM dbo.Recruitments WHERE IsActive = 1) p
+        WHERE p.rn = ((s.Seq - 1) % p.cnt) + 1
+    ) rec
+    OUTER APPLY (
+        SELECT p.CotivityEmployeeId
+        FROM (SELECT CotivityEmployeeId, ROW_NUMBER() OVER (ORDER BY CotivityEmployeeId) AS rn
+              FROM dbo.CotivityEmployees) p
+        WHERE p.rn = s.Seq
+    ) cot
+    CROSS APPLY (
+        SELECT
+            dad.DadName + ' ' + s.LastName AS FatherName,
+            mom.MomName + ' ' + s.LastName AS MotherName,
+            CASE WHEN s.Seq % 4 = 0 THEN
+                (CASE WHEN s.Gender = N'Male' THEN N'Anita' ELSE N'Ramesh' END) + ' ' + s.LastName
+            END AS SpouseName
+        FROM (SELECT TOP (1) f.DadName
+              FROM (VALUES (1, N'Ramesh'), (2, N'Suresh'), (3, N'Bikash'), (4, N'Deepak'),
+                           (5, N'Nabin'), (6, N'Prakash'), (7, N'Sanjay'), (8, N'Krishna')) f(N, DadName)
+              WHERE f.N = ((s.Seq - 1) % 8) + 1) dad
+        CROSS JOIN (SELECT TOP (1) m.MomName
+              FROM (VALUES (1, N'Sita'), (2, N'Gita'), (3, N'Mina'), (4, N'Laxmi'),
+                           (5, N'Sarita'), (6, N'Bina'), (7, N'Rita'), (8, N'Anita')) m(N, MomName)
+              WHERE m.N = ((s.Seq - 1) % 8) + 1) mom
+    ) fam;
 
-    -- reporting hierarchy (ReportsTo + Lead) now that all employees exist
+    /* The self-referencing FK is satisfied only after the flat insert, so the
+       hierarchy is linked tier by tier, top-down. */
+    UPDATE e SET ReportsToEmployeeId = boss.EmployeeId
+    FROM dbo.Employees e
+    CROSS JOIN (SELECT EmployeeId FROM dbo.Employees WHERE ENumber = 5001) boss
+    WHERE e.ENumber BETWEEN 5002 AND 5008;
+
+    UPDATE e SET ReportsToEmployeeId = head.EmployeeId
+    FROM dbo.Employees e
+    OUTER APPLY (SELECT TOP (1) h.EmployeeId
+                 FROM dbo.Employees h
+                 WHERE h.ENumber BETWEEN 5004 AND 5008
+                   AND h.DepartmentId = e.DepartmentId
+                 ORDER BY h.ENumber) head
+    WHERE e.ENumber BETWEEN 5009 AND 5070;
+
     UPDATE e SET ReportsToEmployeeId = mgr.EmployeeId
     FROM dbo.Employees e
-    INNER JOIN (VALUES
-        ('sarah.wilson@teamhub.com',   'david.chen@teamhub.com'),
-        ('michael.brown@teamhub.com',  'sarah.wilson@teamhub.com'),
-        ('emily.davis@teamhub.com',    'michael.brown@teamhub.com'),
-        ('james.lee@teamhub.com',      'emily.davis@teamhub.com'),
-        ('priya.sharma@teamhub.com',   'emily.davis@teamhub.com'),
-        ('daniel.garcia@teamhub.com',  'sarah.wilson@teamhub.com'),
-        ('lisa.anderson@teamhub.com',  'daniel.garcia@teamhub.com'),
-        ('robert.martinez@teamhub.com','david.chen@teamhub.com'),
-        ('linda.wong@teamhub.com',     'david.chen@teamhub.com')
-    ) s(Email, ManagerEmail) ON e.Email = s.Email
-    INNER JOIN dbo.Employees mgr ON mgr.Email = s.ManagerEmail;
+    OUTER APPLY (SELECT TOP (1) m.EmployeeId
+                 FROM dbo.Employees m
+                 WHERE m.ENumber BETWEEN 5009 AND 5070
+                   AND m.DepartmentId = e.DepartmentId
+                 ORDER BY m.ENumber) mgr
+    WHERE e.ENumber BETWEEN 5071 AND 5300;
 
-    UPDATE e SET LeadEmployeeId = lead.EmployeeId
+    -- a department without a head or manager reports straight to the top
+    UPDATE e SET ReportsToEmployeeId = boss.EmployeeId
     FROM dbo.Employees e
-    INNER JOIN (VALUES
-        ('james.lee@teamhub.com',   'emily.davis@teamhub.com'),
-        ('priya.sharma@teamhub.com','emily.davis@teamhub.com'),
-        ('lisa.anderson@teamhub.com','daniel.garcia@teamhub.com')
-    ) s(Email, LeadEmail) ON e.Email = s.Email
-    INNER JOIN dbo.Employees lead ON lead.Email = s.LeadEmail;
+    CROSS JOIN (SELECT EmployeeId FROM dbo.Employees WHERE ENumber = 5001) boss
+    WHERE e.ENumber BETWEEN 5002 AND 5300
+      AND e.ReportsToEmployeeId IS NULL;
+
+    -- the functional lead of the staff tier is their department head
+    UPDATE e SET LeadEmployeeId = head.EmployeeId
+    FROM dbo.Employees e
+    OUTER APPLY (SELECT TOP (1) h.EmployeeId
+                 FROM dbo.Employees h
+                 WHERE h.ENumber BETWEEN 5004 AND 5008
+                   AND h.DepartmentId = e.DepartmentId
+                 ORDER BY h.ENumber) head
+    WHERE e.ENumber BETWEEN 5071 AND 5300;
+
+    COMMIT TRANSACTION;
 END
 GO
 
 /* =========================================================
    4) EMPLOYEE ADDRESSES
+      One permanent address per employee, plus a current address
+      for every third employee (ENumber = 5000 + Seq).
    ========================================================= */
-IF NOT EXISTS (SELECT 1 FROM dbo.EmployeeAddresses)
+IF OBJECT_ID(N'dbo.EmployeeAddresses', N'U') IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM dbo.EmployeeAddresses)
 BEGIN
     INSERT INTO dbo.EmployeeAddresses
         (EmployeeId, AddressTypeId, AddressLine1, AddressLine2, City, [State],
          Latitude, Longitude, IsPrimary, CreatedBy, CreatedDate)
-    SELECT e.EmployeeId, at.AddressTypeId, s.AddressLine1, s.AddressLine2, s.City, s.[State],
-           s.Latitude, s.Longitude, s.IsPrimary, 'seed', SYSUTCDATETIME()
-    FROM (VALUES
-        ('david.chen@teamhub.com','Permanent','1 Lakeview Road',        'Baluwatar',  'Kathmandu',  'Bagmati', 27.71720000, 85.32400000, 1),
-        ('david.chen@teamhub.com','Current',  '2 Hill Avenue',          'Kamalokhi',  'Kathmandu',  'Bagmati', 27.70150000, 85.31800000, 0),
-        ('sarah.wilson@teamhub.com','Permanent','5 Ring Road',          '',           'Lalitpur',   'Bagmati', 27.67150000, 85.32500000, 1),
-        ('michael.brown@teamhub.com','Permanent','8 New Road',          '',           'Bhaktapur',  'Bagmati', 27.67150000, 85.42900000, 1),
-        ('priya.sharma@teamhub.com','Permanent','12 Pulchowk',          '',           'Lalitpur',   'Bagmati', 27.66050000, 85.31400000, 1),
-        ('robert.martinez@teamhub.com','Permanent','3 Durbar Marg',     '',           'Kathmandu',  'Bagmati', 27.71000000, 85.33700000, 1)
-    ) s(Email, AddressTypeName, AddressLine1, AddressLine2, City, [State], Latitude, Longitude, IsPrimary)
-    INNER JOIN dbo.Employees   e  ON e.Email = s.Email
-    INNER JOIN dbo.AddressType at ON at.AddressTypeName = s.AddressTypeName;
+    SELECT e.EmployeeId, at.AddressTypeId,
+           CAST(e.ENumber - 5000 AS VARCHAR(5)) + ' ' + loc.Street, NULL,
+           loc.City, loc.[State], loc.Latitude, loc.Longitude, slot.IsPrimary,
+           'seed', SYSUTCDATETIME()
+    FROM dbo.Employees e
+    INNER JOIN dbo.AddressType at ON at.AddressTypeName IN (N'Permanent', N'Current')
+    CROSS APPLY (SELECT CASE WHEN at.AddressTypeName = N'Permanent' THEN 1 ELSE 0 END AS IsPrimary) slot
+    CROSS APPLY (
+        SELECT p.Street, p.City, p.[State], p.Latitude, p.Longitude
+        FROM (VALUES
+            (1, N'Lakeview Road', N'Kathmandu',  N'Bagmati', 27.71720000, 85.32400000),
+            (2, N'Ring Road',     N'Lalitpur',   N'Bagmati', 27.67150000, 85.32500000),
+            (3, N'New Road',      N'Bhaktapur',  N'Bagmati', 27.67150000, 85.42900000),
+            (4, N'Lakeside',      N'Pokhara',    N'Gandaki', 28.20960000, 83.98560000),
+            (5, N'Main Road',     N'Biratnagar', N'Koshi',   26.45250000, 87.27180000),
+            (6, N'Station Road',  N'Nepalgunj',  N'Lumbini', 28.05000000, 81.61670000)
+        ) p(N, Street, City, [State], Latitude, Longitude)
+        WHERE p.N = ((e.ENumber - 5001) % 6) + 1
+    ) loc
+    WHERE e.ENumber BETWEEN 5001 AND 5300
+      AND (at.AddressTypeName = N'Permanent' OR (e.ENumber - 5000) % 3 = 0);
 END
 GO
 
 /* =========================================================
-   5) EMPLOYEE SKILLS  (SkillLevel 1-5)
+   5) EMPLOYEE SKILLS  (two skills per employee, SkillLevel 2-5)
    ========================================================= */
-IF NOT EXISTS (SELECT 1 FROM dbo.EmployeeSkills)
+IF OBJECT_ID(N'dbo.EmployeeSkills', N'U') IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM dbo.EmployeeSkills)
 BEGIN
     INSERT INTO dbo.EmployeeSkills
         (EmployeeId, SkillId, SkillLevel, IsPrimary, CreatedBy, CreatedDate)
-    SELECT e.EmployeeId, sk.SkillId, s.SkillLevel, s.IsPrimary, 'seed', SYSUTCDATETIME()
-    FROM (VALUES
-        ('david.chen@teamhub.com',   'Leadership',   5, 1),
-        ('david.chen@teamhub.com',   'Communication',4, 0),
-        ('sarah.wilson@teamhub.com', '.NET',         5, 1),
-        ('sarah.wilson@teamhub.com', 'Azure',        4, 0),
-        ('james.lee@teamhub.com',    'C#',           5, 1),
-        ('james.lee@teamhub.com',    'SQL',          4, 0),
-        ('priya.sharma@teamhub.com', 'Angular',      4, 1),
-        ('priya.sharma@teamhub.com', 'TypeScript',   4, 0),
-        ('daniel.garcia@teamhub.com','Leadership',   4, 1),
-        ('lisa.anderson@teamhub.com','Communication',3, 1)
-    ) s(Email, SkillName, SkillLevel, IsPrimary)
-    INNER JOIN dbo.Employees e  ON e.Email = s.Email
-    INNER JOIN dbo.Skills    sk ON sk.SkillName = s.SkillName;
+    SELECT e.EmployeeId, sk.SkillId,
+           CASE WHEN slot.SlotNo = 1 THEN 3 + (e.ENumber % 3) ELSE 2 + (e.ENumber % 4) END,
+           CASE WHEN slot.SlotNo = 1 THEN 1 ELSE 0 END,
+           'seed', SYSUTCDATETIME()
+    FROM dbo.Employees e
+    CROSS JOIN (VALUES (1), (2)) slot(SlotNo)
+    CROSS APPLY (
+        SELECT p.SkillId
+        FROM (SELECT SkillId, ROW_NUMBER() OVER (ORDER BY SkillId) AS rn, COUNT(*) OVER () AS cnt
+              FROM dbo.Skills WHERE IsActive = 1) p
+        WHERE p.rn = (((e.ENumber - 5001) + (slot.SlotNo - 1) * 5) % p.cnt) + 1
+    ) sk
+    WHERE e.ENumber BETWEEN 5001 AND 5300;
 END
 GO
 
 /* =========================================================
-   6) EMPLOYEE IMAGES  (placeholder paths under wwwroot)
+   6) EMPLOYEE IMAGES
+
+      ImagePath is stored web-root relative, exactly like the value
+      produced by ToFileUrl ("InfiniteImages/<file>"). Only files that
+      exist under wwwroot are referenced: referencing missing files made
+      every image decode blow up the whole list request.
    ========================================================= */
-IF NOT EXISTS (SELECT 1 FROM dbo.EmployeeImages)
+IF OBJECT_ID(N'dbo.EmployeeImages', N'U') IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM dbo.EmployeeImages)
 BEGIN
     INSERT INTO dbo.EmployeeImages (EmployeeId, ImagePath, CreatedBy, CreatedDate)
-    SELECT e.EmployeeId, '/wwwroot/InfiniteImages/' + CAST(e.ENumber AS VARCHAR(10)) + '.png', 'seed', SYSUTCDATETIME()
+    SELECT e.EmployeeId, f.ImagePath, 'seed', SYSUTCDATETIME()
     FROM dbo.Employees e
-    WHERE e.Email IN ('david.chen@teamhub.com','sarah.wilson@teamhub.com','priya.sharma@teamhub.com');
+    CROSS APPLY (SELECT ((e.ENumber - 5001) % 5) + 1 AS SlotNo) n
+    CROSS APPLY (
+        SELECT ImagePath FROM (VALUES
+            (1, 'InfiniteImages/employee-6-c2f3dbd1694246cab4d4ec62c8c8706e.jpg'),
+            (2, 'InfiniteImages/employee-8-04b8b561fb4947c4afc2b7ad988110c3.png'),
+            (3, 'InfiniteImages/employee-9-42f51b5850f7404882ec15da1a9d6971.png'),
+            (4, 'InfiniteImages/employee-10-c9712bc372f048208ac7d699e685192a.png'),
+            (5, 'InfiniteImages/employee-91-48b984c516424b7596e3a914a3ad35d1.png')
+        ) v(SlotNo, ImagePath)
+        WHERE v.SlotNo = n.SlotNo
+    ) f
+    WHERE e.ENumber BETWEEN 5001 AND 5030;
 END
 GO
 
@@ -311,33 +930,46 @@ GO
 IF NOT EXISTS (SELECT 1 FROM dbo.CotivityEmployeeImages)
 BEGIN
     INSERT INTO dbo.CotivityEmployeeImages (CotivityEmployeeId, CotivityImagePath, CreatedBy, CreatedDate)
-    SELECT ce.CotivityEmployeeId, '/wwwroot/CotivityImages/' + ce.CotivityEmployeeName + '.png', 'seed', SYSUTCDATETIME()
+    SELECT ce.CotivityEmployeeId, f.ImagePath, 'seed', SYSUTCDATETIME()
     FROM dbo.CotivityEmployees ce
-    WHERE ce.CotivityEmployeeName IN ('Alice Turner','Bob Cox');
+    INNER JOIN (VALUES
+        ('Alice Turner', 'CotivityImages/cotivity-employee-1-d4027a2819dc4775bddaa1c3b6817ec5.png'),
+        ('Bob Cox',      'CotivityImages/cotivity-employee-5-c61d438753b14e8cbf4d20cdc3a0c894.png'),
+        ('Cara Diaz',    'CotivityImages/cotivity-employee-3-c50923e80fe2404fa2cdc06a60616e93.png'),
+        ('Dan Frost',    'CotivityImages/cotivity-employee-4-f31094d12d534255b7deecb4cdbbeb3c.png')
+    ) f(CotivityEmployeeName, ImagePath) ON f.CotivityEmployeeName = ce.CotivityEmployeeName;
 END
 GO
 
 /* =========================================================
-   7) EMPLOYEE DRESSES
+   7) EMPLOYEE DRESSES  (Shirt for odd Seq, Trouser for even)
    ========================================================= */
-IF NOT EXISTS (SELECT 1 FROM dbo.EmployeeDresses)
+IF OBJECT_ID(N'dbo.EmployeeDresses', N'U') IS NOT NULL
+   AND OBJECT_ID(N'dbo.DressSizes', N'U') IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM dbo.EmployeeDresses)
 BEGIN
     INSERT INTO dbo.EmployeeDresses (EmployeeId, DressId, CreatedBy, CreatedDate)
     SELECT e.EmployeeId, ds.DressId, 'seed', SYSUTCDATETIME()
-    FROM (VALUES
-        ('david.chen@teamhub.com',  'Shirt', 'L'),
-        ('sarah.wilson@teamhub.com','Shirt', 'M'),
-        ('priya.sharma@teamhub.com','Jersey','M')
-    ) s(Email, DressName, DressSize)
-    INNER JOIN dbo.Employees  e  ON e.Email = s.Email
-    INNER JOIN dbo.DressSizes ds ON ds.DressName = s.DressName AND ds.[Size] = s.DressSize;
+    FROM dbo.Employees e
+    CROSS APPLY (SELECT e.ENumber - 5000 AS SeqNo) n
+    CROSS APPLY (
+        SELECT d.DressId
+        FROM dbo.DressSizes d
+        WHERE d.DressName = CASE WHEN n.SeqNo % 2 = 1 THEN N'Shirt' ELSE N'Trouser' END
+          AND d.[Size] = CASE WHEN n.SeqNo % 2 = 1
+                              THEN CHOOSE(((n.SeqNo - 1) / 2) % 4 + 1, 'S', 'M', 'L', 'XL')
+                              ELSE CHOOSE((n.SeqNo / 2) % 3 + 1, '30', '32', '34') END
+    ) ds
+    WHERE e.ENumber BETWEEN 5001 AND 5300;
 END
 GO
 
 /* =========================================================
    8) EMPLOYEE RELEASES (resignations)
+      One record per ReleaseStatusWorkflow status.
    ========================================================= */
-IF NOT EXISTS (SELECT 1 FROM dbo.EmployeeReleases)
+IF OBJECT_ID(N'dbo.EmployeeReleases', N'U') IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM dbo.EmployeeReleases)
 BEGIN
     INSERT INTO dbo.EmployeeReleases
         (EmployeeId, ReleaseType, ResignationDate, NoticeDate, LastWorkingDate,
@@ -351,25 +983,36 @@ BEGIN
          s.SettlementAmount, s.RelievingLetterIssued, s.ExperienceLetterIssued,
          s.Status, s.ApprovedBy, s.ApprovedDate, 'seed', SYSUTCDATETIME()
     FROM (VALUES
-        ('james.lee@teamhub.com','Resignation','2025-06-01','2025-06-01','2025-07-31',
-            60, 60, 'Seeking growth opportunities outside the organization', NULL,
-            'Completed knowledge handover', 1, 1, 1, 150000.00, 1, 1, 'Released', 'David Chen', '2025-07-31 10:00:00'),
-        ('lisa.anderson@teamhub.com','Resignation','2025-08-15','2025-08-15','2025-09-01',
-            30, 17, 'Personal reasons requiring relocation to another city',
-            'Family relocation moved up; could not serve full notice', 'Partial handover done',
-            1, 0, 0, 50000.00, 0, 0, 'Submitted', NULL, NULL)
-    ) s(Email, ReleaseType, ResignationDate, NoticeDate, LastWorkingDate,
+        (5291, 'Resignation', '2026-01-05', NULL, NULL, 30, 0,
+            'Better career opportunity', NULL, 'Draft filed by the employee',
+            0, 0, 0, NULL, 0, 0, 'Draft', NULL, NULL),
+        (5292, 'Resignation', '2025-12-15', '2025-12-15', '2026-01-31', 45, 45,
+            'Relocating abroad with family', NULL, 'Knowledge transfer in progress',
+            1, 0, 0, 85000.00, 0, 0, 'Submitted', NULL, NULL),
+        (5293, 'Resignation', '2025-11-20', '2025-11-20', '2026-01-05', 45, 45,
+            'Pursuing higher studies', NULL, 'Awaiting approver decision',
+            1, 1, 0, 90000.00, 0, 0, 'PendingApproval', NULL, NULL),
+        (5294, 'Resignation', '2025-10-01', '2025-10-01', '2025-11-15', 45, 45,
+            'Family relocation', NULL, 'Approved by the reporting manager',
+            1, 1, 1, 75000.00, 1, 0, 'Approved', 'Aarav Kumar Sharma', '2025-10-28 10:00:00'),
+        (5295, 'Resignation', '2025-08-01', '2025-08-01', '2025-09-15', 45, 45,
+            'Seeking growth outside the organisation', 'Notice shortened at employee request',
+            'Full handover completed',
+            1, 1, 1, 120000.00, 1, 1, 'Released', 'Aarav Kumar Sharma', '2025-09-15 09:30:00')
+    ) s(ENumber, ReleaseType, ResignationDate, NoticeDate, LastWorkingDate,
         NoticePeriodDays, ServedNoticeDays, Reason, EarlyReleaseReason, Remarks,
         KnowledgeTransferCompleted, AssetsReturned, ExitInterviewCompleted,
         SettlementAmount, RelievingLetterIssued, ExperienceLetterIssued, Status, ApprovedBy, ApprovedDate)
-    INNER JOIN dbo.Employees e ON e.Email = s.Email;
+    INNER JOIN dbo.Employees e ON e.ENumber = s.ENumber;
 END
 GO
 
 /* =========================================================
    9) EMPLOYEE TERMINATIONS  (table is dbo.EmployeeTerminates)
+      Statuses match TerminationStatusWorkflow.
    ========================================================= */
-IF NOT EXISTS (SELECT 1 FROM dbo.EmployeeTerminates)
+IF OBJECT_ID(N'dbo.EmployeeTerminates', N'U') IS NOT NULL
+   AND NOT EXISTS (SELECT 1 FROM dbo.EmployeeTerminates)
 BEGIN
     INSERT INTO dbo.EmployeeTerminates
         (EmployeeId, TerminationType, EffectiveDate, InvestigationRequired, InvestigationSummary,
@@ -381,45 +1024,73 @@ BEGIN
          s.ExitInterviewCompleted, s.SettlementAmount, s.EligibleForRehire, s.TerminationLetterIssued,
          s.TerminationLetterDate, s.Status, s.ApprovedBy, s.ApprovedDate, 'seed', SYSUTCDATETIME()
     FROM (VALUES
-        ('linda.wong@teamhub.com','Policy Violation','2025-09-30', 1,
-            'Verified expense-report discrepancies during internal review',
-            2, '2025-08-01', 'Repeated violation of expense submission policy',
-            'Settled final dues after recovery', 1, 1, 1, 80000.00, 0, 1, '2025-09-30',
-            'Approved', 'Robert Martinez', '2025-09-30 09:00:00')
-    ) s(Email, TerminationType, EffectiveDate, InvestigationRequired, InvestigationSummary,
+        (5296, 'Policy Violation', '2025-12-31', 1,
+            'Investigation confirmed a workplace policy breach',
+            2, '2025-10-15', 'Repeated violation of workplace policy',
+            'Final settlement after asset recovery', 1, 1, 1, 60000.00, 0, 1, '2025-12-31',
+            'Terminated', 'Aarav Kumar Sharma', '2025-12-31 09:00:00'),
+        (5297, 'Performance', '2025-11-30', 0, NULL,
+            1, '2025-09-01', 'Sustained underperformance after the improvement plan',
+            'PIP closed without improvement', 1, 1, 1, 45000.00, 1, 1, '2025-11-30',
+            'Terminated', 'Aarav Kumar Sharma', '2025-11-30 10:00:00'),
+        (5298, 'Redundancy', '2026-01-15', 0, NULL,
+            0, NULL, 'Role made redundant in the restructuring',
+            'Eligible for rehire if the role reopens', 1, 1, 0, 100000.00, 1, 0, NULL,
+            'Approved', NULL, NULL)
+    ) s(ENumber, TerminationType, EffectiveDate, InvestigationRequired, InvestigationSummary,
         WarningCount, LastWarningDate, Reason, Remarks, AssetRecovered, SystemAccessRevoked,
         ExitInterviewCompleted, SettlementAmount, EligibleForRehire, TerminationLetterIssued,
         TerminationLetterDate, Status, ApprovedBy, ApprovedDate)
-    INNER JOIN dbo.Employees e ON e.Email = s.Email;
+    INNER JOIN dbo.Employees e ON e.ENumber = s.ENumber;
 END
 GO
 
 /* =========================================================
    10) AUTH USERS  (no passwords - Microsoft Entra ID is the sign-in mechanism;
         the Development bypass signs these accounts in passwordlessly.)
-   ========================================================= */
-IF NOT EXISTS (SELECT 1 FROM dbo.Users)
-BEGIN
-    INSERT INTO dbo.Users (EmployeeId, Username, Email, IsActive, CreatedDate)
-    SELECT e.EmployeeId, s.Username, e.Email, 1, SYSUTCDATETIME()
-    FROM (VALUES
-        ('david.chen@teamhub.com', N'Admin'),
-        ('priya.sharma@teamhub.com', N'NormalUser')
-    ) s(Email, Username)
-    INNER JOIN dbo.Employees e ON e.Email = s.Email
-    WHERE NOT EXISTS (SELECT 1 FROM dbo.Users u WHERE u.EmployeeId = e.EmployeeId OR u.Username = s.Username);
-END
-GO
 
-/* Ensure the seeded sign-in accounts carry their roles in the authoritative
-   UserRoles junction (the legacy Employees.RoleId column has been removed). */
+       One account per seeded role, so every role the Role Permission
+       Matrix knows about can be signed in as and inspected end to end.
+       These role names must also appear in Auth:DevSignIn:AllowedRoles
+       (appsettings.json): GET /api/auth/dev-users and
+       POST /api/auth/dev-signin both drop an account whose roles are not
+       on that list.
+
+       Every employee below is taken from the active tiers (ENumber <= 5290).
+   ========================================================= */
+DECLARE @SignInAccounts TABLE
+(
+    ENumber   INT           PRIMARY KEY,
+    Username  NVARCHAR(100) NOT NULL,
+    RoleName  NVARCHAR(100) NOT NULL
+);
+
+INSERT INTO @SignInAccounts (ENumber, Username, RoleName) VALUES
+    (5001, N'Admin',      N'Admin'),        -- company head (Seq 1)
+    (5002, N'SuperAdmin', N'Super Admin'),  -- executive tier
+    (5003, N'Director',   N'Director'),     -- executive tier
+    (5004, N'HR',         N'HR'),           -- Hr Director
+    (5009, N'Manager',    N'Manager'),      -- first department manager
+    (5071, N'Developer',  N'Developer'),    -- staff engineer
+    (5072, N'IT',         N'IT'),           -- staff engineer
+    (5073, N'Trainee',    N'Trainee'),      -- staff engineer
+    (5075, N'NormalUser', N'NormalUser');   -- plain staff member
+
+INSERT INTO dbo.Users (EmployeeId, Username, Email, IsActive, CreatedDate)
+SELECT e.EmployeeId, a.Username, e.Email, 1, SYSUTCDATETIME()
+FROM @SignInAccounts a
+INNER JOIN dbo.Employees e ON e.ENumber = a.ENumber
+WHERE NOT EXISTS (SELECT 1 FROM dbo.Users u WHERE u.EmployeeId = e.EmployeeId OR u.Username = a.Username);
+
+/* Each account carries exactly one role in the authoritative UserRoles
+   junction (the legacy Employees.RoleId column has been removed). */
 IF OBJECT_ID(N'dbo.UserRoles', N'U') IS NOT NULL
 BEGIN
     INSERT INTO dbo.UserRoles (UserId, RoleId, CreatedBy, CreatedDate)
     SELECT u.UserId, r.RoleId, 'seed', SYSUTCDATETIME()
-    FROM (VALUES (N'Admin', N'Admin'), (N'NormalUser', N'NormalUser')) AS seed(Username, RoleName)
-    INNER JOIN dbo.Users u ON u.Username = seed.Username
-    INNER JOIN dbo.Roles r ON r.RoleName = seed.RoleName AND r.IsActive = 1
+    FROM @SignInAccounts a
+    INNER JOIN dbo.Users u ON u.Username = a.Username
+    INNER JOIN dbo.Roles r ON r.RoleName = a.RoleName AND r.IsActive = 1
     WHERE NOT EXISTS (
         SELECT 1 FROM dbo.UserRoles ur WHERE ur.UserId = u.UserId AND ur.RoleId = r.RoleId
     );
@@ -537,6 +1208,32 @@ BEGIN
         SELECT 1 FROM dbo.RolePermissions rp
         WHERE rp.RoleId = r.RoleId AND rp.PermissionId = p.PermissionId
     );
+
+    /* Every seeded role needs the two self-service codes, otherwise its demo
+       account can sign in but cannot open or edit its own profile. */
+    INSERT INTO dbo.RolePermissions (RoleId, PermissionId, CreatedBy, CreatedDate)
+    SELECT r.RoleId, p.PermissionId, 'seed', SYSUTCDATETIME()
+    FROM dbo.Roles r
+    INNER JOIN dbo.Permissions p
+            ON p.PermissionCode IN (N'profile.view', N'profile.edit') AND p.IsActive = 1
+    WHERE r.IsActive = 1
+      AND NOT EXISTS (
+          SELECT 1 FROM dbo.RolePermissions rp
+          WHERE rp.RoleId = r.RoleId AND rp.PermissionId = p.PermissionId
+      );
+
+    /* Super Admin mirrors Admin exactly. rbac-schema.sql only mirrors the
+       catalog onto Admin, so without this the top role would sign in empty. */
+    INSERT INTO dbo.RolePermissions (RoleId, PermissionId, CreatedBy, CreatedDate)
+    SELECT sa.RoleId, rp.PermissionId, 'seed', SYSUTCDATETIME()
+    FROM dbo.Roles sa
+    INNER JOIN dbo.Roles admin ON admin.RoleName = N'Admin' AND admin.IsActive = 1
+    INNER JOIN dbo.RolePermissions rp ON rp.RoleId = admin.RoleId
+    WHERE sa.RoleName = N'Super Admin' AND sa.IsActive = 1
+      AND NOT EXISTS (
+          SELECT 1 FROM dbo.RolePermissions existing
+          WHERE existing.RoleId = sa.RoleId AND existing.PermissionId = rp.PermissionId
+      );
 END
 GO
 

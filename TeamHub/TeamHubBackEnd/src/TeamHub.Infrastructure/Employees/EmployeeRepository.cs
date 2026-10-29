@@ -170,6 +170,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 d.DepartmentName AS Department,
                 CONCAT_WS(' ', reports.FirstName, reports.MiddleName, reports.LastName) AS ReportsToEmployee,
                 t.TeamName,
+                bu.BusinessUnitName,
                 e.IsActive,
                 e.IsDeleted
             FROM Employees e
@@ -177,6 +178,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             LEFT JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
             LEFT JOIN Employees reports ON reports.EmployeeId = e.ReportsToEmployeeId
             LEFT JOIN Teams t ON t.TeamId = e.TeamId
+            LEFT JOIN BusinessUnits bu ON bu.BusinessUnitId = e.BusinessUnitId
             WHERE (@Status = 'all' OR e.IsActive = CASE WHEN @Status = 'active' THEN 1 ELSE 0 END)
                 AND (@DepartmentName IS NULL OR d.DepartmentName = @DepartmentName)
                 AND (
@@ -205,6 +207,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 Department = row.Department,
                 ReportsToEmployee = string.IsNullOrWhiteSpace(row.ReportsToEmployee) ? null : row.ReportsToEmployee,
                 TeamName = row.TeamName,
+                BusinessUnitName = row.BusinessUnitName,
                 IsActive = row.IsActive,
                 IsDeleted = row.IsDeleted
             })
@@ -220,6 +223,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
         public string? Department { get; set; }
         public string? ReportsToEmployee { get; set; }
         public string? TeamName { get; set; }
+        public string? BusinessUnitName { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
     }
@@ -261,6 +265,8 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 e.LockerNumber,
                 (SELECT STRING_AGG(role.RoleName, ', ') FROM dbo.UserRoles ur INNER JOIN dbo.Users u ON u.UserId = ur.UserId INNER JOIN dbo.Roles role ON role.RoleId = ur.RoleId AND role.IsActive = 1 WHERE u.EmployeeId = e.EmployeeId) AS RoleName,
                 t.TeamName,
+                e.BusinessUnitId,
+                bu.BusinessUnitName,
                 ce.CotivityEmployeeName AS ReportToCotivityEmployee,
                 CONCAT_WS(', ', address.AddressLine1, address.AddressLine2, address.City, address.State) AS Address,
                 skill.SkillName AS SkillName,
@@ -273,6 +279,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             LEFT JOIN Employees reports ON reports.EmployeeId = e.ReportsToEmployeeId AND reports.IsDeleted = 0
             LEFT JOIN Employees leads ON leads.EmployeeId = e.LeadEmployeeId AND leads.IsDeleted = 0
             LEFT JOIN Teams t ON t.TeamId = e.TeamId
+            LEFT JOIN BusinessUnits bu ON bu.BusinessUnitId = e.BusinessUnitId
             LEFT JOIN CotivityEmployees ce ON ce.CotivityEmployeeId = e.CotivityEmployeeId
             LEFT JOIN EmployeeAddresses address ON address.EmployeeId = e.EmployeeId
             LEFT JOIN EmployeeSkills employeeSkill ON employeeSkill.EmployeeId = e.EmployeeId
@@ -332,6 +339,8 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                     LockerNumber = first.LockerNumber,
                     RoleName = first.RoleName,
                     TeamName = first.TeamName,
+                    BusinessUnitId = first.BusinessUnitId,
+                    BusinessUnitName = first.BusinessUnitName,
                     ReportToCotivityEmployee = first.ReportToCotivityEmployee,
                     ImageBase64 = !string.IsNullOrWhiteSpace(first.ImagePath)
                         ? ToBase64DataUrl(first.ImagePath)
@@ -368,6 +377,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                    e.ExtensionNumber, e.CitizenshipNumber, e.DateOfBirth, e.PANNumber, e.LockerNumber,
                    (SELECT STRING_AGG(role.RoleName, ', ') FROM dbo.UserRoles ur INNER JOIN dbo.Users u ON u.UserId = ur.UserId INNER JOIN dbo.Roles role ON role.RoleId = ur.RoleId AND role.IsActive = 1 WHERE u.EmployeeId = e.EmployeeId) AS RoleName,
                    e.TeamId, team.TeamName,
+                   e.BusinessUnitId, businessUnit.BusinessUnitName,
                    e.CotivityEmployeeId, cotivityEmployee.CotivityEmployeeName,
                    e.IsActive, e.JoinedDateBS, e.DateOfBirthBS, e.PhoneNumber, e.MobileNumber,
                    e.EmergencyContactNumber, e.EmergencyContactPerson, e.FatherName, e.MotherName,
@@ -382,6 +392,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             LEFT JOIN Employees lead ON lead.EmployeeId = e.LeadEmployeeId
             LEFT JOIN Recruitments recruitment ON recruitment.RecruitmentId = e.RecruitmentId
             LEFT JOIN Teams team ON team.TeamId = e.TeamId
+            LEFT JOIN BusinessUnits businessUnit ON businessUnit.BusinessUnitId = e.BusinessUnitId
             LEFT JOIN CotivityEmployees cotivityEmployee ON cotivityEmployee.CotivityEmployeeId = e.CotivityEmployeeId
             OUTER APPLY (
                 SELECT TOP (1) ImagePath
@@ -498,6 +509,8 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             RoleName = row.RoleName,
             TeamId = row.TeamId,
             TeamName = row.TeamName,
+            BusinessUnitId = row.BusinessUnitId,
+            BusinessUnitName = row.BusinessUnitName,
             CotivityEmployeeId = row.CotivityEmployeeId,
             CotivityEmployeeName = row.CotivityEmployeeName,
             IsActive = row.IsActive,
@@ -517,7 +530,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                  LeadEmployeeId, StationNumber, RecruitmentId, ExtensionNumber, CitizenshipNumber,
                  DateOfBirth, DateOfBirthBS, PhoneNumber, MobileNumber, EmergencyContactNumber,
                  EmergencyContactPerson, FatherName, MotherName, SpouseName,
-                 PANNumber, LockerNumber, TeamId, CotivityEmployeeId, IsActive,
+                 PANNumber, LockerNumber, TeamId, BusinessUnitId, CotivityEmployeeId, IsActive,
                  CreatedDate, CreatedBy)
             OUTPUT INSERTED.EmployeeId
             VALUES
@@ -526,7 +539,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                  @LeadEmployeeId, @StationNumber, @RecruitmentId, @ExtensionNumber, @CitizenshipNumber,
                  @DateOfBirth, @DateOfBirthBS, @PhoneNumber, @MobileNumber, @EmergencyContactNumber,
                  @EmergencyContactPerson, @FatherName, @MotherName, @SpouseName,
-                 @PANNumber, @LockerNumber, @TeamId, @CotivityEmployeeId, @IsActive,
+                 @PANNumber, @LockerNumber, @TeamId, @BusinessUnitId, @CotivityEmployeeId, @IsActive,
                  @CreatedDate, @CreatedBy);
             ";
         const string addressSql = @"
@@ -593,6 +606,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 employee.PANNumber,
                 employee.LockerNumber,
                 employee.TeamId,
+                employee.BusinessUnitId,
                 employee.CotivityEmployeeId,
                 employee.IsActive,
                 employee.CreatedDate,
@@ -707,6 +721,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 PANNumber = @PANNumber,
                 LockerNumber = @LockerNumber,
                 TeamId = @TeamId,
+                BusinessUnitId = @BusinessUnitId,
                 CotivityEmployeeId = @CotivityEmployeeId,
                 IsActive = @IsActive,
                 IsDeleted = CASE
@@ -783,6 +798,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             employee.PANNumber,
             employee.LockerNumber,
             employee.TeamId,
+            employee.BusinessUnitId,
             employee.CotivityEmployeeId,
             employee.IsActive,
             employee.LastModifiedDate,
@@ -1099,18 +1115,25 @@ public async Task<EmployeeMastersResponse> GetEmployeeMastersAsync(CancellationT
             return null;
         }
 
-        var relativePath = imagePath.Replace('\\', '/').TrimStart('/');
-        var base64 = FileHelper.GetBase64StringFromFile(relativePath);
-        var extension = Path.GetExtension(relativePath);
-        var mimeType = extension.ToLowerInvariant() switch
+        try
         {
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png" => "image/png",
-            ".gif" => "image/gif",
-            _ => "application/octet-stream"
-        };
+            var relativePath = imagePath.Replace('\\', '/').TrimStart('/');
+            var base64 = FileHelper.GetBase64StringFromFile(relativePath);
+            var extension = Path.GetExtension(relativePath);
+            var mimeType = extension.ToLowerInvariant() switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                _ => "application/octet-stream"
+            };
 
-        return $"data:{mimeType};base64,{base64}";
+            return $"data:{mimeType};base64,{base64}";
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private sealed class EmployeeDetailRow
@@ -1157,6 +1180,8 @@ public async Task<EmployeeMastersResponse> GetEmployeeMastersAsync(CancellationT
         public string? RoleName { get; set; }
         public int TeamId { get; set; }
         public string? TeamName { get; set; }
+        public int? BusinessUnitId { get; set; }
+        public string? BusinessUnitName { get; set; }
         public int? CotivityEmployeeId { get; set; }
         public string? CotivityEmployeeName { get; set; }
         public bool IsActive { get; set; }
@@ -1187,6 +1212,8 @@ public async Task<EmployeeMastersResponse> GetEmployeeMastersAsync(CancellationT
         public string? LockerNumber { get; set; }
         public string? RoleName { get; set; }
         public string? TeamName { get; set; }
+        public int? BusinessUnitId { get; set; }
+        public string? BusinessUnitName { get; set; }
         public string? ReportToCotivityEmployee { get; set; }
         public string? Address { get; set; }
         public string? SkillName { get; set; }

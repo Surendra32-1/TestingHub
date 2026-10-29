@@ -223,6 +223,7 @@ export class EmployeeAddFormComponent implements OnInit {
       genderId: ['', Validators.required],
       roleIds: [[]],
       teamId: ['', Validators.required],
+      businessUnitId: [''],
 
       recruitmentId: [''],
       leadEmployeeId: [''],
@@ -288,6 +289,8 @@ export class EmployeeAddFormComponent implements OnInit {
       this.genders, 'genderId', data.genderId, 'genderName', data.genderName);
     this.teams = this.withCurrentOption(
       this.teams, 'teamId', data.teamId, 'teamName', data.teamName);
+    this.businessUnits = this.withCurrentOption(
+      this.businessUnits, 'businessUnitId', data.businessUnitId, 'businessUnitName', data.businessUnitName);
     this.recruitments = this.withCurrentOption(
       this.recruitments, 'recruitmentId', data.recruitmentId, 'recruitmentName', data.recruitmentName);
     this.employees = this.withCurrentOption(
@@ -363,6 +366,7 @@ export class EmployeeAddFormComponent implements OnInit {
       genderId: this.normalizeFormId(data.genderId),
       roleIds: (data.roleIds ?? []).map(String),
       teamId: this.normalizeFormId(data.teamId),
+      businessUnitId: this.normalizeFormId(data.businessUnitId),
       recruitmentId: data.recruitmentId ? String(data.recruitmentId) : '',
       leadEmployeeId: data.leadEmployeeId ? String(data.leadEmployeeId) : '',
       reportToEmployeeId: data.reportsToEmployeeId ? String(data.reportsToEmployeeId) : '',
@@ -417,6 +421,9 @@ export class EmployeeAddFormComponent implements OnInit {
           : [];
         this.teams = employee.teamName
           ? [{ teamId: employee.teamId, teamName: employee.teamName }]
+          : [];
+        this.businessUnits = employee.businessUnitId && employee.businessUnitName
+          ? [{ businessUnitId: employee.businessUnitId, businessUnitName: employee.businessUnitName }]
           : [];
         this.recruitments = employee.recruitmentName && employee.recruitmentId
           ? [{ recruitmentId: employee.recruitmentId, recruitmentName: employee.recruitmentName }]
@@ -613,6 +620,7 @@ export class EmployeeAddFormComponent implements OnInit {
       lockerNumber: value.lockerNumber?.trim() || null,
       roleIds: (value.roleIds as Array<number | string>).map(Number),
       teamId: Number(value.teamId),
+      businessUnitId: this.toNullablePositiveId(value.businessUnitId),
       cotivityEmployeeId: this.toNullablePositiveId(value.cotivityEmployeeId),
       imageBase64: this.imageBase64,
       isActive: value.isActive,
@@ -809,7 +817,8 @@ export class EmployeeAddFormComponent implements OnInit {
       bloodGroupId: 'Blood group',
       genderId: 'Gender',
       roleId: 'Role',
-      teamId: 'Team'
+      teamId: 'Team',
+      businessUnitId: 'Business unit'
     };
     const label = labels[controlName] ?? controlName;
     const errors = control.errors;

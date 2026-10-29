@@ -27,7 +27,10 @@ live with Entra and how to remove the bypass afterwards.
   server; client-supplied roles are never trusted.
 - Sign-in is refused (403) when the user is missing, inactive, or the employee is inactive, and
   when the user does not hold at least one role in `Auth:DevSignIn.AllowedRoles`
-  (default `["Admin", "NormalUser"]`).
+  (in-code fallback `["Admin", "NormalUser"]`). The shipped `appsettings.json` lists every
+  seeded role — `Super Admin`, `Admin`, `Director`, `Manager`, `HR`, `Developer`, `IT`, `Trainee`,
+  `NormalUser` — and `seed-data.sql` (§10) creates one account per role, so each row of the Role
+  Permission Matrix can be signed in as.
 - On success it issues the same local JWT (identical claims) used by the rest of the app, so
   `[Authorize(Policy = RbacPolicies.*)]` endpoints and the Angular guards keep working unchanged.
 
@@ -84,7 +87,12 @@ store in Production rather than committing values):
     "ClientId": "<API_CLIENT_ID>",
     "Audience": "<API_CLIENT_ID>"                       // the API's App ID URI / client id
   },
-  "DevSignIn": { "AllowedRoles": ["Admin", "NormalUser"] }
+  "DevSignIn": {
+    "AllowedRoles": [
+      "Super Admin", "Admin", "Director", "Manager",
+      "HR", "Developer", "IT", "Trainee", "NormalUser"
+    ]
+  }
 }
 ```
 

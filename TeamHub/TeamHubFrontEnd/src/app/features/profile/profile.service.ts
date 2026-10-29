@@ -100,6 +100,8 @@ export interface EmployeeProfileEmployee {
   roleName: string | null;
   teamId: number;
   teamName: string | null;
+  businessUnitId: number | null;
+  businessUnitName: string | null;
   cotivityEmployeeId: number | null;
   cotivityEmployeeName: string | null;
   isActive: boolean;

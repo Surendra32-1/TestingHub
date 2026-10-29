@@ -13,6 +13,8 @@ export interface Employee {
   isActive?: boolean;
   isDeleted?: boolean;
   teamName: string;
+  businessUnitId?: number | null;
+  businessUnitName?: string | null;
   imageBase64: string;
   accent:string
   

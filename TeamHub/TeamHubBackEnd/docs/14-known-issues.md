@@ -72,7 +72,7 @@ Categories: **[SEC]** security/authorization · **[DATA]** data integrity/correc
 - **R4** Wrap lifecycle batches and the employee create saga in transactions / a single Unit-of-Work connection (addresses H3/H4). *(Recommended)*
 - **R5** Add a CI step that builds the `tests/` projects outside the `.slnx` (C4 would have been caught by a single `dotnet build` job). *(Recommended)*
 - **R6** If Entra is the target, finish the session bridge before flipping `enableEntra` (addresses H2). *(Recommended)*
-- **R7** Role-permission subsets for `NormalUser`/`Manager`/`HR` were seeded on 2026-10-23 (`seed-data.sql:429-493`), including `terminations.add` for HR. Remaining: give `Manager` and `HR` at least one demo `Users` + `UserRoles` row each and add them to `Auth:DevSignIn:AllowedRoles` so the seeded grants are reachable; retire the six inert codes with `UPDATE Permissions SET IsActive = 0`. *(Recommended)*
+- **R7** ~~Give `Manager`/`HR` a demo `Users` + `UserRoles` row and add them to `Auth:DevSignIn:AllowedRoles`~~ — **done**: `seed-data.sql` §10 now creates one account per seeded role (Super Admin, Admin, Director, Manager, HR, Developer, IT, Trainee, NormalUser) and the config lists all nine, so every role is signable-in. §11 also grants `profile.view`/`profile.edit` to every role and mirrors Admin's grant set onto Super Admin. Still open from the original item: retire the six inert codes with `UPDATE Permissions SET IsActive = 0`. *(Recommended)*
 
 ## Explicitly unverified / limited
 

@@ -337,6 +337,15 @@
             </select>
           </div>
           <div class="field">
+            <label class="field-label" for="businessUnitId">Business Unit</label>
+            <select id="businessUnitId" formControlName="businessUnitId" (blur)="showFieldError('businessUnitId')">
+              <option value="">Select Business Unit</option>
+              @for(item of businessUnits; track item.businessUnitId){
+                <option [value]="item.businessUnitId">{{ item.businessUnitName }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
             <label class="field-label" for="recruitmentId">Recruitment Source</label>
             <select id="recruitmentId" formControlName="recruitmentId" (blur)="showFieldError('recruitmentId')">
               <option value="">Select Source</option>

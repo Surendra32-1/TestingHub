@@ -34,6 +34,11 @@ export interface Team {
   teamName: string;
 }
 
+export interface BusinessUnit {
+  businessUnitId: number;
+  businessUnitName: string;
+}
+
 export interface Skill {
   skillId: number;
   skillName: string;
@@ -57,6 +62,7 @@ export interface EmployeeMastersResponse {
   genders: Gender[];
   roles: Role[];
   teams: Team[];
+  businesses: BusinessUnit[];
   skills: Skill[];
   recruitments: Recruitment[];
   reportingManagers: ReportingManager[];

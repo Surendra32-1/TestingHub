@@ -34,6 +34,7 @@ public class CreateOrUpdateEmployeeRequest
     public string? LockerNumber { get; set; }
     public List<int> RoleIds { get; set; } = [];
     public int TeamId { get; set; }
+    public int? BusinessUnitId { get; set; }
     public int? CotivityEmployeeId { get; set; }
     public string? ImageBase64 { get; set; }
     public bool IsActive { get; set; } = true;

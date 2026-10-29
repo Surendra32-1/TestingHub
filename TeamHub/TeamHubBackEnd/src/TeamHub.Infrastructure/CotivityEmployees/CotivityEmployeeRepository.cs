@@ -138,17 +138,24 @@ public sealed class CotivityEmployeeRepository(IDbConnectionFactory connectionFa
             return null;
         }
 
-        var relativePath = imagePath.Replace('\\', '/').TrimStart('/');
-        var base64 = FileHelper.GetBase64StringFromFile(relativePath);
-        var mimeType = Path.GetExtension(relativePath).ToLowerInvariant() switch
+        try
         {
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png" => "image/png",
-            ".gif" => "image/gif",
-            _ => "application/octet-stream"
-        };
+            var relativePath = imagePath.Replace('\\', '/').TrimStart('/');
+            var base64 = FileHelper.GetBase64StringFromFile(relativePath);
+            var mimeType = Path.GetExtension(relativePath).ToLowerInvariant() switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                _ => "application/octet-stream"
+            };
 
-        return $"data:{mimeType};base64,{base64}";
+            return $"data:{mimeType};base64,{base64}";
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private sealed class CotivityEmployeeRow

@@ -48,6 +48,7 @@ export interface CreateEmployeeRequest {
   lockerNumber: string | null;
   roleIds: number[];
   teamId: number;
+  businessUnitId: number | null;
   cotivityEmployeeId: number | null;
   imageBase64: string | null;
   isActive: boolean;
@@ -77,6 +78,7 @@ export interface EmployeeEditResponse extends Omit<CreateEmployeeRequest, 'addre
   recruitmentName: string | null;
   roleName: string | null;
   teamName: string | null;
+  businessUnitName: string | null;
   cotivityEmployeeName: string | null;
   addresses: Array<{
     addressId: number;
@@ -259,6 +261,7 @@ export interface EmployeeDetails {
   lockerNumber: string | null;
   roleName: string | null;
   teamName: string | null;
+  businessUnitName: string | null;
   cotivityEmployeeName: string | null;
   isActive: boolean;
   imageBase64: string | null;
@@ -300,6 +303,7 @@ interface EmployeeApiRecord {
   isActive?: boolean;
   isDeleted?: boolean;
   teamName: string | null;
+  businessUnitName: string | null;
   imageBase64: string | null;
 }
 
@@ -689,6 +693,7 @@ export class EmployeeService {
           isActive: employee.isActive ?? true,
           isDeleted: employee.isDeleted ?? false,
           teamName: employee.teamName ?? '',
+          businessUnitName: employee.businessUnitName ?? '',
           imageBase64: employee.imageBase64 ?? this.createAvatar(employee.name, accent),
           accent
         };

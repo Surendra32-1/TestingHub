@@ -108,7 +108,8 @@ fallback and are reachable without a token **in every environment**, not just in
                             "SecretKey": "ThisIsAVerySecureDevelopmentSecretKey123456789" } },
 "Auth": { "Entra": { "Enabled": false, "Instance": "https://login.microsoftonline.com/",
                      "TenantId": "<TENANT_ID>", "ClientId": "<API_CLIENT_ID>", "Audience": "<API_CLIENT_ID>" },
-          "DevSignIn": { "AllowedRoles": ["Admin", "NormalUser"] } },
+          "DevSignIn": { "AllowedRoles": ["Super Admin", "Admin", "Director", "Manager",
+                                           "HR", "Developer", "IT", "Trainee", "NormalUser"] } },
 "Frontend": { "AllowedOrigins": ["http://localhost:4200", "https://localhost:4200"] }
 ```
 

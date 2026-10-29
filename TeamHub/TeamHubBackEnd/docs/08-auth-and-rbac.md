@@ -180,7 +180,7 @@ effect. **Unknown** whether intentional.
 | `Auth:Entra:TenantId` | `Extensions:80` | `"<TENANT_ID>"` placeholder (`:22`) |
 | `Auth:Entra:ClientId` | `Extensions:83` (Audience fallback) | `"<API_CLIENT_ID>"` (`:23`) |
 | `Auth:Entra:Audience` | `Extensions:82` | `"<API_CLIENT_ID>"` (`:24`) |
-| `Auth:DevSignIn:AllowedRoles` | `AuthService:76` | `["Admin","NormalUser"]` (`:27`) |
+| `Auth:DevSignIn:AllowedRoles` | `AuthService:75` | all nine seeded roles (`appsettings.json:26-32`) |
 | `Frontend:AllowedOrigins` | `Program.cs:32`, `AuthController:202` | `["http://localhost:4200","https://localhost:4200"]` (`:31-34`) |
 | `ConnectionStrings:TeamHub` | `Program.cs:35` | SQLEXPRESS / Integrated Security (`:8-9`) |
 
@@ -366,7 +366,9 @@ allow-list is also case-insensitive while CORS (`Program.cs:41-50`) is not, a ha
 3. `AuthService.DevSignInAsync` re-reads the user from the DB and requires `IsActive` **and**
    `IsEmployeeActive` (`AuthService.cs:24-27`).
 4. The user must hold at least one allowed role, compared `OrdinalIgnoreCase` (`:29-33`), against
-   `Auth:DevSignIn:AllowedRoles` with an in-code fallback `["Admin","NormalUser"]` (`:14`, `:75-78`).
+   `Auth:DevSignIn:AllowedRoles` (in-code fallback `["Admin","NormalUser"]`, `:14`, `:74-77`).
+   The config lists every seeded role, and `seed-data.sql` §10 gives each of them its own
+   `Users` + `UserRoles` row, so all nine rows of the Role Permission Matrix are reachable.
 
 Only then are the token pair and cookie issued. The request body is
 `DevSignInRequest { [Range(1,int.MaxValue)] required int UserId }` (`DTOs/AuthRequests.cs:10-15`) —

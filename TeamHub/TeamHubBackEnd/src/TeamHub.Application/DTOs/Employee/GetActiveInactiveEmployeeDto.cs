@@ -9,6 +9,7 @@ public class GetActiveInactiveEmployeeDto
     public string? Department { get; set; }
     public string? ReportsToEmployee { get; set; }
     public string? TeamName { get; set; }
+    public string? BusinessUnitName { get; set; }
     public bool IsActive { get; set; }
     public bool IsDeleted { get; set; }
 }

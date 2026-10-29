@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\TeamHub.UnitTests.csproj": {}
+    "e:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\TeamHub.UnitTests.csproj": {}
   },
   "projects": {
-    "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj": {
+    "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj",
+        "projectUniqueName": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj",
         "projectName": "TeamHub.Application",
-        "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj",
+        "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj",
         "packagesPath": "C:\\Users\\Dell Suren\\.nuget\\packages\\",
-        "outputPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\obj\\",
+        "outputPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "E:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
+          "e:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
           "C:\\Users\\Dell Suren\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -31,11 +31,11 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj": {
-                "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj"
+              "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj": {
+                "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj"
               },
-              "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {
-                "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj"
+              "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {
+                "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj"
               }
             }
           }
@@ -363,17 +363,17 @@
         }
       }
     },
-    "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj": {
+    "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj",
+        "projectUniqueName": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj",
         "projectName": "TeamHub.Domain",
-        "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj",
+        "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj",
         "packagesPath": "C:\\Users\\Dell Suren\\.nuget\\packages\\",
-        "outputPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\obj\\",
+        "outputPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "E:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
+          "e:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
           "C:\\Users\\Dell Suren\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -701,17 +701,17 @@
         }
       }
     },
-    "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {
+    "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
+        "projectUniqueName": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
         "projectName": "TeamHub.Shared",
-        "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
+        "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\TeamHub.Shared.csproj",
         "packagesPath": "C:\\Users\\Dell Suren\\.nuget\\packages\\",
-        "outputPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\obj\\",
+        "outputPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "E:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
+          "e:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
           "C:\\Users\\Dell Suren\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -1188,17 +1188,17 @@
         }
       }
     },
-    "E:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\TeamHub.UnitTests.csproj": {
+    "e:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\TeamHub.UnitTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\TeamHub.UnitTests.csproj",
+        "projectUniqueName": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\TeamHub.UnitTests.csproj",
         "projectName": "TeamHub.UnitTests",
-        "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\TeamHub.UnitTests.csproj",
+        "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\TeamHub.UnitTests.csproj",
         "packagesPath": "C:\\Users\\Dell Suren\\.nuget\\packages\\",
-        "outputPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\obj\\",
+        "outputPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\tests\\TeamHub.UnitTests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "E:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
+          "e:\\TEST\\TeamHub\\TeamHubBackEnd\\NuGet.Config",
           "C:\\Users\\Dell Suren\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
@@ -1215,11 +1215,11 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj": {
-                "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj"
+              "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj": {
+                "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Application\\TeamHub.Application.csproj"
               },
-              "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj": {
-                "projectPath": "E:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj"
+              "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj": {
+                "projectPath": "e:\\TEST\\TeamHub\\TeamHubBackEnd\\src\\TeamHub.Domain\\TeamHub.Domain.csproj"
               }
             }
           }

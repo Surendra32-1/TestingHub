@@ -324,6 +324,8 @@ BEGIN
         --RoleId INT NOT NULL,
         TeamId INT NOT NULL,
 
+        BusinessUnitId INT NULL,
+
         CotivityEmployeeId INT NULL,
 
         IsActive BIT NOT NULL DEFAULT(1),
@@ -407,6 +409,8 @@ IF COL_LENGTH('dbo.Employees', 'MotherName') IS NULL
     ALTER TABLE dbo.Employees ADD MotherName VARCHAR(150) NULL;
 IF COL_LENGTH('dbo.Employees', 'SpouseName') IS NULL
     ALTER TABLE dbo.Employees ADD SpouseName VARCHAR(150) NULL;
+IF COL_LENGTH('dbo.Employees', 'BusinessUnitId') IS NULL
+    ALTER TABLE dbo.Employees ADD BusinessUnitId INT NULL;
 IF COL_LENGTH('dbo.Employees', 'ReleaseDate') IS NOT NULL
     ALTER TABLE dbo.Employees DROP COLUMN ReleaseDate;
 IF COL_LENGTH('dbo.Employees', 'ReasonForRelease') IS NOT NULL
@@ -685,6 +689,34 @@ BEGIN
 
     CREATE UNIQUE INDEX UQ_BusinessUnits_BusinessUnitName
         ON dbo.BusinessUnits (BusinessUnitName);
+END
+GO
+
+-- Employees.BusinessUnitId: the FK is declared here, not inside the Employees
+-- CREATE TABLE, because BusinessUnits is created later in this script.
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.foreign_keys
+    WHERE name = 'FK_Employees_BusinessUnit'
+)
+BEGIN
+    ALTER TABLE dbo.Employees
+        ADD CONSTRAINT FK_Employees_BusinessUnit
+            FOREIGN KEY (BusinessUnitId)
+            REFERENCES dbo.BusinessUnits(BusinessUnitId);
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_Employees_BusinessUnitId'
+        AND object_id = OBJECT_ID('dbo.Employees')
+)
+BEGIN
+    CREATE INDEX IX_Employees_BusinessUnitId
+        ON dbo.Employees (BusinessUnitId)
+        INCLUDE (IsActive, IsDeleted);
 END
 GO
 

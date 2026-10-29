@@ -30,6 +30,7 @@
         <th scope="col">Manager (Report To)</th>
         <th scope="col">Department</th>
         <th scope="col">Team</th>
+        <th scope="col">Business Unit</th>
         <th scope="col">Status</th>
         <th scope="col">Card View</th>
         <th scope="col">Edit</th>
@@ -40,6 +41,7 @@
         <th scope="col">Name</th>
         <th scope="col">Department</th>
         <th scope="col">Team Name</th>
+        <th scope="col">Business Unit</th>
         <th scope="col">Designation Name</th>
         <th scope="col"><span class="visually-hidden">Actions</span></th>
       </tr>
@@ -55,6 +57,7 @@
           <td>{{ employee.reportsToEmployee || '—' }}</td>
           <td>{{ employee.department || '—' }}</td>
           <td>{{ employee.teamName || '—' }}</td>
+          <td>{{ employee.businessUnitName || '—' }}</td>
           <td>
             <span
               class="employee-status"
@@ -89,6 +92,7 @@
           <td class="employee-table-name">{{ employee.name }}</td>
           <td>{{ employee.department || '—' }}</td>
           <td>{{ employee.teamName || '—' }}</td>
+          <td>{{ employee.businessUnitName || '—' }}</td>
           <td>{{ employee.designation || '—' }}</td>
           <td class="employee-table-actions">
             <div class="employee-action-menu" (click)="$event.stopPropagation()">
@@ -148,10 +152,10 @@
         </ng-template>
       </tr>
       <tr *ngIf="isLoading">
-        <td [attr.colspan]="managementLayout ? 9 : 6" class="employee-table-status" aria-live="polite">Loading employees...</td>
+        <td [attr.colspan]="managementLayout ? 10 : 7" class="employee-table-status" aria-live="polite">Loading employees...</td>
       </tr>
       <tr *ngIf="!isLoading && employees.length === 0">
-        <td [attr.colspan]="managementLayout ? 9 : 6" class="employee-table-status">
+        <td [attr.colspan]="managementLayout ? 10 : 7" class="employee-table-status">
           {{ departmentFilterName ? 'No employees found in this department.' : 'No employees match your search.' }}
         </td>
       </tr>
@@ -303,6 +307,7 @@
       <div><dt>Employee No.</dt><dd>{{ person.eNumber }}</dd></div>
       <div><dt>Department</dt><dd>{{ person.departmentName || '—' }}</dd></div>
       <div><dt>Team</dt><dd>{{ person.teamName || '—' }}</dd></div>
+      <div><dt>Business unit</dt><dd>{{ person.businessUnitName || '—' }}</dd></div>
       <div><dt>Reports to</dt><dd>{{ person.reportsToEmployeeName || '—' }}</dd></div>
       <div><dt>Email</dt><dd>{{ person.email || '—' }}</dd></div>
       <div><dt>Mobile</dt><dd>{{ person.mobileNumber || person.phoneNumber || '—' }}</dd></div>

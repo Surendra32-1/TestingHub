@@ -41,6 +41,7 @@ public class Employee : AuditableEntity<int>
     public string PANNumber { get; set; } = string.Empty;
     public string? LockerNumber { get; set; }
     public int TeamId { get; set; }
+    public int? BusinessUnitId { get; set; }
     public int? CotivityEmployeeId { get; set; }
     public bool IsActive { get; set; } = true;
     public EmployeeImage ? Image { get; set; } = new EmployeeImage();

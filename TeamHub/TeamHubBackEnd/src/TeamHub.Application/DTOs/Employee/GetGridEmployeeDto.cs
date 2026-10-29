@@ -25,6 +25,8 @@ public class GetGridEmployeeDto
     public string? LockerNumber { get; set; }
     public string? RoleName { get; set; }
     public string? TeamName { get; set; }
+    public int? BusinessUnitId { get; set; }
+    public string? BusinessUnitName { get; set; }
     public string? ReportToCotivityEmployee { get; set; }
     public string? ImageBase64 { get; set; }
     public IReadOnlyList<string> Addresses { get; set; } = [];
