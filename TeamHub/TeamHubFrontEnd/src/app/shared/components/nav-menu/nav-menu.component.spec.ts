@@ -9,7 +9,7 @@ import { NavMenuComponent } from './nav-menu.component';
 class BlankPageComponent {}
 
 const TREE: readonly MenuItem[] = [
-  { id: 'people', label: 'People', route: '/people', visibility: 'authenticated' },
+  { id: 'administration', label: 'Administration', route: '/administration', visibility: 'authenticated' },
   {
     id: 'manage',
     label: 'Manage',
@@ -57,7 +57,7 @@ describe('NavMenuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [provideRouter([
-        { path: 'people', component: BlankPageComponent },
+        { path: 'administration', component: BlankPageComponent },
         { path: 'login', component: BlankPageComponent },
         { path: 'master/department', component: BlankPageComponent },
         { path: 'master/gender', component: BlankPageComponent },
@@ -75,7 +75,7 @@ describe('NavMenuComponent', () => {
   it('renders leaves as router links and groups as expandable branches', () => {
     const barItems = Array.from(host().querySelectorAll(':scope > .menu-level > .nav-item')).map(labelOf);
 
-    expect(barItems).toEqual(['People', 'Login']);
+    expect(barItems).toEqual(['Administration', 'Login']);
     expect(labelOf(branch('Manage').querySelector('.menu-toggle')!)).toBe('Manage');
     expect(childLabels(panelOf(branch('Manage')))).toEqual(['Department', 'Reference Data']);
   });
@@ -89,11 +89,48 @@ describe('NavMenuComponent', () => {
     expect(host().querySelectorAll('app-nav-menu').length).toBe(3);
   });
 
+  it('opens nested branches on tap and closes them after navigation', async () => {
+    const manage = branch('Manage');
+    const manageToggle = manage.querySelector<HTMLButtonElement>(':scope > .menu-toggle')!;
+    manageToggle.click();
+    fixture.detectChanges();
+
+    expect(manage.classList.contains('menu-branch--open')).toBe(true);
+    expect(manageToggle.getAttribute('aria-expanded')).toBe('true');
+
+    const department = panelOf(manage).querySelector<HTMLAnchorElement>('a.nav-item')!;
+    department.click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(router.url).toBe('/master/department');
+    expect(manage.classList.contains('menu-branch--open')).toBe(false);
+  });
+
+  it('closes an open branch on outside click and Escape', () => {
+    const manage = branch('Manage');
+    const toggle = manage.querySelector<HTMLButtonElement>(':scope > .menu-toggle')!;
+
+    toggle.click();
+    fixture.detectChanges();
+    expect(manage.classList.contains('menu-branch--open')).toBe(true);
+
+    document.body.click();
+    fixture.detectChanges();
+    expect(manage.classList.contains('menu-branch--open')).toBe(false);
+
+    toggle.click();
+    fixture.detectChanges();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.detectChanges();
+    expect(manage.classList.contains('menu-branch--open')).toBe(false);
+  });
+
   it('navigates with the Angular router when an item is clicked', async () => {
     host().querySelector<HTMLAnchorElement>('a.nav-item')!.click();
     await fixture.whenStable();
 
-    expect(router.url).toBe('/people');
+    expect(router.url).toBe('/administration');
   });
 
   it('highlights the active leaf and every ancestor group', async () => {

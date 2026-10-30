@@ -16,8 +16,9 @@ import { AuthService } from './auth.service';
 import {
   anonymousHomeGuard,
   authenticatedGuard,
+  employeeTerminationAddGuard,
   masterGuard,
-  peopleViewGuard,
+  administrationViewGuard,
   rolePermissionMatrixGuard,
   signedInLandingGuard,
   terminationAddGuard
@@ -103,7 +104,7 @@ describe('route guards', () => {
   });
 
   it('requires a session and sends anonymous visitors to the sign-in page', async () => {
-    const result = await resolveGuard(() => authenticatedGuard(routeSnapshot(), stateSnapshot('/people')));
+    const result = await resolveGuard(() => authenticatedGuard(routeSnapshot(), stateSnapshot('/administration')));
 
     expect(result instanceof UrlTree).toBe(true);
     expect((result as UrlTree).toString()).toContain('/login');
@@ -116,12 +117,12 @@ describe('route guards', () => {
     expect(result).toBe(true);
   });
 
-  it('requires people.view to open the employee management page', () => {
-    signIn(['people.view']);
-    expect(guardResult(() => peopleViewGuard(routeSnapshot(), stateSnapshot('/people')))).toBe(true);
+  it('requires administration.view to open the employee management page', () => {
+    signIn(['administration.view']);
+    expect(guardResult(() => administrationViewGuard(routeSnapshot(), stateSnapshot('/administration')))).toBe(true);
 
     signIn([]);
-    const result = guardResult(() => peopleViewGuard(routeSnapshot(), stateSnapshot('/people')));
+    const result = guardResult(() => administrationViewGuard(routeSnapshot(), stateSnapshot('/administration')));
     expect(result instanceof UrlTree).toBe(true);
     expect((result as UrlTree).toString()).toBe('/home');
   });
@@ -138,42 +139,103 @@ describe('route guards', () => {
   });
 
   it('keeps master routes behind their own module code', () => {
-    signIn(['master.department']);
+    signIn(['organization.department.view']);
 
     expect(guardResult(() => masterGuard(routeSnapshot({ masterKey: 'department' }), stateSnapshot('/master/department')))).toBe(true);
 
     const blocked = guardResult(() => masterGuard(routeSnapshot({ masterKey: 'gender' }), stateSnapshot('/master/gender')));
     expect(blocked instanceof UrlTree).toBe(true);
+
+    signIn(['organization.gender.create']);
+    const createOnly = guardResult(() => masterGuard(routeSnapshot({ masterKey: 'gender' }), stateSnapshot('/master/gender')));
+    expect(createOnly).toBe(true);
+
+    signIn(['organization.bloodgroup.view']);
+    expect(guardResult(() => masterGuard(
+      routeSnapshot({ masterKey: 'blood-group' }),
+      stateSnapshot('/master/blood-group')
+    ))).toBe(true);
   });
 
-  it('keeps the termination create routes on terminations.add, not terminations.manage', () => {
+  it('uses the dedicated gear View grants for Role and Manage Permissions pages', () => {
+    signIn(['setting.gear.role.view']);
+    expect(guardResult(() => masterGuard(
+      routeSnapshot({ masterKey: 'role' }),
+      stateSnapshot('/master/role')
+    ))).toBe(true);
+    expect(guardResult(() => masterGuard(
+      routeSnapshot({ masterKey: 'permission' }),
+      stateSnapshot('/master/permission')
+    )) instanceof UrlTree).toBe(true);
+
+    signIn(['setting.gear.manage.permissions.view']);
+    expect(guardResult(() => masterGuard(
+      routeSnapshot({ masterKey: 'permission' }),
+      stateSnapshot('/master/permission')
+    ))).toBe(true);
+  });
+
+  it('allows Cotivity master routes for view or CRUD grants', () => {
+    signIn(['cotivity.department.view']);
+    expect(guardResult(() => masterGuard(
+      routeSnapshot({ masterKey: 'cotivity-department' }),
+      stateSnapshot('/master/cotivity-department')
+    ))).toBe(true);
+    expect(guardResult(() => masterGuard(
+      routeSnapshot({ masterKey: 'cotivity-employee' }),
+      stateSnapshot('/master/cotivity-employee')
+    )) instanceof UrlTree).toBe(true);
+
+    signIn(['cotivity.employee.create']);
+    expect(guardResult(() => masterGuard(
+      routeSnapshot({ masterKey: 'cotivity-employee' }),
+      stateSnapshot('/master/cotivity-employee')
+    ))).toBe(true);
+  });
+
+  it('allows employee termination with administration.terminate or terminations.add, but not manage alone', () => {
     signIn(['terminations.manage']);
 
     const blocked = guardResult(() =>
-      terminationAddGuard(routeSnapshot({ employeeId: '6' }), stateSnapshot('/employees/terminate/6'))
+      employeeTerminationAddGuard(routeSnapshot({ employeeId: '6' }), stateSnapshot('/employees/terminate/6'))
     );
     expect(blocked instanceof UrlTree).toBe(true);
+
+    signIn(['administration.terminate']);
+
+    expect(guardResult(() =>
+      employeeTerminationAddGuard(routeSnapshot({ employeeId: '6' }), stateSnapshot('/employees/terminate/6'))
+    )).toBe(true);
 
     signIn(['terminations.manage', 'terminations.add']);
 
     expect(guardResult(() =>
-      terminationAddGuard(routeSnapshot({ employeeId: '6' }), stateSnapshot('/employees/terminate/6'))
+      employeeTerminationAddGuard(routeSnapshot({ employeeId: '6' }), stateSnapshot('/employees/terminate/6'))
+    )).toBe(true);
+
+    signIn(['terminations.add']);
+    expect(guardResult(() =>
+      terminationAddGuard(routeSnapshot(), stateSnapshot('/employees/terminations/new'))
     )).toBe(true);
   });
 
-  it('sends a signed-in visitor to the Employee page when they may open it', () => {
-    signIn(['allemployee.search.view', 'people.view']);
+  it('prioritizes Administration for signed-in visitors who may open it', () => {
+    signIn(['people.allemployee.search.view', 'administration.view']);
 
     const result = guardResult(() => signedInLandingGuard(routeSnapshot(), stateSnapshot('/')));
 
     expect(result instanceof UrlTree).toBe(true);
-    expect((result as UrlTree).toString()).toBe('/employee');
+    expect((result as UrlTree).toString()).toBe('/administration');
   });
 
-  it('falls back to People, then to Home, when the Employee page is not granted', () => {
-    signIn(['people.view']);
+  it('uses the assigned landing permission and falls back to Home without either', () => {
+    signIn(['people.allemployee.search.view']);
     expect((guardResult(() => signedInLandingGuard(routeSnapshot(), stateSnapshot('/'))) as UrlTree).toString())
       .toBe('/people');
+
+    signIn(['administration.view']);
+    expect((guardResult(() => signedInLandingGuard(routeSnapshot(), stateSnapshot('/'))) as UrlTree).toString())
+      .toBe('/administration');
 
     signIn([]);
     expect((guardResult(() => signedInLandingGuard(routeSnapshot(), stateSnapshot('/'))) as UrlTree).toString())
@@ -181,23 +243,23 @@ describe('route guards', () => {
   });
 
   it('keeps a signed-in account out of the public Home directory', () => {
-    signIn(['allemployee.search.view']);
+    signIn(['people.allemployee.search.view']);
 
     const result = guardResult(() => anonymousHomeGuard(routeSnapshot(), stateSnapshot('/home')));
 
     expect(result instanceof UrlTree).toBe(true);
-    expect((result as UrlTree).toString()).toBe('/employee');
+    expect((result as UrlTree).toString()).toBe('/people');
 
     authService.clearSession();
     expect(guardResult(() => anonymousHomeGuard(routeSnapshot(), stateSnapshot('/home')))).toBe(true);
   });
 
-  it('sends a denied People visit to the Employee page when that is the only page allowed', () => {
-    signIn(['allemployee.search.view']);
+  it('sends a denied Administration visit to People when that is the only page allowed', () => {
+    signIn(['people.allemployee.search.view']);
 
-    const result = guardResult(() => peopleViewGuard(routeSnapshot(), stateSnapshot('/people')));
+    const result = guardResult(() => administrationViewGuard(routeSnapshot(), stateSnapshot('/administration')));
 
     expect(result instanceof UrlTree).toBe(true);
-    expect((result as UrlTree).toString()).toBe('/employee');
+    expect((result as UrlTree).toString()).toBe('/people');
   });
 });

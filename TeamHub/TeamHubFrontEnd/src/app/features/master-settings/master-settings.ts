@@ -11,6 +11,7 @@ import { PagedResult } from '../../shared/models/paged-result.model';
 import { ToastService } from '../../shared/services/toast.service';
 import { getApiErrorMessage } from '../../shared/services/api-error-message';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/auth/auth.service';
 
 type MasterKey =
   | 'department'
@@ -178,6 +179,7 @@ export class MasterSettings implements OnInit, AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly toastService = inject(ToastService);
+  private readonly authService = inject(AuthService);
   private readonly apiBaseUrl = `${environment.apiUrl}api`;
   @ViewChild('masterForm') private masterForm?: ElementRef<HTMLFormElement>;
 
@@ -199,10 +201,15 @@ export class MasterSettings implements OnInit, AfterViewInit {
   selectedImageBase64: string | null = null;
   currentImageBase64: string | null = null;
   imageFileName = '';
+  private currentMasterKey: MasterKey | null = null;
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      const key = params.get('masterKey') as MasterKey | null;
+      const rawKey = params.get('masterKey');
+      const key = rawKey && Object.prototype.hasOwnProperty.call(masterConfigs, rawKey)
+        ? rawKey as MasterKey
+        : null;
+      this.currentMasterKey = key;
       this.config = key ? masterConfigs[key] : undefined;
       this.fields = this.config?.fields ?? [];
       this.rows = [];
@@ -225,11 +232,17 @@ export class MasterSettings implements OnInit, AfterViewInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/people']);
+    this.router.navigate(['/administration']);
   }
 
   save(): void {
     if (!this.config || this.isSaving) {
+      return;
+    }
+
+    const action = this.editingId === null ? 'create' : 'update';
+    if (!this.hasMasterActionPermission(action)) {
+      this.toastService.error(`You do not have permission to ${action} ${this.config.singular.toLowerCase()}.`);
       return;
     }
 
@@ -287,6 +300,10 @@ export class MasterSettings implements OnInit, AfterViewInit {
     if (!this.config) {
       return;
     }
+    if (!this.canUpdate) {
+      this.toastService.error(`You do not have permission to update ${this.config.singular.toLowerCase()}.`);
+      return;
+    }
 
     this.editingId = Number(row[this.config.idField]);
     const value = Object.fromEntries(this.fields.map((field) => [
@@ -305,6 +322,10 @@ export class MasterSettings implements OnInit, AfterViewInit {
 
   delete(row: Record<string, unknown>): void {
     if (!this.config) {
+      return;
+    }
+    if (!this.canDelete) {
+      this.toastService.error(`You do not have permission to delete ${this.config.singular.toLowerCase()}.`);
       return;
     }
 
@@ -456,6 +477,18 @@ export class MasterSettings implements OnInit, AfterViewInit {
 
   get cotivityEmployeeSettings(): boolean {
     return this.config?.endpoint === 'cotivityemployees';
+  }
+
+  get canCreate(): boolean {
+    return this.hasMasterActionPermission('create');
+  }
+
+  get canUpdate(): boolean {
+    return this.hasMasterActionPermission('update');
+  }
+
+  get canDelete(): boolean {
+    return this.hasMasterActionPermission('delete');
   }
 
   optionsFor(field: MasterField): LookupItem[] {
@@ -612,5 +645,36 @@ export class MasterSettings implements OnInit, AfterViewInit {
 
   private getEndpoint(): string {
     return `${this.apiBaseUrl}/${this.config?.endpoint}`;
+  }
+
+  private hasMasterActionPermission(action: 'create' | 'update' | 'delete'): boolean {
+    if (!this.currentMasterKey) {
+      return false;
+    }
+
+    const actionCode = action === 'update' ? 'edit' : action;
+    const specializedMaster = {
+      'cotivity-department': 'cotivity.department',
+      'cotivity-designation': 'cotivity.designation',
+      'cotivity-employee': 'cotivity.employee',
+      department: 'organization.department',
+      designation: 'organization.designation',
+      'business-unit': 'organization.businessunit',
+      'dress-size': 'organization.dresssize',
+      'address-type': 'organization.addresstype',
+      'blood-group': 'organization.bloodgroup',
+      skills: 'organization.skills',
+      'job-type': 'organization.jobtype',
+      team: 'organization.team',
+      gender: 'organization.gender'
+    } as const;
+    const permissionCode = this.currentMasterKey === 'permission'
+      ? `setting.gear.manage.permissions.${actionCode}`
+      : this.currentMasterKey === 'role'
+        ? `setting.gear.role.${actionCode}`
+        : this.currentMasterKey in specializedMaster
+          ? `${specializedMaster[this.currentMasterKey as keyof typeof specializedMaster]}.${actionCode}`
+          : `master.${this.currentMasterKey}.${action}`;
+    return this.authService.hasPermission(permissionCode);
   }
 }

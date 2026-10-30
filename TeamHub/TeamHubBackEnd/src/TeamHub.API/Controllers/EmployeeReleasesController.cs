@@ -121,7 +121,7 @@ public sealed class EmployeeReleasesController(
         }
         else
         {
-            var releaseAuth = await authorization.AuthorizeAsync(User, null, RbacPolicies.PeopleRelease);
+            var releaseAuth = await authorization.AuthorizeAsync(User, null, RbacPolicies.AdministrationRelease);
             if (!releaseAuth.Succeeded)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, ApiProblemDetailsFactory.Forbidden(

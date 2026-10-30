@@ -61,10 +61,6 @@ export class DirectoryViewComponent {
   @Output() viewEmployeeHierarchy = new EventEmitter<number>();
   @Output() viewEmployeeDirectHierarchy = new EventEmitter<number>();
   @Output() viewEmployeeDetails = new EventEmitter<number>();
-  openMenuEmployeeId: number | null = null;
-  menuLeft = 0;
-  menuTop = 0;
-
   previewEmployeeId: number | null = null;
   previewEmployee: EmployeeDetails | null = null;
   previewPublicEmployee: PublicEmployeeDetails | null = null;
@@ -72,6 +68,10 @@ export class DirectoryViewComponent {
   previewVisible = false;
   previewLeft = 0;
   previewTop = 0;
+
+  get managementColumnCount(): number {
+    return 8 + Number(this.canViewCard) + Number(this.canEditEmployee) + Number(this.canDeleteEmployee);
+  }
 
   onEmployeeHover(employeeId: number, event: MouseEvent): void {
     if (!this.readOnlyHome && !this.canViewEmployeeDetails) return;
@@ -173,11 +173,13 @@ export class DirectoryViewComponent {
 
   private positionPreview(anchor: HTMLElement): void {
     const rect = anchor.getBoundingClientRect();
-    const width = 320;
-    const height = 420;
+    const width = Math.min(320, window.innerWidth - 16);
+    const height = Math.min(420, window.innerHeight - 16);
     const gap = 12;
     const spaceRight = window.innerWidth - rect.right;
-    let left = spaceRight >= width + gap + 8 ? rect.right + gap : Math.max(8, rect.left - width - gap);
+    let left = spaceRight >= width + gap + 8
+      ? rect.right + gap
+      : Math.max(8, Math.min(rect.left - width - gap, window.innerWidth - width - 8));
     let top = rect.top;
     if (top + height > window.innerHeight - 8) {
       top = Math.max(8, window.innerHeight - height - 8);
@@ -195,33 +197,13 @@ export class DirectoryViewComponent {
     this.changeDetectorRef.markForCheck();
   }
 
-  toggleActionMenu(employeeId: number, event: MouseEvent): void {
-    event.stopPropagation();
-    if (this.openMenuEmployeeId === employeeId) {
-      this.openMenuEmployeeId = null;
-      return;
-    }
-    const trigger = (event.target as HTMLElement).closest('.menu-trigger') as HTMLElement;
-    const rect = trigger.getBoundingClientRect();
-    const menuWidth = 44;
-    const gap = 8;
-    const fitsLeft = rect.left - menuWidth - gap >= 8;
-    this.menuLeft = fitsLeft
-      ? rect.left - menuWidth - gap
-      : Math.min(rect.right + gap, window.innerWidth - menuWidth - 8);
-    this.menuTop = Math.max(8, Math.min(rect.top, window.innerHeight - 220));
-    this.openMenuEmployeeId = employeeId;
-  }
-
   edit(employeeId: number): void {
     if (!this.canEditEmployee) return;
-    this.openMenuEmployeeId = null;
     this.editEmployee.emit(employeeId);
   }
 
   showCard(employeeId: number): void {
     if (!this.canViewCard) return;
-    this.openMenuEmployeeId = null;
     this.viewEmployeeDetails.emit(employeeId);
   }
 
@@ -236,7 +218,6 @@ export class DirectoryViewComponent {
   }
 
   release(employeeId: number): void {
-    this.openMenuEmployeeId = null;
     const employee = this.employees.find((item) => item.id === employeeId);
     const employeeName = employee?.name ?? 'this employee';
     this.toastService.confirm(
@@ -247,7 +228,6 @@ export class DirectoryViewComponent {
   }
 
   terminate(employeeId: number): void {
-    this.openMenuEmployeeId = null;
     const employee = this.employees.find((item) => item.id === employeeId);
     const employeeName = employee?.name ?? 'this employee';
     this.toastService.confirm(
@@ -258,12 +238,10 @@ export class DirectoryViewComponent {
   }
 
   showHierarchy(employeeId: number): void {
-    this.openMenuEmployeeId = null;
     this.viewEmployeeHierarchy.emit(employeeId);
   }
 
   showDirectHierarchy(employeeId: number): void {
-    this.openMenuEmployeeId = null;
     this.viewEmployeeDirectHierarchy.emit(employeeId);
   }
 
@@ -271,15 +249,9 @@ export class DirectoryViewComponent {
     this.viewEmployeeDetails.emit(employeeId);
   }
 
-  @HostListener('document:click')
-  closeActionMenu(): void {
-    this.openMenuEmployeeId = null;
-  }
-
   @HostListener('window:scroll.capture')
   @HostListener('window:resize')
   onViewportChange(): void {
-    this.openMenuEmployeeId = null;
     this.closePreview();
   }
 

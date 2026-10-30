@@ -106,6 +106,69 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_UserRoles_RoleId' AND ob
     CREATE INDEX IX_UserRoles_RoleId ON dbo.UserRoles(RoleId);
 GO
 
+/* Rename legacy employee permissions without dropping their role grants. */
+BEGIN TRANSACTION;
+
+DECLARE @EmployeePermissionCodes TABLE
+(
+    OldCode VARCHAR(100) NOT NULL,
+    NewCode VARCHAR(100) NOT NULL
+);
+
+INSERT INTO @EmployeePermissionCodes (OldCode, NewCode)
+VALUES
+    ('people.view', 'administration.view'),
+    ('people.create', 'administration.create'),
+    ('people.update', 'administration.update'),
+    ('people.release', 'administration.release'),
+    ('people.terminate', 'administration.terminate'),
+    ('people.hierarchy.view', 'administration.hierarchy.view'),
+    ('people.delete', 'administration.delete'),
+    ('people.cardview', 'administration.cardview'),
+    ('allemployee.search.view', 'people.allemployee.search.view');
+
+DELETE oldGrant
+FROM dbo.RolePermissions oldGrant
+INNER JOIN dbo.Permissions oldPermission ON oldPermission.PermissionId = oldGrant.PermissionId
+INNER JOIN @EmployeePermissionCodes codeMap ON codeMap.OldCode = oldPermission.PermissionCode
+INNER JOIN dbo.Permissions newPermission ON newPermission.PermissionCode = codeMap.NewCode
+WHERE EXISTS
+(
+    SELECT 1
+    FROM dbo.RolePermissions existingGrant
+    WHERE existingGrant.RoleId = oldGrant.RoleId
+      AND existingGrant.PermissionId = newPermission.PermissionId
+);
+
+UPDATE oldGrant
+SET PermissionId = newPermission.PermissionId
+FROM dbo.RolePermissions oldGrant
+INNER JOIN dbo.Permissions oldPermission ON oldPermission.PermissionId = oldGrant.PermissionId
+INNER JOIN @EmployeePermissionCodes codeMap ON codeMap.OldCode = oldPermission.PermissionCode
+INNER JOIN dbo.Permissions newPermission ON newPermission.PermissionCode = codeMap.NewCode;
+
+DELETE oldPermission
+FROM dbo.Permissions oldPermission
+INNER JOIN @EmployeePermissionCodes codeMap ON codeMap.OldCode = oldPermission.PermissionCode
+WHERE EXISTS
+(
+    SELECT 1
+    FROM dbo.Permissions newPermission
+    WHERE newPermission.PermissionCode = codeMap.NewCode
+);
+
+UPDATE oldPermission
+SET PermissionCode = codeMap.NewCode,
+    Module = CASE WHEN codeMap.NewCode = 'people.allemployee.search.view'
+                  THEN N'People' ELSE N'Administration' END,
+    LastModifiedBy = 'permission-migration',
+    LastModifiedDate = SYSUTCDATETIME()
+FROM dbo.Permissions oldPermission
+INNER JOIN @EmployeePermissionCodes codeMap ON codeMap.OldCode = oldPermission.PermissionCode;
+
+COMMIT TRANSACTION;
+GO
+
 /* =========================================================
    PERMISSION CATALOG SEED
    Populates dbo.Permissions so the Role Permission Matrix has
@@ -121,14 +184,15 @@ SELECT v.PermissionCode, v.PermissionName, v.Module, v.Description, 1, 'permissi
 FROM (VALUES
     ('profile.view',            N'View Own Profile',          N'Profile',      N'View the authenticated employee''s own employee record and related profile data.'),
     ('profile.edit',            N'Edit Own Profile',          N'Profile',      N'Update the authenticated employee''s own permitted profile fields and profile picture.'),
-    ('people.view',             N'View Employees',          N'People',       N'View the employee directory and profiles.'),
-    ('people.create',           N'Add Employee',            N'People',       N'Create new employee records.'),
-    ('people.update',           N'Update Employee',         N'People',       N'Edit existing employee records.'),
-    ('people.delete',           N'Delete Employee',         N'People',       N'Soft-delete employee records while retaining history.'),
-    ('people.cardview',         N'View Employee Cards',     N'People',       N'Open employee card views from the People module.'),
-    ('people.release',          N'Release Employee',        N'People',       N'Release an employee from the organization.'),
-    ('people.terminate',        N'Terminate Employee',      N'People',       N'Terminate an employee record.'),
-    ('people.hierarchy.view',   N'View Hierarchy',          N'People',       N'View the organization hierarchy chart.'),
+    ('people.allemployee.search.view', N'Search All Employees', N'People', N'Open the Employee search page and view active employee cards.'),
+    ('administration.view',             N'View Employees',          N'Administration', N'View the employee directory and profiles.'),
+    ('administration.create',           N'Add Employee',            N'Administration', N'Create new employee records.'),
+    ('administration.update',           N'Update Employee',         N'Administration', N'Edit existing employee records.'),
+    ('administration.delete',           N'Delete Employee',         N'Administration', N'Soft-delete employee records while retaining history.'),
+    ('administration.cardview',         N'View Employee Cards',     N'Administration', N'Open employee card views from the Administration module.'),
+    ('administration.release',          N'Release Employee',        N'Administration', N'Release an employee from the organization.'),
+    ('administration.terminate',        N'Terminate Employee',      N'Administration', N'Terminate an employee record.'),
+    ('administration.hierarchy.view',   N'View Hierarchy',          N'Administration', N'View the organization hierarchy chart.'),
     ('resignations.button',     N'Show Resignations Navigation', N'Resignations', N'Show the Resignations navigation button.'),
     ('resignations.view',       N'View Resignations',       N'Resignations', N'View resignation records.'),
     ('resignations.manage',     N'Manage Resignations',     N'Resignations', N'Create and update resignation records.'),
@@ -166,8 +230,7 @@ FROM (VALUES
     ('master.recruitment',          N'Master: Recruitment',         N'Settings',     N'Maintain the Recruitment Source master data.'),
     ('permissions.manage',      N'Manage Permissions',      N'RBAC',         N'Create and maintain permission definitions.'),
     ('user-roles.assign',       N'Assign User Roles',       N'RBAC',         N'Assign roles to employees in the matrix.'),
-    ('role-permissions.manage', N'Manage Role Permissions', N'RBAC',         N'Grant permissions to roles in the matrix.')
-    ('role-permissions.manage', N'Manage Role Permissions', N'RBAC',         N'Grant permissions to roles in the matrix.'),
+    ('role-permissions.manage', N'Manage Role Permissions', N'RBAC', N'Grant permissions to roles in the matrix.'),
     ('setting.gear', N'Show Settings Gear', N'Settings', N'Show the settings gear menu.'),
     ('setting.gear.EmployeeRole', N'Open Employee Role Matrix', N'Settings',  N'Open the Employee Role Matrix from the settings gear menu.'),
     ('setting.gear.RolePermission', N'Open Role Permission Matrix', N'Settings', N'Open the Role Permission Matrix from the settings gear menu.')
@@ -175,6 +238,162 @@ FROM (VALUES
 WHERE NOT EXISTS (
     SELECT 1 FROM dbo.Permissions p WHERE p.PermissionCode = v.PermissionCode
 );
+
+/* UI-level master permissions: the existing master.<key> codes remain the
+   backend API authorization contract; these codes control frontend visibility. */
+INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
+SELECT
+    CONCAT('master.', m.MasterKey, '.', a.ActionKey),
+    CONCAT(a.ActionName, N' ', m.MasterName),
+    m.Module,
+    CONCAT(a.ActionName, N' access to the ', m.MasterName, N' master page.'),
+    1,
+    'permission-seed',
+    SYSUTCDATETIME()
+FROM (VALUES
+    ('department', N'Department', N'Organization Master'),
+    ('designation', N'Designation', N'Organization Master'),
+    ('business-unit', N'Business Unit', N'Organization Master'),
+    ('dress-size', N'Dress Size', N'Organization Master'),
+    ('address-type', N'Address Type', N'Organization Master'),
+    ('blood-group', N'Blood Group', N'Organization Master'),
+    ('skills', N'Skills', N'Organization Master'),
+    ('job-type', N'Job Type', N'Organization Master'),
+    ('team', N'Team', N'Organization Master'),
+    ('gender', N'Gender', N'Organization Master'),
+    ('cotivity-department', N'Cotivity Department', N'Cotivity'),
+    ('cotivity-designation', N'Cotivity Designation', N'Cotivity'),
+    ('cotivity-employee', N'Cotivity Employee', N'Cotivity'),
+    ('role', N'Role', N'Settings'),
+    ('recruitment', N'Recruitment', N'Settings')
+) m(MasterKey, MasterName, Module)
+CROSS JOIN (VALUES
+    ('view', N'View'),
+    ('create', N'Create'),
+    ('update', N'Update'),
+    ('delete', N'Delete')
+) a(ActionKey, ActionName)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM dbo.Permissions p
+    WHERE p.PermissionCode = CONCAT('master.', m.MasterKey, '.', a.ActionKey)
+);
+
+INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
+SELECT v.PermissionCode, v.PermissionName, v.Module, v.Description, 1, 'permission-seed', SYSUTCDATETIME()
+FROM (VALUES
+    ('setting.gear.role.view', N'View Roles', N'Settings', N'View user roles.'),
+    ('setting.gear.role.create', N'Create Role', N'Settings', N'Create new user roles.'),
+    ('setting.gear.role.edit', N'Edit Role', N'Settings', N'Edit existing user roles.'),
+    ('setting.gear.role.delete', N'Delete Role', N'Settings', N'Delete user roles.'),
+    ('setting.gear.manage.permissions.view', N'View Permissions', N'Settings', N'View application permissions.'),
+    ('setting.gear.manage.permissions.create', N'Create Permission', N'Settings', N'Create new application permissions.'),
+    ('setting.gear.manage.permissions.edit', N'Edit Permission', N'Settings', N'Edit existing application permissions.'),
+    ('setting.gear.manage.permissions.delete', N'Delete Permission', N'Settings', N'Delete application permissions.')
+) v(PermissionCode, PermissionName, Module, Description)
+WHERE NOT EXISTS (
+    SELECT 1 FROM dbo.Permissions p WHERE p.PermissionCode = v.PermissionCode
+);
+
+INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
+SELECT v.PermissionCode, v.PermissionName, v.Module, v.Description, 1, 'permission-seed', SYSUTCDATETIME()
+FROM (VALUES
+    ('cotivity.department.view', N'View Department', N'Cotivity', N'View Cotivity departments.'),
+    ('cotivity.department.create', N'Create Department', N'Cotivity', N'Create new Cotivity departments.'),
+    ('cotivity.department.edit', N'Edit Department', N'Cotivity', N'Edit existing Cotivity departments.'),
+    ('cotivity.department.delete', N'Delete Department', N'Cotivity', N'Delete Cotivity departments.'),
+    ('cotivity.designation.view', N'View Designation', N'Cotivity', N'View Cotivity designations.'),
+    ('cotivity.designation.create', N'Create Designation', N'Cotivity', N'Create new Cotivity designations.'),
+    ('cotivity.designation.edit', N'Edit Designation', N'Cotivity', N'Edit existing Cotivity designations.'),
+    ('cotivity.designation.delete', N'Delete Designation', N'Cotivity', N'Delete Cotivity designations.'),
+    ('cotivity.employee.view', N'View Employee', N'Cotivity', N'View Cotivity employee records.'),
+    ('cotivity.employee.create', N'Create Employee', N'Cotivity', N'Create new Cotivity employee records.'),
+    ('cotivity.employee.edit', N'Edit Employee', N'Cotivity', N'Edit existing Cotivity employee records.'),
+    ('cotivity.employee.delete', N'Delete Employee', N'Cotivity', N'Delete Cotivity employee records.')
+) v(PermissionCode, PermissionName, Module, Description)
+WHERE NOT EXISTS (
+    SELECT 1 FROM dbo.Permissions p WHERE p.PermissionCode = v.PermissionCode
+);
+
+INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
+SELECT v.PermissionCode, v.PermissionName, v.Module, v.Description, 1, 'permission-seed', SYSUTCDATETIME()
+FROM (VALUES
+    ('organization.department.view', N'View Department', N'Organization', N'View organization departments.'),
+    ('organization.department.create', N'Create Department', N'Organization', N'Create new organization departments.'),
+    ('organization.department.edit', N'Edit Department', N'Organization', N'Edit existing organization departments.'),
+    ('organization.department.delete', N'Delete Department', N'Organization', N'Delete organization departments.'),
+    ('organization.designation.view', N'View Designation', N'Organization', N'View organization designations.'),
+    ('organization.designation.create', N'Create Designation', N'Organization', N'Create new organization designations.'),
+    ('organization.designation.edit', N'Edit Designation', N'Organization', N'Edit existing organization designations.'),
+    ('organization.designation.delete', N'Delete Designation', N'Organization', N'Delete organization designations.'),
+    ('organization.businessunit.view', N'View Business Unit', N'Organization', N'View organization business units.'),
+    ('organization.businessunit.create', N'Create Business Unit', N'Organization', N'Create new organization business units.'),
+    ('organization.businessunit.edit', N'Edit Business Unit', N'Organization', N'Edit existing organization business units.'),
+    ('organization.businessunit.delete', N'Delete Business Unit', N'Organization', N'Delete organization business units.'),
+    ('organization.dresssize.view', N'View Dress Size', N'Organization', N'View available dress sizes.'),
+    ('organization.dresssize.create', N'Create Dress Size', N'Organization', N'Create new dress sizes.'),
+    ('organization.dresssize.edit', N'Edit Dress Size', N'Organization', N'Edit existing dress sizes.'),
+    ('organization.dresssize.delete', N'Delete Dress Size', N'Organization', N'Delete dress sizes.'),
+    ('organization.addresstype.view', N'View Address Type', N'Organization', N'View address types.'),
+    ('organization.addresstype.create', N'Create Address Type', N'Organization', N'Create new address types.'),
+    ('organization.addresstype.edit', N'Edit Address Type', N'Organization', N'Edit existing address types.'),
+    ('organization.addresstype.delete', N'Delete Address Type', N'Organization', N'Delete address types.'),
+    ('organization.skills.view', N'View Skills', N'Organization', N'View available skills.'),
+    ('organization.skills.create', N'Create Skill', N'Organization', N'Create new skills.'),
+    ('organization.skills.edit', N'Edit Skill', N'Organization', N'Edit existing skills.'),
+    ('organization.skills.delete', N'Delete Skill', N'Organization', N'Delete skills.'),
+    ('organization.jobtype.view', N'View Job Type', N'Organization', N'View job types.'),
+    ('organization.jobtype.create', N'Create Job Type', N'Organization', N'Create new job types.'),
+    ('organization.jobtype.edit', N'Edit Job Type', N'Organization', N'Edit existing job types.'),
+    ('organization.jobtype.delete', N'Delete Job Type', N'Organization', N'Delete job types.'),
+    ('organization.team.view', N'View Team', N'Organization', N'View organization teams.'),
+    ('organization.team.create', N'Create Team', N'Organization', N'Create new organization teams.'),
+    ('organization.team.edit', N'Edit Team', N'Organization', N'Edit existing organization teams.'),
+    ('organization.team.delete', N'Delete Team', N'Organization', N'Delete organization teams.'),
+    ('organization.gender.view', N'View Gender', N'Organization', N'View gender options.'),
+    ('organization.gender.create', N'Create Gender', N'Organization', N'Create new gender options.'),
+    ('organization.gender.edit', N'Edit Gender', N'Organization', N'Edit existing gender options.'),
+    ('organization.gender.delete', N'Delete Gender', N'Organization', N'Delete gender options.'),
+    ('organization.bloodgroup.view', N'View Blood Group', N'Organization', N'View available blood groups.'),
+    ('organization.bloodgroup.create', N'Create Blood Group', N'Organization', N'Create new blood groups.'),
+    ('organization.bloodgroup.edit', N'Edit Blood Group', N'Organization', N'Edit existing blood groups.'),
+    ('organization.bloodgroup.delete', N'Delete Blood Group', N'Organization', N'Delete blood groups.')
+) v(PermissionCode, PermissionName, Module, Description)
+WHERE NOT EXISTS (
+    SELECT 1 FROM dbo.Permissions p WHERE p.PermissionCode = v.PermissionCode
+);
+
+/* Preserve grants on the previous generic UI-level codes during this rename. */
+INSERT INTO dbo.RolePermissions (RoleId, PermissionId, CreatedBy, CreatedDate)
+SELECT oldGrant.RoleId, newPermission.PermissionId, 'permission-migration', SYSUTCDATETIME()
+FROM dbo.RolePermissions oldGrant
+INNER JOIN dbo.Permissions oldPermission ON oldPermission.PermissionId = oldGrant.PermissionId
+CROSS JOIN (VALUES
+    ('department', 'department'),
+    ('designation', 'designation'),
+    ('business-unit', 'businessunit'),
+    ('dress-size', 'dresssize'),
+    ('address-type', 'addresstype'),
+    ('blood-group', 'bloodgroup'),
+    ('skills', 'skills'),
+    ('job-type', 'jobtype'),
+    ('team', 'team'),
+    ('gender', 'gender')
+) masterMap(MasterKey, OrganizationKey)
+CROSS JOIN (VALUES
+    ('view', 'view'),
+    ('create', 'create'),
+    ('update', 'edit'),
+    ('delete', 'delete')
+) actionMap(OldAction, NewAction)
+INNER JOIN dbo.Permissions newPermission
+    ON newPermission.PermissionCode = CONCAT('organization.', masterMap.OrganizationKey, '.', actionMap.NewAction)
+WHERE oldPermission.PermissionCode = CONCAT('master.', masterMap.MasterKey, '.', actionMap.OldAction)
+  AND NOT EXISTS (
+      SELECT 1 FROM dbo.RolePermissions existingGrant
+      WHERE existingGrant.RoleId = oldGrant.RoleId
+        AND existingGrant.PermissionId = newPermission.PermissionId
+  );
 
 /* Mirror super-admin access: grant the full catalog to the Admin role. */
 INSERT INTO dbo.RolePermissions (RoleId, PermissionId, CreatedBy, CreatedDate)

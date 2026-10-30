@@ -108,6 +108,13 @@ export class EmployeeRoleMatrixComponent implements OnInit {
           this.selections.clear();
           this.hasPendingChanges = false;
           this.load();
+          this.auth.refreshAccessToken()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              error: () => this.toastService.error(
+                'Role assignments were saved, but this account session could not be refreshed. Sign out and back in to see updated navigation.'
+              )
+            });
         },
         error: (error) => {
           this.toastService.error(getApiErrorMessage(error, 'Could not save role assignments.'));
@@ -150,7 +157,7 @@ export class EmployeeRoleMatrixComponent implements OnInit {
   }
 
   goBack(): void {
-    void this.router.navigateByUrl('/people');
+    void this.router.navigateByUrl('/administration');
   }
 
   trackByUser(_index: number, row: EmployeeRoleMatrixRow): number {

@@ -1,24 +1,31 @@
 using TeamHub.Domain.Entities;
 using TeamHub.Application.DTOs.Employee;
 using TeamHub.Application.DTOs.Employees;
+using TeamHub.Shared.Responses;
 
 namespace TeamHub.Application.Contracts.Repositories;
 
 public interface IEmployeeRepository
 {
-    Task<IReadOnlyList<GetGridEmployeeDto>> GetAllAsync(
+    Task<PagedResult<GetGridEmployeeDto>> GetAllAsync(
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all",
         string? departmentName = null,
         string status = "active");
-    Task<IReadOnlyList<GetGridEmployeeDto>> GetActiveByDepartmentIdAsync(
+    Task<PagedResult<GetGridEmployeeDto>> GetActiveByDepartmentIdAsync(
         int departmentId,
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all");
-    Task<IReadOnlyList<GetActiveInactiveEmployeeDto>> GetAllActiveInactiveAsync(
+    Task<PagedResult<GetActiveInactiveEmployeeDto>> GetAllActiveInactiveAsync(
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all",
         string? departmentName = null,

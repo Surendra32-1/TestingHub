@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
@@ -146,7 +147,8 @@ public sealed class ProfileController(IEmployeeProfileService profileService) : 
     {
         patch = new EmployeeProfilePatch(
             false, null, false, 0, false, null, false, null, false, null, false, null,
-            false, 0, false, 0, false, null, false, [], false, []);
+            false, 0, false, 0, false, null, false, [], false, [],
+            false, null, false, null, false, null, false, null);
         errors = new Dictionary<string, string[]>(StringComparer.Ordinal);
         if (body.ValueKind != JsonValueKind.Object)
         {
@@ -175,7 +177,11 @@ public sealed class ProfileController(IEmployeeProfileService profileService) : 
             "longitude",
             "imageBase64",
             "skills",
-            "dressIds"
+            "dressIds",
+            "joinedDate",
+            "joinedDateBS",
+            "dateOfBirth",
+            "dateOfBirthBS"
         };
         foreach (var name in values.Keys)
         {
@@ -197,6 +203,10 @@ public sealed class ProfileController(IEmployeeProfileService profileService) : 
         var imageBase64 = ReadOptionalString(values, "imageBase64", errors, ref valid);
         var skills = ReadOptionalSkills(values, errors, ref valid);
         var dressIds = ReadOptionalIntArray(values, "dressIds", errors, ref valid);
+        var joinedDate = ReadOptionalDateOnly(values, "joinedDate", errors, ref valid);
+        var joinedDateBS = ReadOptionalString(values, "joinedDateBS", errors, ref valid);
+        var dateOfBirth = ReadOptionalDateOnly(values, "dateOfBirth", errors, ref valid);
+        var dateOfBirthBS = ReadOptionalString(values, "dateOfBirthBS", errors, ref valid);
 
         patch = new EmployeeProfilePatch(
             values.ContainsKey("alternateEmail"), alternateEmail,
@@ -209,7 +219,11 @@ public sealed class ProfileController(IEmployeeProfileService profileService) : 
             values.ContainsKey("longitude"), longitude ?? 0,
             values.ContainsKey("imageBase64"), imageBase64,
             values.ContainsKey("skills"), skills,
-            values.ContainsKey("dressIds"), dressIds);
+            values.ContainsKey("dressIds"), dressIds,
+            values.ContainsKey("joinedDate"), joinedDate,
+            values.ContainsKey("joinedDateBS"), joinedDateBS,
+            values.ContainsKey("dateOfBirth"), dateOfBirth,
+            values.ContainsKey("dateOfBirthBS"), dateOfBirthBS);
 
         if (values.Count == 0)
         {
@@ -355,6 +369,29 @@ public sealed class ProfileController(IEmployeeProfileService profileService) : 
         }
 
         errors[name] = ["This field must be a number."];
+        valid = false;
+        return null;
+    }
+
+    private static DateOnly? ReadOptionalDateOnly(
+        IReadOnlyDictionary<string, JsonElement> values,
+        string name,
+        IDictionary<string, string[]> errors,
+        ref bool valid)
+    {
+        if (!values.TryGetValue(name, out var value) || value.ValueKind == JsonValueKind.Null)
+        {
+            return null;
+        }
+
+        if (value.ValueKind == JsonValueKind.String
+            && DateOnly.TryParseExact(value.GetString(), "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out var result))
+        {
+            return result;
+        }
+
+        errors[name] = ["This field must be an ISO date (yyyy-MM-dd) or null."];
         valid = false;
         return null;
     }

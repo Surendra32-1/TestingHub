@@ -236,14 +236,16 @@ The insert itself is `WHERE NOT EXISTS`-guarded, and a final block seeds `UserRo
 | `RolePermissions` | 55 | `RolePermissionId` PK, `RoleId` FK→Roles, `PermissionId` FK→Permissions, `UQ_RolePermissions_Role_Permission UNIQUE (RoleId, PermissionId)`, audit, `IX_RolePermissions_RoleId`, `IX_RolePermissions_PermissionId` |
 | `UserRoles` | 85 | `UserRoleId` PK, `UserId` FK→Users, `RoleId` FK→Roles, `UQ_UserRoles_User_Role UNIQUE (UserId, RoleId)`, audit, `IX_UserRoles_RoleId` |
 
-Permission catalog seed (`:117-161`, one transaction) inserts **36 codes** with a
+Permission catalog seed (one transaction) inserts **52 distinct codes** with a
 `WHERE NOT EXISTS (… PermissionCode …)` guard, so re-running adds only codes introduced since the last
-apply. Coverage: 6 `People`, 10 `Resignations` (`view`, `manage`, `add` + 7 `resignations.action.*`),
-3 `Terminations` (`view`, `add`, `manage`), 14 `master.<module>` (`Settings`) and the 3 stable RBAC codes
-(`permissions.manage`, `user-roles.assign`, `role-permissions.manage`) — the codes
-`RbacPolicies.PolicyPermissions` enforces (doc 08 §9). `:164-172` then mirrors the **entire** catalog
-onto the `Admin` role with an idempotent `CROSS JOIN`, which is why the seed must be re-run after any
-code is added or Admin loses the corresponding button.
+apply. Coverage: 1 `People`, 8 `Administration`, 2 `Profile`, 14 `Resignations`, 6 `Terminations`,
+18 `Settings` (15 `master.<module>` and 3 `setting.*`), and 3 RBAC codes. The seed then mirrors the
+**entire** catalog onto the `Admin` role with an idempotent `CROSS JOIN`, which is why it must be
+re-run after any code is added or Admin loses the corresponding button.
+
+The employee search page uses the separate `people.allemployee.search.view` permission in the `People`
+module; the schema migration renames the former `allemployee.search.view` code while preserving its
+role grants. Employee-management permissions use the `administration.*` namespace.
 
 **Verified live-DB state (re-queried 2026-10-23):** `dbo.Permissions` has **38** rows — the 36 seeded codes
 plus the legacy `master.view` / `master.manage`, which were removed from the seed but still exist in the
@@ -263,15 +265,20 @@ termination/offboarding are reachable without hand-ticking the Role Permission M
 
 | Role | Granted codes | Intent |
 |---|---|---|
-| `NormalUser` | `resignations.add` | Self-service filing; "People" needs no code (`authenticatedGuard` only), so the menu shows People + Apply Resignation |
+| `NormalUser` | `resignations.add` | Self-service filing; Administration visibility uses `administration.view` |
 | `Manager` | `resignations.view`, `resignations.add`, `resignations.action.submit`/`.sendforapproval`/`.approve`/`.reject`/`.cancel`, `master.team` | Runs the resignation queue; no termination writes |
-| `HR` | `people.create`, `people.update`, `people.release`, `resignations.view`, `resignations.add`, `resignations.action.submit`/`.sendforapproval`/`.cancel`/`.exitchecklist`/`.release`, `terminations.view`, `terminations.add`, `terminations.manage` | People master data + both termination capabilities — `terminations.add` files the record (`EmployeeTerminationsController.cs:85`, mirrored by `terminationAddGuard`), `terminations.manage` edits and transitions it — + operational resignation steps |
+| `HR` | `administration.view/create/update/release`, `resignations.view`, `resignations.add`, `resignations.action.submit`/`.sendforapproval`/`.cancel`/`.exitchecklist`/`.release`, `terminations.view`, `terminations.add`, `terminations.manage` | Administration access + termination capabilities — `terminations.add` files the record (`EmployeeTerminationsController.cs:85`), `terminations.manage` edits and transitions it — + operational resignation steps |
 
-The six inert codes (`people.view`, `people.terminate`, `people.hierarchy.view`, `resignations.manage`,
+The catalog also includes `administration.terminate` and `administration.hierarchy.view`; the former
+is accepted for employee-specific termination alongside `terminations.add`, and the latter gates the
+SPA hierarchy controls. `administration.view` gates the Administration route and menu. Employee-read
+API endpoints remain public.
+
+The remaining inert codes (`resignations.manage`,
 `master.view`, `master.manage`) are deliberately **not** granted — a tick that changes nothing is worse
 than no tick. *Verified* applied to the live DB 2026-10-23: the §11 batch first inserted 20 rows, then 1
 more when `terminations.add` was added to the HR list; final grant totals `NormalUser` = 1, `Manager` = 8,
-`HR` = 13, `Admin` = 38 (the pre-existing hand-granted `people.create` was not duplicated, and a re-run of
+`HR` = 13, `Admin` = 38 (the pre-existing hand-granted `administration.create` was not duplicated, and a re-run of
 the batch inserts 0 rows). Remaining gap: only `Admin`/`NormalUser` have `Users` rows and
 `DevSignIn.AllowedRoles` is `["Admin","NormalUser"]`, so `Manager`/`HR` grants cannot be signed in as
 yet (`14-known-issues.md` M9).
@@ -317,7 +324,7 @@ i.e. the newest image wins. Lookups are joined with `LEFT JOIN`, so a missing de
 department yields NULL names rather than dropping the node.
 
 **Verified:** this procedure is consumed by `EmployeeHierarchyRepository` through Dapper
-`QueryMultipleAsync` and surfaces as the `people.hierarchy.view` feature — traced in
+`QueryMultipleAsync` and surfaces as the `administration.hierarchy.view` feature — traced in
 [12-workflows.md](12-workflows.md).
 
 ## Logical relationships (from the FKs above)

@@ -18,6 +18,12 @@
           </button>
           @if (isSettingsMenuOpen) {
             <div class="profile-dropdown settings-dropdown" role="menu">
+              @if (canOpenRoleMaster) {
+                <button type="button" role="menuitem" (click)="openRoleMaster()">Role</button>
+              }
+              @if (canOpenPermissionsMaster) {
+                <button type="button" role="menuitem" (click)="openPermissionsMaster()">Manage Permissions</button>
+              }
               @if (canOpenEmployeeRoleMatrix) {
                 <button type="button" role="menuitem" (click)="openEmployeeRoleMatrix()">Employee Role</button>
               }

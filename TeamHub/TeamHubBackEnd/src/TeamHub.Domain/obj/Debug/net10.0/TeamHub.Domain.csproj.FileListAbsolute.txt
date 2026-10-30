@@ -128,3 +128,9 @@ e:\TEST\TeamHub\TeamHubBackEnd\.tmpbuild\verify2\TeamHub.Domain.pdb
 e:\TEST\TeamHub\_buildcheck\TeamHub.Domain.deps.json
 e:\TEST\TeamHub\_buildcheck\TeamHub.Domain.dll
 e:\TEST\TeamHub\_buildcheck\TeamHub.Domain.pdb
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildVerify\TeamHub.Domain.deps.json
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildVerify\TeamHub.Domain.dll
+C:\Users\Dell Suren\AppData\Local\Temp\TeamHubBuildVerify\TeamHub.Domain.pdb
+E:\TEST\_teamhub-validation-build\bin\Debug\net10.0\TeamHub.Domain.deps.json
+E:\TEST\_teamhub-validation-build\bin\Debug\net10.0\TeamHub.Domain.dll
+E:\TEST\_teamhub-validation-build\bin\Debug\net10.0\TeamHub.Domain.pdb

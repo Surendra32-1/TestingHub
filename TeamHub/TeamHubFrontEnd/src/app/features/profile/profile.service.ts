@@ -126,6 +126,10 @@ export interface EmployeeProfileSummary {
 }
 
 export interface EmployeeProfilePatch {
+  joinedDate?: string;
+  joinedDateBS?: string;
+  dateOfBirth?: string | null;
+  dateOfBirthBS?: string | null;
   alternateEmail?: string | null;
   bloodGroupId?: number;
   mobileNumber?: string | null;

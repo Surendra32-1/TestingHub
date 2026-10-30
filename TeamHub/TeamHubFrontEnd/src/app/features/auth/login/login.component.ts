@@ -30,6 +30,11 @@ export class LoginComponent implements OnInit {
   isSubmitting = false;
 
   ngOnInit(): void {
+    if (this.authService.isAuthenticated) {
+      this.navigateAfterSignIn();
+      return;
+    }
+
     if (this.enableEntra) {
       return;
     }
@@ -75,7 +80,10 @@ export class LoginComponent implements OnInit {
 
   private navigateAfterSignIn(): void {
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-    const safeReturnUrl = returnUrl?.startsWith('/') && !returnUrl.startsWith('//')
+    const returnPath = returnUrl?.split(/[?#]/, 1)[0].replace(/\/+$/, '') || '';
+    const safeReturnUrl = returnUrl?.startsWith('/')
+      && !returnUrl.startsWith('//')
+      && returnPath !== '/login'
       ? returnUrl
       : signedInLandingPath(this.authService);
     void this.router.navigateByUrl(safeReturnUrl);

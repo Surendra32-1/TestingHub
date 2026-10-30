@@ -25,7 +25,9 @@ public sealed class EmployeeProfileServiceTests
                 false, 0,
                 false, null,
                 false, [],
-                false, []));
+                false, [],
+                false, null, false, null,
+                false, null, false, null));
 
         Assert.Empty(result.Errors);
         Assert.Equal("user.name@example.com", repository.UpdatedPatch?.AlternateEmail);
@@ -54,7 +56,9 @@ public sealed class EmployeeProfileServiceTests
             false, 0,
             false, null,
             false, [],
-            false, []);
+            false, [],
+            false, null, false, null,
+            false, null, false, null);
 
         var result = await service.UpdateAsync(17, patch);
 
@@ -78,7 +82,9 @@ public sealed class EmployeeProfileServiceTests
             false, 0,
             true, "data:image/svg+xml;base64,PHN2Zz4=",
             false, [],
-            false, []);
+            false, [],
+            false, null, false, null,
+            false, null, false, null);
 
         var result = await service.UpdateAsync(17, patch);
 
@@ -102,7 +108,9 @@ public sealed class EmployeeProfileServiceTests
             false, 0,
             false, null,
             true, [new EmployeeProfileSkillUpdateDto(1, 6)],
-            false, []);
+            false, [],
+            false, null, false, null,
+            false, null, false, null);
 
         var result = await service.UpdateAsync(17, patch);
 
@@ -128,13 +136,70 @@ public sealed class EmployeeProfileServiceTests
             false, 0,
             false, null,
             true, skills,
-            true, dressIds);
+            true, dressIds,
+            false, null, false, null,
+            false, null, false, null);
 
         var result = await service.UpdateAsync(17, patch);
 
         Assert.Empty(result.Errors);
         Assert.Equal(skills, repository.UpdatedPatch?.Skills);
         Assert.Equal(dressIds, repository.UpdatedPatch?.DressIds);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_persists_paired_joined_and_birth_dates()
+    {
+        var repository = new EmployeeProfileRepositoryStub();
+        var service = new EmployeeProfileService(repository);
+        var patch = new EmployeeProfilePatch(
+            false, null,
+            false, 0,
+            false, null,
+            false, null,
+            false, null,
+            false, null,
+            false, 0,
+            false, 0,
+            false, null,
+            false, [],
+            false, [],
+            true, new DateOnly(2025, 1, 2), true, "2081-09-18",
+            true, new DateOnly(1990, 1, 1), true, "2046-09-17");
+
+        var result = await service.UpdateAsync(17, patch);
+
+        Assert.Empty(result.Errors);
+        Assert.Equal(new DateOnly(2025, 1, 2), repository.UpdatedPatch?.JoinedDate);
+        Assert.Equal("2081-09-18", repository.UpdatedPatch?.JoinedDateBS);
+        Assert.Equal(new DateOnly(1990, 1, 1), repository.UpdatedPatch?.DateOfBirth);
+        Assert.Equal("2046-09-17", repository.UpdatedPatch?.DateOfBirthBS);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_rejects_an_incomplete_joined_date_pair()
+    {
+        var repository = new EmployeeProfileRepositoryStub();
+        var service = new EmployeeProfileService(repository);
+        var patch = new EmployeeProfilePatch(
+            false, null,
+            false, 0,
+            false, null,
+            false, null,
+            false, null,
+            false, null,
+            false, 0,
+            false, 0,
+            false, null,
+            false, [],
+            false, [],
+            true, new DateOnly(2025, 1, 2), false, null,
+            false, null, false, null);
+
+        var result = await service.UpdateAsync(17, patch);
+
+        Assert.Contains("joinedDate", result.Errors.Keys);
+        Assert.Null(repository.UpdatedPatch);
     }
 
     private sealed class EmployeeProfileRepositoryStub : IEmployeeProfileRepository

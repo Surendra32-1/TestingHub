@@ -57,10 +57,10 @@ describe('TopbarComponent', () => {
   });
 
   it('renders only the entries the signed-in permissions allow', () => {
-    signIn(['people.view', 'master.department', 'user-roles.assign']);
+    signIn(['administration.view', 'organization.department.view', 'user-roles.assign']);
     fixture.detectChanges();
 
-    expect(itemLabels()).toEqual(['People', 'Manage']);
+    expect(itemLabels()).toEqual(['Administration', 'Organization Master']);
     expect(host().querySelector('.profile-trigger')).not.toBeNull();
   });
 
@@ -77,14 +77,33 @@ describe('TopbarComponent', () => {
     expect(dropdown?.textContent).not.toContain('Matrix');
   });
 
-  it('shows the gear only when the setting.gear permission is granted', () => {
+  it('shows Role and Manage Permissions in the gear when their permissions are granted', () => {
+    signIn(['setting.gear.role.view', 'setting.gear.manage.permissions.view']);
+    fixture.detectChanges();
+
+    host().querySelector<HTMLButtonElement>('.settings-trigger')!.click();
+    fixture.detectChanges();
+
+    const links = Array.from(host().querySelectorAll<HTMLButtonElement>('.settings-dropdown button'))
+      .map((button) => button.textContent?.trim());
+    expect(links).toEqual(['Role', 'Manage Permissions']);
+  });
+
+  it('hides Role and Manage Permissions from the gear without their View permissions', () => {
+    signIn(['master.role.view', 'permissions.manage']);
+    fixture.detectChanges();
+
+    expect(host().querySelector('.settings-trigger')).toBeNull();
+  });
+
+  it('shows the gear only when at least one settings entry is authorized', () => {
     signIn(['setting.gear.EmployeeRole']);
     fixture.detectChanges();
-    expect(host().querySelector('.settings-trigger')).toBeNull();
+    expect(host().querySelector('.settings-trigger')).not.toBeNull();
 
     signIn(['setting.gear']);
     fixture.detectChanges();
-    expect(host().querySelector('.settings-trigger')).not.toBeNull();
+    expect(host().querySelector('.settings-trigger')).toBeNull();
   });
 
   it('navigates to the employee role matrix from the gear menu', async () => {
@@ -112,7 +131,7 @@ describe('TopbarComponent', () => {
   });
 
   it('opens the profile menu and closes it when clicking outside', () => {
-    signIn(['master.department', 'profile.view', 'profile.edit']);
+    signIn(['organization.department.view', 'profile.view', 'profile.edit']);
     fixture.detectChanges();
 
     host().querySelector<HTMLButtonElement>('.profile-trigger')!.click();
@@ -139,9 +158,9 @@ describe('TopbarComponent', () => {
   });
 
   it('removes every protected entry when the user signs out', async () => {
-    signIn(['master.department']);
+    signIn(['organization.department.view']);
     fixture.detectChanges();
-    expect(itemLabels()).toContain('Manage');
+    expect(itemLabels()).toContain('Organization Master');
 
     host().querySelector<HTMLButtonElement>('.profile-trigger')!.click();
     fixture.detectChanges();
@@ -155,15 +174,15 @@ describe('TopbarComponent', () => {
   });
 
   it('re-renders the navigation when another account takes over the session', () => {
-    signIn(['people.view', 'setting.gear', 'setting.gear.EmployeeRole']);
+    signIn(['administration.view', 'setting.gear', 'setting.gear.EmployeeRole']);
     fixture.detectChanges();
-    expect(itemLabels()).toEqual(['People']);
+    expect(itemLabels()).toEqual(['Administration']);
     expect(host().querySelector('.settings-trigger')).not.toBeNull();
 
-    signIn(['people.view', 'terminations.view']);
+    signIn(['administration.view', 'terminations.view']);
     fixture.detectChanges();
 
-    expect(itemLabels()).toEqual(['People', 'Terminations']);
+    expect(itemLabels()).toEqual(['Administration', 'Terminations']);
     expect(host().querySelector('.settings-trigger')).toBeNull();
   });
 });

@@ -79,7 +79,7 @@ public sealed class EmployeeTerminationsController(IEmployeeTerminationService s
             });
     }
 
-    [Authorize(Policy = RbacPolicies.TerminationAdd)]
+    [Authorize(Policy = RbacPolicies.TerminationAddOrAdministrationTerminate)]
     [HttpPost("employee/{employeeId:int}")]
     public async Task<ActionResult<ApiResponse<EmployeeTerminationResponse>>> Create(
         int employeeId, EmployeeTerminationRequest request, CancellationToken cancellationToken)

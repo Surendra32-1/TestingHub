@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -64,8 +64,11 @@ export class EmployeeAddFormComponent implements OnInit {
   isProfileMode = false;
   profileData: EmployeeProfile | null = null;
   readonly today = new Date(new Date().setHours(0, 0, 0, 0));
-  readonly latestDateOfBirth = new Date(this.today.getTime() - 24 * 60 * 60 * 1000);
-  readonly maxDateOfBirth = this.getLatestPastDate();
+
+  get maxDateOfBirth(): Date {
+    const joiningDate = this.dateValue(this.employeeForm?.get('joinedDate')?.value) ?? this.today;
+    return this.getMinimumAgeDate(joiningDate);
+  }
 
   departments: any[] = [];
   designations: any[] = [];
@@ -83,19 +86,7 @@ export class EmployeeAddFormComponent implements OnInit {
   addressTypes: any[] = [];
   skillLevels: Record<number, number> = {};
 
-  newSkillLevel = 1;
-
   readonly levelOptions = [1, 2, 3, 4, 5];
-
-  openSkillLevelId: number | null = null;
-
-  levelRowOpen = false;
-
-  @HostListener('document:click')
-  closeLevelMenus(): void {
-    this.openSkillLevelId = null;
-    this.levelRowOpen = false;
-  }
 
   get profileHasChanges(): boolean {
     if (!this.isProfileMode || !this.profileData) {
@@ -109,6 +100,8 @@ export class EmployeeAddFormComponent implements OnInit {
     const currentSkillIds = employee.skills.map((skill) => skill.skillId).sort((a, b) => a - b);
     const selectedDressIds = (values.dressIds as Array<number | string> ?? []).map(Number).sort((a, b) => a - b);
     const currentDressIds = employee.dressSizes.map((dress) => dress.dressId).sort((a, b) => a - b);
+    const joinedDate = this.toDateOnly(values.joinedDate);
+    const dateOfBirth = values.dateOfBirth ? this.toDateOnly(values.dateOfBirth) : null;
     const skillsChanged = !this.sameIds(selectedSkillIds, currentSkillIds)
       || employee.skills.some((skill) =>
         selectedSkillIds.includes(skill.skillId) && this.skillLevelFor(skill.skillId) !== skill.skillLevel);
@@ -119,6 +112,10 @@ export class EmployeeAddFormComponent implements OnInit {
       || values.emergencyContactNumber !== (employee.emergencyContactNumber ?? '')
       || values.motherName !== (employee.motherName ?? '')
       || values.spouseName !== (employee.spouseName ?? '')
+      || joinedDate !== employee.joinedDate
+      || values.joinedDateBS !== employee.joinedDateBS
+      || dateOfBirth !== employee.dateOfBirth
+      || (values.dateOfBirthBS || null) !== employee.dateOfBirthBS
       || values.latitude !== address?.latitude
       || values.longitude !== address?.longitude
       || skillsChanged
@@ -145,13 +142,6 @@ export class EmployeeAddFormComponent implements OnInit {
     return this.selectedOptionName(this.departments, 'departmentId', 'departmentName', 'departmentId');
   }
 
-  get levelRowValue(): number {
-    const levels = this.selectedIds('skillIds').map((skillId) => this.skillLevelFor(skillId));
-    return levels.length > 0 && levels.every((level) => level === levels[0])
-      ? levels[0]
-      : this.newSkillLevel;
-  }
-
   private selectedOptionName(
     options: any[],
     idField: string,
@@ -166,9 +156,7 @@ export class EmployeeAddFormComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.isProfileMode = this.route.snapshot.data['mode'] === 'profile';
-    if (!this.isProfileMode) {
-      this.loadNepaliDateConverter();
-    }
+    this.loadNepaliDateConverter();
     const employeeId = Number(this.route.snapshot.paramMap.get('employeeId'));
     if (Number.isInteger(employeeId) && employeeId > 0) {
       this.employeeId = employeeId;
@@ -204,9 +192,9 @@ export class EmployeeAddFormComponent implements OnInit {
       lockerNumber: ['', Validators.maxLength(20)],
       stationNumber: ['', Validators.maxLength(20)],
 
-      joinedDate: [new Date(), Validators.required],
-      joinedDateBS: [this.formatNepaliDate(new Date()), [Validators.required, Validators.pattern(/^\d{4}-\d{2}-\d{2}$/), this.validateNepaliDate]],
-      dateOfBirth: [null],
+      joinedDate: [this.today, [Validators.required, this.validateJoiningDate]],
+      joinedDateBS: [this.formatNepaliDate(this.today), [Validators.required, Validators.pattern(/^\d{4}-\d{2}-\d{2}$/), this.validateNepaliDate]],
+      dateOfBirth: [null, this.validateDateOfBirth],
       dateOfBirthBS: ['', [Validators.pattern(/^\d{4}-\d{2}-\d{2}$/), this.validateNepaliDate]],
 
       address: ['', Validators.maxLength(160)],
@@ -243,11 +231,49 @@ export class EmployeeAddFormComponent implements OnInit {
     this.watchDatePair('dateOfBirth', 'dateOfBirthBS');
   }
 
-  private getLatestPastDate(): Date {
-    const latestPastDate = new Date();
-    latestPastDate.setHours(0, 0, 0, 0);
-    latestPastDate.setDate(latestPastDate.getDate() - 1);
-    return latestPastDate;
+  private getMinimumAgeDate(referenceDate: Date): Date {
+    const minimumDateOfBirth = new Date(referenceDate);
+    minimumDateOfBirth.setFullYear(minimumDateOfBirth.getFullYear() - 18);
+    return minimumDateOfBirth;
+  }
+
+  private readonly validateJoiningDate = (control: AbstractControl): ValidationErrors | null => {
+    const joiningDate = this.dateValue(control.value);
+    if (joiningDate && this.dateKey(joiningDate) > this.dateKey(this.today)) {
+      return { futureJoiningDate: true };
+    }
+    return null;
+  };
+
+  private readonly validateDateOfBirth = (control: AbstractControl): ValidationErrors | null => {
+    const dateOfBirth = this.dateValue(control.value);
+    if (!dateOfBirth) return null;
+
+    if (this.dateKey(dateOfBirth) > this.dateKey(this.today)) {
+      return { futureDateOfBirth: true };
+    }
+    const joiningDate = this.dateValue(this.employeeForm?.get('joinedDate')?.value);
+    if (joiningDate && this.dateKey(dateOfBirth) >= this.dateKey(joiningDate)) {
+      return { dateOfBirthNotBeforeJoining: true };
+    }
+    if (this.dateKey(dateOfBirth) > this.dateKey(this.getMinimumAgeDate(joiningDate ?? this.today))) {
+      return { minimumAge: { requiredAge: 18 } };
+    }
+    return null;
+  };
+
+  private dateValue(value: unknown): Date | null {
+    if (!(value instanceof Date) || Number.isNaN(value.getTime())) return null;
+    return value;
+  }
+
+  private dateKey(value: Date): number {
+    return value.getFullYear() * 10000 + (value.getMonth() + 1) * 100 + value.getDate();
+  }
+
+  private refreshDateValidation(): void {
+    this.employeeForm.get('joinedDate')?.updateValueAndValidity({ emitEvent: false });
+    this.employeeForm.get('dateOfBirth')?.updateValueAndValidity({ emitEvent: false });
   }
 
   private loadEmployee(employeeId: number): void {
@@ -381,8 +407,8 @@ export class EmployeeAddFormComponent implements OnInit {
       isActive: data.isActive
     }, { emitEvent: false });
     this.skillLevels = Object.fromEntries(skills.map((skill) => [skill.skillId, skill.skillLevel]));
-    this.newSkillLevel = skills[0]?.skillLevel ?? 1;
     this.currentImageBase64 = data.imageBase64;
+    this.refreshDateValidation();
   }
 
   private loadMyProfile(): void {
@@ -490,6 +516,10 @@ export class EmployeeAddFormComponent implements OnInit {
       'emergencyContactNumber',
       'motherName',
       'spouseName',
+      'joinedDate',
+      'joinedDateBS',
+      'dateOfBirth',
+      'dateOfBirthBS',
       'latitude',
       'longitude',
       'skillIds',
@@ -554,7 +584,7 @@ export class EmployeeAddFormComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/people']);
+    this.router.navigate(['/administration']);
   }
 
   onSubmit(): void {
@@ -563,8 +593,13 @@ export class EmployeeAddFormComponent implements OnInit {
       return;
     }
 
+    const skills = this.getSelectedSkillsForSave();
+    if (skills === null) {
+      return;
+    }
+
     if (this.isProfileMode) {
-      this.saveMyProfile();
+      this.saveMyProfile(skills);
       return;
     }
 
@@ -634,11 +669,7 @@ export class EmployeeAddFormComponent implements OnInit {
         longitude: 0,
         isPrimary: true
       }] : [],
-      skills: (value.skillIds as Array<number | string>).map((skillId) => ({
-        skillId: Number(skillId),
-        skillLevel: this.skillLevelFor(Number(skillId)),
-        isPrimary: false
-      })),
+      skills: skills.map((skill) => ({ ...skill, isPrimary: false })),
       dressSizes: this.dressSizes
         .filter((dress) => (value.dressIds as Array<number | string>).map(Number).includes(Number(dress.dressId)))
         .map((dress) => ({
@@ -656,7 +687,7 @@ export class EmployeeAddFormComponent implements OnInit {
     saveRequest.subscribe({
       next: () => {
         this.toastService.success(`Employee ${this.employeeId === null ? 'created' : 'updated'} successfully.`);
-        this.router.navigate(['/people']);
+        this.router.navigate(['/administration']);
       },
       error: (error) => {
         this.errorMessage = getApiErrorMessage(error, 'Could not save the employee. Please try again.');
@@ -666,7 +697,7 @@ export class EmployeeAddFormComponent implements OnInit {
     });
   }
 
-  private saveMyProfile(): void {
+  private saveMyProfile(skills: Array<{ skillId: number; skillLevel: number }>): void {
     if (!this.profileData) {
       return;
     }
@@ -680,6 +711,10 @@ export class EmployeeAddFormComponent implements OnInit {
       'emergencyContactNumber',
       'motherName',
       'spouseName',
+      'joinedDate',
+      'joinedDateBS',
+      'dateOfBirth',
+      'dateOfBirthBS',
       'latitude',
       'longitude'
     ];
@@ -696,6 +731,17 @@ export class EmployeeAddFormComponent implements OnInit {
       ?? employee.addresses[0]
       ?? null;
     const patch: EmployeeProfilePatch = {};
+    const joinedDate = this.toDateOnly(value.joinedDate);
+    if (joinedDate !== employee.joinedDate || value.joinedDateBS !== employee.joinedDateBS) {
+      patch.joinedDate = joinedDate;
+      patch.joinedDateBS = value.joinedDateBS;
+    }
+    const dateOfBirth = value.dateOfBirth ? this.toDateOnly(value.dateOfBirth) : null;
+    const dateOfBirthBS = value.dateOfBirthBS || null;
+    if (dateOfBirth !== employee.dateOfBirth || dateOfBirthBS !== employee.dateOfBirthBS) {
+      patch.dateOfBirth = dateOfBirth;
+      patch.dateOfBirthBS = dateOfBirthBS;
+    }
     if (value.alternateEmail !== (employee.alternateEmail ?? '')) {
       patch.alternateEmail = value.alternateEmail?.trim() || null;
     }
@@ -722,15 +768,11 @@ export class EmployeeAddFormComponent implements OnInit {
     }
     const selectedSkillIds = (value.skillIds as Array<number | string> ?? []).map(Number);
     const currentSkillIds = employee.skills.map((skill) => skill.skillId);
-    if (!this.sameIds(selectedSkillIds, currentSkillIds)
+    if (this.employeeForm.get('skillIds')?.dirty
+      || !this.sameIds(selectedSkillIds, currentSkillIds)
       || employee.skills.some((skill) =>
         selectedSkillIds.includes(skill.skillId) && this.skillLevelFor(skill.skillId) !== skill.skillLevel)) {
-      patch.skills = selectedSkillIds.map((skillId) => {
-        return {
-          skillId,
-          skillLevel: this.skillLevelFor(skillId)
-        };
-      });
+      patch.skills = skills;
     }
     const selectedDressIds = (value.dressIds as Array<number | string> ?? []).map(Number);
     const currentDressIds = employee.dressSizes.map((dress) => dress.dressId);
@@ -828,9 +870,19 @@ export class EmployeeAddFormComponent implements OnInit {
     if (errors['maxlength']) return `${label} must be ${errors['maxlength'].requiredLength} characters or fewer.`;
     if (errors['min']) return `${label} must be at least ${errors['min'].min}.`;
     if (errors['max']) return `${label} must be ${errors['max'].max} or less.`;
+    if (errors['pattern'] && (controlName === 'joinedDateBS' || controlName === 'dateOfBirthBS')) {
+      return `${label} must be a valid date in YYYY-MM-DD format.`;
+    }
+    if (errors['invalidNepaliDate']) return `${label} must be a valid Nepali calendar date.`;
+    if (errors['conversionUnavailable']) return `${label} cannot be validated right now.`;
     if (errors['pattern']) return `${label} must be a whole number.`;
+    if (errors['futureJoiningDate']) return 'Date of joining cannot be in the future.';
+    if (errors['futureDateOfBirth']) return 'Date of birth cannot be in the future.';
+    if (errors['minimumAge']) return 'Employee must be at least 18 years old on the date of joining.';
+    if (errors['dateOfBirthNotBeforeJoining']) return 'Date of birth must be earlier than date of joining.';
+    if (errors['matDatepickerMax'] && controlName === 'dateOfBirth') return 'Employee must be at least 18 years old.';
+    if (errors['matDatepickerMax']) return `${label} must be today or earlier.`;
     if (errors['matDatepickerMin']) return `${label} must be today or later.`;
-    if (errors['matDatepickerMax']) return `${label} must be before today.`;
     return `${label} is invalid.`;
   }
 
@@ -870,7 +922,7 @@ export class EmployeeAddFormComponent implements OnInit {
       .some((selectedId) => Number(selectedId) === skillId);
   }
 
-  get selectedSkills(): Array<{ skillId: number; skillName: string; skillLevel: number }> {
+  get selectedSkills(): Array<{ skillId: number; skillName: string; skillLevel: number | null }> {
     const selectedIds = this.selectedIds('skillIds');
     return (this.skills ?? [])
       .filter((skill) => selectedIds.includes(Number(skill.skillId)))
@@ -895,49 +947,30 @@ export class EmployeeAddFormComponent implements OnInit {
     }
 
     this.toggleSelectedId('skillIds', skillId, true);
-    if (this.skillLevels[skillId] === undefined) {
-      this.skillLevels[skillId] = this.newSkillLevel;
-    }
   }
 
-  toggleSkillLevelMenu(skillId: number, event: Event): void {
-    event.stopPropagation();
-    this.levelRowOpen = false;
-    this.openSkillLevelId = this.openSkillLevelId === skillId ? null : skillId;
-  }
-
-  chooseSkillLevel(skillId: number, level: number, event: Event): void {
-    event.stopPropagation();
-    this.openSkillLevelId = null;
-    this.skillLevels[skillId] = level;
-    this.newSkillLevel = level;
-    this.employeeForm.get('skillIds')?.markAsDirty();
-  }
-
-  toggleLevelRow(event: Event): void {
-    event.stopPropagation();
-    this.openSkillLevelId = null;
-    this.levelRowOpen = !this.levelRowOpen;
-  }
-
-  chooseLevelRow(level: number, event: Event): void {
-    event.stopPropagation();
-    this.levelRowOpen = false;
-    this.updateNewSkillLevel(level);
-  }
-
-  updateNewSkillLevel(level: number): void {
-    this.newSkillLevel = Number.isInteger(level) && level >= 1 && level <= 5 ? level : 1;
-
-    const selectedSkillIds = this.selectedIds('skillIds');
-    if (!selectedSkillIds.length) {
+  setSkillLevel(skillId: number, event: Event): void {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    if (!selectedValue) {
+      const { [skillId]: removed, ...remaining } = this.skillLevels;
+      void removed;
+      this.skillLevels = remaining;
+      this.employeeForm.get('skillIds')?.markAsDirty();
+      this.employeeForm.markAsDirty();
       return;
     }
+    const level = Number(selectedValue);
+    this.updateSkillLevel(skillId, level);
+  }
 
-    selectedSkillIds.forEach((skillId) => {
-      this.skillLevels[skillId] = this.newSkillLevel;
-    });
-    this.employeeForm.get('skillIds')?.markAsDirty();
+  private updateSkillLevel(skillId: number, level: number): void {
+    if (!this.levelOptions.includes(level)) {
+      return;
+    }
+    this.skillLevels = { ...this.skillLevels, [skillId]: level };
+    const skillIds = this.employeeForm.get('skillIds');
+    skillIds?.markAsDirty();
+    skillIds?.parent?.markAsDirty();
   }
 
   removeSkill(skillId: number): void {
@@ -947,8 +980,23 @@ export class EmployeeAddFormComponent implements OnInit {
     this.skillLevels = remaining;
   }
 
-  skillLevelFor(skillId: number): number {
-    return this.skillLevels[skillId] ?? 1;
+  skillLevelFor(skillId: number): number | null {
+    return this.skillLevels[skillId] ?? null;
+  }
+
+  private getSelectedSkillsForSave(): Array<{ skillId: number; skillLevel: number }> | null {
+    const skills: Array<{ skillId: number; skillLevel: number }> = [];
+    for (const skillId of this.selectedIds('skillIds')) {
+      const skillLevel = this.skillLevelFor(skillId);
+      if (skillLevel === null || !this.levelOptions.includes(skillLevel)) {
+        const skillName = this.skills.find((skill) => Number(skill.skillId) === skillId)?.skillName
+          ?? 'the selected skill';
+        this.toastService.error(`Select a level for ${skillName} before saving.`);
+        return null;
+      }
+      skills.push({ skillId, skillLevel });
+    }
+    return skills;
   }
 
   isDressSelected(dressId: number): boolean {
@@ -1061,7 +1109,15 @@ export class EmployeeAddFormComponent implements OnInit {
     }
 
     const supportedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    if (!supportedTypes.includes(file.type)) {
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const mimeTypesByExtension: Record<string, string> = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif'
+    };
+    const inferredType = mimeTypesByExtension[fileExtension ?? ''];
+    if (!supportedTypes.includes(file.type) && !inferredType) {
       this.toastService.error('Choose a JPEG, PNG, or GIF image.');
       input.value = '';
       return;
@@ -1083,7 +1139,10 @@ export class EmployeeAddFormComponent implements OnInit {
         return;
       }
 
-      this.imageBase64 = reader.result;
+      const imageType = supportedTypes.includes(file.type) ? file.type : inferredType;
+      this.imageBase64 = imageType && reader.result.startsWith('data:')
+        ? reader.result.replace(/^data:[^;,]+/, `data:${imageType}`)
+        : reader.result;
       this.imageFileName = file.name;
       this.changeDetectorRef.markForCheck();
     };
@@ -1111,6 +1170,9 @@ export class EmployeeAddFormComponent implements OnInit {
   }
 
   private toDateOnly(value: Date | string): string {
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return value;
+    }
     const date = value instanceof Date ? value : new Date(value);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1126,29 +1188,65 @@ export class EmployeeAddFormComponent implements OnInit {
     adControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: Date | null) => {
       if (!value) {
         bsControl.setValue('', { emitEvent: false });
+        this.refreshDateValidation();
+        this.notifyDateValidationAfterChange(adControlName);
         return;
       }
       bsControl.setValue(this.formatNepaliDate(value), { emitEvent: false });
+      this.refreshDateValidation();
+      this.notifyDateValidationAfterChange(adControlName);
     });
 
     bsControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: string | null) => {
       if (!value) {
         adControl.setValue(null, { emitEvent: false });
+        this.refreshDateValidation();
+        this.notifyDateValidationAfterChange(bsControlName);
         return;
       }
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        this.refreshDateValidation();
+        this.notifyDateValidationAfterChange(bsControlName);
+        return;
+      }
       try {
-        if (!this.nepaliDate) return;
+        if (!this.nepaliDate) {
+          this.refreshDateValidation();
+          this.notifyDateValidationAfterChange(bsControlName);
+          return;
+        }
         const nepaliDate = new this.nepaliDate(value);
-        if (nepaliDate.format('YYYY-MM-DD') !== value) return;
+        if (nepaliDate.format('YYYY-MM-DD') !== value) {
+          this.refreshDateValidation();
+          this.notifyDateValidationAfterChange(bsControlName);
+          return;
+        }
         const adDate = nepaliDate.toJsDate();
         if (!Number.isNaN(adDate.getTime())) {
           adControl.setValue(adDate, { emitEvent: false });
+          this.refreshDateValidation();
+          this.notifyDateValidationAfterChange(bsControlName);
         }
       } catch {
-        return;
+        this.refreshDateValidation();
+        this.notifyDateValidationAfterChange(bsControlName);
       }
     });
+  }
+
+  private notifyDateValidationAfterChange(changedControlName: string): void {
+    const controlNames = changedControlName === 'joinedDate' || changedControlName === 'joinedDateBS'
+      ? ['joinedDate', 'joinedDateBS', 'dateOfBirth', 'dateOfBirthBS']
+      : ['dateOfBirth', 'dateOfBirthBS'];
+    const messages = controlNames
+      .map((controlName) => {
+        this.employeeForm.get(controlName)?.markAsTouched();
+        return this.validationMessage(controlName);
+      })
+      .filter((message): message is string => message !== null);
+    if (messages.length > 0) {
+      this.showValidationMessages(messages);
+    }
   }
 
   private formatNepaliDate(value: Date): string {
@@ -1212,5 +1310,6 @@ export class EmployeeAddFormComponent implements OnInit {
       bsControl.setValue(this.formatNepaliDate(adValue), { emitEvent: false });
     }
     bsControl.updateValueAndValidity();
+    this.refreshDateValidation();
   }
 }

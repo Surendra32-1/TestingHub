@@ -17,11 +17,11 @@
 
         <div class="photo-controls">
           <label class="photo-upload" for="employeeImage">{{ isReadingImage ? 'Preparing image...' : (imageBase64 || currentImageBase64 ? 'Change photo' : 'Upload photo') }}</label>
-          <input #imageInput id="employeeImage" class="photo-input" type="file" accept="image/jpeg,image/png,image/gif"
+          <input #imageInput id="employeeImage" class="photo-input" type="file" accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
             [disabled]="isSubmitting || isReadingImage" (change)="onImageSelected($event)">
           <p class="photo-hint" *ngIf="isReadingImage">Preparing image...</p>
           <p class="photo-hint" *ngIf="!isReadingImage && imageFileName">{{ imageFileName }}</p>
-          <p class="photo-hint" *ngIf="!isReadingImage && !imageFileName">JPEG, PNG, or GIF up to 5 MB</p>
+          <p class="photo-hint" *ngIf="!isReadingImage && !imageFileName">PNG, JPEG, or GIF up to 5 MB</p>
           <button *ngIf="imageBase64" class="photo-remove" type="button" (click)="clearImage(imageInput)">Remove photo</button>
         </div>
 
@@ -134,7 +134,7 @@
                 <div class="date-control">
                   <span class="date-caption">A.D. (English)</span>
                   <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                    <input id="joinedDate" matInput aria-label="Joined date in A.D." [matDatepicker]="joinedPicker" [min]="employeeId === null ? today : null" formControlName="joinedDate" required (blur)="showFieldError('joinedDate')">
+                    <input id="joinedDate" matInput aria-label="Joined date in A.D." [matDatepicker]="joinedPicker" [max]="today" formControlName="joinedDate" required (blur)="showFieldError('joinedDate')">
                     <mat-datepicker-toggle matSuffix [for]="joinedPicker"></mat-datepicker-toggle>
                     <mat-datepicker #joinedPicker></mat-datepicker>
                   </mat-form-field>
@@ -222,49 +222,38 @@
             <span class="field-label">Skills</span>
             <div id="skillIds" class="chip-picker" role="group" aria-label="Employee skills">
               @if (selectedSkills.length) {
-                <div class="chip-list">
+                <div class="skill-list">
                   @for (skill of selectedSkills; track skill.skillId) {
-                    <span class="chip">
-                      <span class="chip-text">{{ skill.skillName }}</span>
-                      <span class="chip-level">
-                        <span>Lv</span>
-                        <button type="button" class="level-toggle" [attr.aria-expanded]="openSkillLevelId === skill.skillId" [attr.aria-label]="'Skill level for ' + skill.skillName" (click)="toggleSkillLevelMenu(skill.skillId, $event)">{{ skill.skillLevel }}</button>
-                        @if (openSkillLevelId === skill.skillId) {
-                          <span class="level-menu" role="listbox" [attr.aria-label]="'Pick a level for ' + skill.skillName">
-                            @for (level of levelOptions; track level) {
-                              <button type="button" class="level-option" role="option" [class.selected]="level === skill.skillLevel" [attr.aria-selected]="level === skill.skillLevel" (click)="chooseSkillLevel(skill.skillId, level, $event)">{{ level }}</button>
-                            }
-                          </span>
-                        }
-                      </span>
-                      <button type="button" class="chip-remove" [attr.aria-label]="'Remove skill ' + skill.skillName" (click)="removeSkill(skill.skillId)">×</button>
-                    </span>
+                    <div class="skill-row">
+                      <span class="skill-name">{{ skill.skillName }}</span>
+                      <label class="skill-level-control">
+                        <span>Level</span>
+                        <select [attr.aria-label]="'Skill level for ' + skill.skillName" (change)="setSkillLevel(skill.skillId, $event)">
+                          <option value="">Select level</option>
+                          @for (level of levelOptions; track level) {
+                            <option [value]="level" [selected]="level === skill.skillLevel">{{ level }}</option>
+                          }
+                        </select>
+                      </label>
+                      <button type="button" class="skill-remove" [attr.aria-label]="'Remove skill ' + skill.skillName" (click)="removeSkill(skill.skillId)">Remove</button>
+                    </div>
                   }
                 </div>
               } @else {
                 <p class="chip-empty">No skills selected.</p>
               }
               @if (availableSkills.length) {
-                <div class="chip-add-row">
+                <label class="skill-add-control">
+                  <span>Add skill</span>
                   <select class="chip-add" aria-label="Add skill" (change)="addSkill($event)">
-                    <option value="">Add skill…</option>
+                    <option value="">Choose a skill…</option>
                     @for (skill of availableSkills; track skill.skillId) {
                       <option [value]="skill.skillId">{{ skill.skillName }}</option>
                     }
                   </select>
-                  <div class="chip-add-level">
-                    <span>Set level</span>
-                    <button type="button" class="level-toggle" [attr.aria-expanded]="levelRowOpen" aria-label="Set the level for the selected skills" (click)="toggleLevelRow($event)">{{ levelRowValue }}</button>
-                    @if (levelRowOpen) {
-                      <span class="level-menu" role="listbox" aria-label="Pick a level for the selected skills">
-                        @for (level of levelOptions; track level) {
-                          <button type="button" class="level-option" role="option" [class.selected]="level === levelRowValue" [attr.aria-selected]="level === levelRowValue" (click)="chooseLevelRow(level, $event)">{{ level }}</button>
-                        }
-                      </span>
-                    }
-                  </div>
-                </div>
-              } @else if (skills?.length) {
+                </label>
+              }
+              @if (!availableSkills.length && skills?.length) {
                 <p class="chip-empty">All skills added.</p>
               }
             </div>

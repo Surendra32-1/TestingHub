@@ -132,4 +132,19 @@ public class EmployeeRequestValidatorTests
 
         Assert.DoesNotContain(result.Errors, error => error.PropertyName == nameof(request.JoinedDate));
     }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(6)]
+    public void EmployeeSkillLevel_MustBeBetweenOneAndFive(int skillLevel)
+    {
+        var request = new CreateOrUpdateEmployeeRequest
+        {
+            Skills = [new EmployeeSkillDto { SkillId = 1, SkillLevel = skillLevel }]
+        };
+
+        var result = new CreateOrUpdateEmployeeRequestValidator().Validate(request);
+
+        Assert.Contains(result.Errors, error => error.PropertyName == "Skills[0].SkillLevel");
+    }
 }

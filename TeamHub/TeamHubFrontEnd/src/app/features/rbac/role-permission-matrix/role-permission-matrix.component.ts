@@ -129,7 +129,7 @@ export class RolePermissionMatrixComponent implements OnInit {
   }
 
   goBack(): void {
-    void this.router.navigateByUrl('/people');
+    void this.router.navigateByUrl('/administration');
   }
 
   trackByPermission(_index: number, row: RolePermissionMatrixRow): number {
@@ -153,6 +153,13 @@ export class RolePermissionMatrixComponent implements OnInit {
           this.selections.clear();
           this.hasPendingChanges = false;
           this.load();
+          this.auth.refreshAccessToken()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              error: () => this.toastService.error(
+                'Permissions were saved, but this account session could not be refreshed. Sign out and back in to see updated navigation.'
+              )
+            });
         },
         error: (error) => {
           this.toastService.error(getApiErrorMessage(error, 'Could not save permission assignments.'));

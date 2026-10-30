@@ -13,7 +13,7 @@ namespace TeamHub.API.Controllers;
 public class EmployeeSearchController(IEmployeeSearchService service) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Policy = RbacPolicies.AllemployeeSearchView)]
+    [Authorize(Policy = RbacPolicies.PeopleSearchView)]
     public async Task<ActionResult<ApiResponse<PagedResult<EmployeeSearchCardDto>>>> Search(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 12,

@@ -109,6 +109,14 @@ public static class TeamHubAuthServiceCollectionExtensions
                     .AddRequirements(new PermissionRequirement(policy.Value)));
             }
 
+            options.AddPolicy(RbacPolicies.TerminationAddOrAdministrationTerminate, policy => policy
+                .RequireAuthenticatedUser()
+                .RequireAssertion(context =>
+                    context.User.IsInRole(PermissionAuthorizationHandler.SuperAdminRole)
+                    || context.User.FindAll(PermissionAuthorizationHandler.PermissionClaimType).Any(claim =>
+                        string.Equals(claim.Value, RbacPolicies.TerminationAdd, StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(claim.Value, RbacPolicies.AdministrationTerminate, StringComparison.OrdinalIgnoreCase))));
+
             options.AddPolicy(RbacPolicies.ProfileViewOrEdit, builder => builder
                 .RequireAuthenticatedUser()
                 .RequireAssertion(context =>

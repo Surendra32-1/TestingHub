@@ -1105,8 +1105,8 @@ GO
    keys (RoleName + PermissionCode) and only missing grants are inserted.
 
    Only codes that a backend policy actually enforces are listed here
-   (RbacPolicies.PolicyPermissions). The catalog's inert codes - people.view,
-   people.terminate, people.hierarchy.view, resignations.manage, master.view,
+   (RbacPolicies.PolicyPermissions). The catalog's inert codes - administration.view,
+   administration.terminate, administration.hierarchy.view, resignations.manage, master.view,
    master.manage - are deliberately NOT granted, so the matrix cannot show a
    tick that changes nothing. Admin needs no rows: rbac-schema.sql mirrors the
    whole catalog onto it.
@@ -1142,10 +1142,10 @@ BEGIN
     );
 
     INSERT INTO dbo.Permissions (PermissionCode, PermissionName, Module, Description, IsActive, CreatedBy, CreatedDate)
-    SELECT permissions.PermissionCode, permissions.PermissionName, N'People', permissions.Description, 1, 'seed', SYSUTCDATETIME()
+    SELECT permissions.PermissionCode, permissions.PermissionName, N'Administration', permissions.Description, 1, 'seed', SYSUTCDATETIME()
     FROM (VALUES
-        ('people.delete', N'Delete Employee', N'Soft-delete employee records while retaining history.'),
-        ('people.cardview', N'View Employee Cards', N'Open employee card views from the People module.')
+        ('administration.delete', N'Delete Employee', N'Soft-delete employee records while retaining history.'),
+        ('administration.cardview', N'View Employee Cards', N'Open employee card views from the Administration module.')
     ) permissions(PermissionCode, PermissionName, Description)
     WHERE NOT EXISTS (
         SELECT 1 FROM dbo.Permissions existing
@@ -1155,7 +1155,7 @@ BEGIN
     INSERT INTO dbo.RolePermissions (RoleId, PermissionId, CreatedBy, CreatedDate)
     SELECT r.RoleId, p.PermissionId, 'seed', SYSUTCDATETIME()
     FROM (VALUES
-        -- NormalUser: a plain employee. "People" needs no code (authenticatedGuard only),
+        -- NormalUser: a plain employee. Administration requires administration.view,
         -- so this single grant is what makes the "Apply Resignation" entry appear.
         (N'NormalUser', N'profile.view'),
         (N'NormalUser', N'profile.edit'),
@@ -1180,15 +1180,15 @@ BEGIN
 
         -- HR: people master data + offboarding (the "Add Termination" capability) and the
         -- operational resignation steps; approval/rejection stay with the Manager.
-        (N'Manager', N'people.view'),
-        (N'HR', N'people.view'),
-        (N'HR', N'people.create'),
-        (N'HR', N'people.update'),
-        (N'HR', N'people.release'),
-        (N'Admin', N'people.delete'),
-        (N'HR', N'people.delete'),
-        (N'Admin', N'people.cardview'),
-        (N'HR', N'people.cardview'),
+        (N'Manager', N'administration.view'),
+        (N'HR', N'administration.view'),
+        (N'HR', N'administration.create'),
+        (N'HR', N'administration.update'),
+        (N'HR', N'administration.release'),
+        (N'Admin', N'administration.delete'),
+        (N'HR', N'administration.delete'),
+        (N'Admin', N'administration.cardview'),
+        (N'HR', N'administration.cardview'),
         (N'HR', N'master.recruitment'),
         (N'HR', N'resignations.button'),
         (N'HR', N'resignations.view'),

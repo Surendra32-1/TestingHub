@@ -4,33 +4,40 @@ using TeamHub.Application.DTOs.Employee;
 using TeamHub.Domain.Entities;
 using TeamHub.Shared.Common.Services;
 using TeamHub.Application.DTOs.Employees;
+using TeamHub.Shared.Responses;
 
 namespace TeamHub.Application.Services;
 
 public sealed class EmployeeService(IEmployeeRepository repository) : IEmployeeService
 {
-    public Task<IReadOnlyList<GetGridEmployeeDto>> GetAllAsync(
+    public Task<PagedResult<GetGridEmployeeDto>> GetAllAsync(
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all",
         string? departmentName = null,
         string status = "active") =>
-        repository.GetAllAsync(cancellationToken, searchTerm, searchField, departmentName, status);
+        repository.GetAllAsync(cancellationToken, pageNumber, pageSize, searchTerm, searchField, departmentName, status);
 
-    public Task<IReadOnlyList<GetGridEmployeeDto>> GetActiveByDepartmentIdAsync(
+    public Task<PagedResult<GetGridEmployeeDto>> GetActiveByDepartmentIdAsync(
         int departmentId,
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all") =>
-        repository.GetActiveByDepartmentIdAsync(departmentId, cancellationToken, searchTerm, searchField);
+        repository.GetActiveByDepartmentIdAsync(departmentId, cancellationToken, pageNumber, pageSize, searchTerm, searchField);
 
-    public Task<IReadOnlyList<GetActiveInactiveEmployeeDto>> GetAllActiveInactiveAsync(
+    public Task<PagedResult<GetActiveInactiveEmployeeDto>> GetAllActiveInactiveAsync(
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all",
         string? departmentName = null,
         string status = "all") =>
-        repository.GetAllActiveInactiveAsync(cancellationToken, searchTerm, searchField, departmentName, status);
+        repository.GetAllActiveInactiveAsync(cancellationToken, pageNumber, pageSize, searchTerm, searchField, departmentName, status);
 
     public Task<GetEmployeeDto?> GetByIdAsync(int employeeId, CancellationToken cancellationToken = default) =>
         repository.GetByIdAsync(employeeId, cancellationToken);

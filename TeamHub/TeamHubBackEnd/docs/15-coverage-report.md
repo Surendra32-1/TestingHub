@@ -43,8 +43,8 @@ Analysis method: complete repository inventory → module-by-module source readi
 | Sign-in / session restore / logout | Verified (incl. `sessionRevision` → `sessionState` → `visibleMenu()` re-filter) | Verified (404/403 gates, refresh) | Verified | cookie + sessionStorage + menu re-render |
 | Directory read + department read + org tree | Verified | Verified (404 shape) | **AllowAnonymous verified** | none |
 | Hierarchy view (recursive SP) | Verified | Verified (404 on missing employee) | AllowAnonymous verified | none |
-| Employee create | Verified | Verified (manual ruleset validation, partial-failure noted) | `people.create` policy (`EmployeesController.cs:60`) verified | Users provisioning, image file+row |
-| Employee edit | Verified | Verified (ruleset asymmetry, rollback-on-0-rows) | `people.update` policy (`:97`) verified | child replace, role reset, new image |
+| Employee create | Verified | Verified (manual ruleset validation, partial-failure noted) | `administration.create` policy (`EmployeesController.cs:60`) verified | Users provisioning, image file+row |
+| Employee edit | Verified | Verified (ruleset asymmetry, rollback-on-0-rows) | `administration.update` policy (`:97`) verified | child replace, role reset, new image |
 | Resignation create/transition/clearance | Verified | Verified (409 gates, non-transactional risk) | Verified policy | employee deactivation coupling |
 | Termination (deltas vs resignation) | Verified incl. dead `Completed` branch | Verified | Verified — reads `terminations.view`, create `terminations.add` (`:85`), writes `terminations.manage`; a `POST` with a token lacking the code returned 403 over HTTP (2026-10-23) | same deactivation pattern |
 | RBAC matrix load/save (both) | Verified | Verified (escalation exceptions → 400/403) | policy + superadmin bypass | transactional DELETE+INSERT; stale-claims window |

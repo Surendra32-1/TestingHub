@@ -2,7 +2,7 @@ import { APP_MENU, MenuItem } from './menu.config';
 import { MenuContext, filterMenu } from './menu-filter';
 
 const DEEP_TREE: readonly MenuItem[] = [
-  { id: 'people', label: 'People', route: '/people', visibility: 'authenticated' },
+  { id: 'administration', label: 'Administration', route: '/administration', visibility: 'authenticated' },
   {
     id: 'manage',
     label: 'Manage',
@@ -19,13 +19,13 @@ const DEEP_TREE: readonly MenuItem[] = [
                 id: 'cotivity.employee',
                 label: 'Cotivity Employee',
                 route: '/master/cotivity-employee',
-                permission: 'master.cotivity-employee'
+                permission: 'cotivity.employee.view'
               }
             ]
           }
         ]
       },
-      { id: 'gender', label: 'Gender', route: '/master/gender', permission: 'master.gender' }
+      { id: 'gender', label: 'Gender', route: '/master/gender', permission: 'master.gender.view' }
     ]
   },
   { id: 'login', label: 'Login', route: '/login', visibility: 'anonymous' }
@@ -40,26 +40,26 @@ const labels = (items: readonly MenuItem[]): string[] => items.map((item) => ite
 
 describe('filterMenu', () => {
   it('shows an item only when its required permission is granted', () => {
-    const visible = filterMenu(DEEP_TREE, context(['master.gender']));
+    const visible = filterMenu(DEEP_TREE, context(['master.gender.view']));
 
-    expect(labels(visible)).toEqual(['People', 'Manage']);
+    expect(labels(visible)).toEqual(['Administration', 'Manage']);
     expect(labels(visible[1].children!)).toEqual(['Gender']);
   });
 
   it('keeps every ancestor of an authorized descendant at any depth', () => {
-    const visible = filterMenu(DEEP_TREE, context(['master.cotivity-employee']));
+    const visible = filterMenu(DEEP_TREE, context(['cotivity.employee.view']));
     const manage = visible[1];
     const organization = manage.children![0];
     const cotivity = organization.children![0];
 
-    expect(labels(visible)).toEqual(['People', 'Manage']);
+    expect(labels(visible)).toEqual(['Administration', 'Manage']);
     expect(labels(manage.children!)).toEqual(['Organization']);
     expect(labels(organization.children!)).toEqual(['Cotivity']);
     expect(labels(cotivity.children!)).toEqual(['Cotivity Employee']);
   });
 
   it('removes a group whose descendants are all unauthorized', () => {
-    expect(labels(filterMenu(DEEP_TREE, context([])))).toEqual(['People']);
+    expect(labels(filterMenu(DEEP_TREE, context([])))).toEqual(['Administration']);
   });
 
   it('removes a group that was configured empty', () => {
@@ -72,7 +72,7 @@ describe('filterMenu', () => {
   });
 
   it('preserves the configured ordering at every level', () => {
-    const visible = filterMenu(DEEP_TREE, context(['master.gender', 'master.cotivity-employee']));
+    const visible = filterMenu(DEEP_TREE, context(['master.gender.view', 'cotivity.employee.view']));
 
     expect(labels(visible[1].children!)).toEqual(['Organization', 'Gender']);
     expect(labels(visible[1].children![0].children!)).toEqual(['Cotivity']);
@@ -117,7 +117,7 @@ describe('filterMenu', () => {
 
   it('gates items on the session state, never on a role name', () => {
     expect(labels(filterMenu(DEEP_TREE, context([], false)))).toEqual(['Login']);
-    expect(labels(filterMenu(DEEP_TREE, context(['master.gender'], true)))).toEqual(['People', 'Manage']);
+    expect(labels(filterMenu(DEEP_TREE, context(['master.gender.view'], true)))).toEqual(['Administration', 'Manage']);
   });
 
   it('never mutates the original configuration', () => {
@@ -125,7 +125,7 @@ describe('filterMenu', () => {
     const frozen = JSON.parse(snapshot) as MenuItem[];
     frozen.forEach((item) => Object.freeze(item));
 
-    const visible = filterMenu(frozen, context(['master.gender']));
+    const visible = filterMenu(frozen, context(['master.gender.view']));
 
     expect(JSON.stringify(frozen)).toBe(snapshot);
     expect(visible).not.toBe(frozen);
@@ -135,9 +135,22 @@ describe('filterMenu', () => {
   });
 
   it('filters the real application menu down to a single-module grant', () => {
-    const visible = filterMenu(APP_MENU, context(['people.view', 'master.department', 'setting.gear.EmployeeRole']));
+    const visible = filterMenu(APP_MENU, context(['administration.view', 'organization.department.view', 'setting.gear.EmployeeRole']));
 
-    expect(labels(visible)).toEqual(['People', 'Manage']);
+    expect(labels(visible)).toEqual(['Administration', 'Organization Master']);
     expect(labels(visible[1].children!)).toEqual(['Department']);
+  });
+
+  it('shows master groups and links when the user has action grants without view grants', () => {
+    const visible = filterMenu(APP_MENU, context([
+      'cotivity.employee.create',
+      'organization.skills.edit'
+    ]));
+    const organization = visible.find((item) => item.id === 'organization-master');
+    const cotivity = visible.find((item) => item.id === 'cotivity');
+
+    expect(labels(visible)).toEqual(['Organization Master', 'Cotivity']);
+    expect(labels(organization?.children ?? [])).toEqual(['Skills']);
+    expect(labels(cotivity?.children ?? [])).toEqual(['Cotivity Employee']);
   });
 });

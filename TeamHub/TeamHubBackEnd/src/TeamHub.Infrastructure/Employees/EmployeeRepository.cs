@@ -15,6 +15,7 @@ using TeamHub.Application.DTOs.Role ;
 using TeamHub.Application.DTOs.Team ;
 using TeamHub.Application.DTOs.Skill ;
 using TeamHub.Application.DTOs.Recruitment;
+using TeamHub.Shared.Responses;
 
 namespace TeamHub.Infrastructure.Employees;
 
@@ -134,34 +135,66 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             Level = row.Level
         };
 
-    public Task<IReadOnlyList<GetGridEmployeeDto>> GetAllAsync(
+    public Task<PagedResult<GetGridEmployeeDto>> GetAllAsync(
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all",
         string? departmentName = null,
         string status = "active") =>
-        GetEmployeesAsync(cancellationToken, searchTerm, searchField, null, departmentName, status);
+        GetEmployeesAsync(cancellationToken, pageNumber, pageSize, searchTerm, searchField, null, departmentName, status);
 
-    public Task<IReadOnlyList<GetGridEmployeeDto>> GetActiveByDepartmentIdAsync(
+    public Task<PagedResult<GetGridEmployeeDto>> GetActiveByDepartmentIdAsync(
         int departmentId,
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all") =>
-        GetEmployeesAsync(cancellationToken, searchTerm, searchField, departmentId, null, "active");
+        GetEmployeesAsync(cancellationToken, pageNumber, pageSize, searchTerm, searchField, departmentId, null, "active");
 
-    public async Task<IReadOnlyList<GetActiveInactiveEmployeeDto>> GetAllActiveInactiveAsync(
+    public async Task<PagedResult<GetActiveInactiveEmployeeDto>> GetAllActiveInactiveAsync(
         CancellationToken cancellationToken = default,
+        int pageNumber = 1,
+        int pageSize = 10,
         string? searchTerm = null,
         string searchField = "all",
         string? departmentName = null,
         string status = "all")
     {
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = Math.Clamp(pageSize, 1, 100);
         searchTerm = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim();
         searchField = searchField is "name" or "designation" or "department" ? searchField : "all";
         departmentName = string.IsNullOrWhiteSpace(departmentName) ? null : departmentName.Trim();
         status = status is "active" or "inactive" or "all" ? status : "all";
 
-        const string sql = @"
+        const string fromSql = @"
+            FROM Employees e
+            LEFT JOIN Departments d ON d.DepartmentId = e.DepartmentId
+            LEFT JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
+            LEFT JOIN Employees reports ON reports.EmployeeId = e.ReportsToEmployeeId
+            LEFT JOIN Teams t ON t.TeamId = e.TeamId
+            LEFT JOIN BusinessUnits bu ON bu.BusinessUnitId = e.BusinessUnitId";
+        const string whereSql = @"
+            WHERE (@Status = 'all' OR e.IsActive = CASE WHEN @Status = 'active' THEN 1 ELSE 0 END)
+                AND (@DepartmentName IS NULL OR d.DepartmentName = @DepartmentName)
+                AND (
+                        @SearchTerm IS NULL
+                        OR (@SearchField IN ('all', 'name') AND LOWER(CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName)) LIKE '%' + LOWER(@SearchTerm) + '%')
+                        OR (@SearchField IN ('all', 'designation') AND LOWER(dsg.DesignationName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                        OR (@SearchField IN ('all', 'department') AND LOWER(d.DepartmentName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                        OR (@SearchField = 'all' AND LOWER(t.TeamName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                )";
+        using var connection = connectionFactory.CreateConnection();
+        var filters = new { SearchTerm = searchTerm, SearchField = searchField, DepartmentName = departmentName, Status = status };
+        var totalCount = await connection.ExecuteScalarAsync<int>(
+            new CommandDefinition("SELECT COUNT(1)" + fromSql + whereSql, filters, cancellationToken: cancellationToken));
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        pageNumber = totalPages == 0 ? 1 : Math.Min(pageNumber, totalPages);
+
+        const string selectSql = @"
             SELECT
                 e.EmployeeId AS Id,
                 e.ENumber,
@@ -172,32 +205,26 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 t.TeamName,
                 bu.BusinessUnitName,
                 e.IsActive,
-                e.IsDeleted
-            FROM Employees e
-            LEFT JOIN Departments d ON d.DepartmentId = e.DepartmentId
-            LEFT JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
-            LEFT JOIN Employees reports ON reports.EmployeeId = e.ReportsToEmployeeId
-            LEFT JOIN Teams t ON t.TeamId = e.TeamId
-            LEFT JOIN BusinessUnits bu ON bu.BusinessUnitId = e.BusinessUnitId
-            WHERE (@Status = 'all' OR e.IsActive = CASE WHEN @Status = 'active' THEN 1 ELSE 0 END)
-                AND (@DepartmentName IS NULL OR d.DepartmentName = @DepartmentName)
-                AND (
-                        @SearchTerm IS NULL
-                        OR (@SearchField IN ('all', 'name') AND LOWER(CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName)) LIKE '%' + LOWER(@SearchTerm) + '%')
-                        OR (@SearchField IN ('all', 'designation') AND LOWER(dsg.DesignationName) LIKE '%' + LOWER(@SearchTerm) + '%')
-                        OR (@SearchField IN ('all', 'department') AND LOWER(d.DepartmentName) LIKE '%' + LOWER(@SearchTerm) + '%')
-                        OR (@SearchField = 'all' AND LOWER(t.TeamName) LIKE '%' + LOWER(@SearchTerm) + '%')
-                )
+                e.IsDeleted";
+        var sql = selectSql + fromSql + whereSql + @"
             ORDER BY
                 CASE WHEN e.IsActive = 1 THEN 0 ELSE 1 END,
-                e.FirstName, e.LastName, e.EmployeeId;
-            ";
-
-        using var connection = connectionFactory.CreateConnection();
+                e.FirstName, e.LastName, e.EmployeeId
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
         var rows = await connection.QueryAsync<ActiveInactiveEmployeeRow>(
-            new CommandDefinition(sql, new { SearchTerm = searchTerm, SearchField = searchField, DepartmentName = departmentName, Status = status }, cancellationToken: cancellationToken));
-
-        return rows
+            new CommandDefinition(
+                sql,
+                new
+                {
+                    filters.SearchTerm,
+                    filters.SearchField,
+                    filters.DepartmentName,
+                    filters.Status,
+                    Offset = (long)(pageNumber - 1) * pageSize,
+                    PageSize = pageSize
+                },
+                cancellationToken: cancellationToken));
+        var items = rows
             .Select(row => new GetActiveInactiveEmployeeDto
             {
                 Id = row.Id,
@@ -211,7 +238,16 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 IsActive = row.IsActive,
                 IsDeleted = row.IsDeleted
             })
-            .ToList();
+            .ToArray();
+
+        return new PagedResult<GetActiveInactiveEmployeeDto>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
     }
 
     private sealed class ActiveInactiveEmployeeRow
@@ -228,20 +264,69 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
         public bool IsDeleted { get; set; }
     }
 
-    private async Task<IReadOnlyList<GetGridEmployeeDto>> GetEmployeesAsync(
+    private async Task<PagedResult<GetGridEmployeeDto>> GetEmployeesAsync(
         CancellationToken cancellationToken,
+        int pageNumber,
+        int pageSize,
         string? searchTerm,
         string searchField,
         int? departmentId,
         string? departmentName,
         string status)
     {
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = Math.Clamp(pageSize, 1, 100);
         searchTerm = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim();
         searchField = searchField is "name" or "designation" or "department" ? searchField : "all";
         departmentName = string.IsNullOrWhiteSpace(departmentName) ? null : departmentName.Trim();
         status = status is "active" or "inactive" or "all" ? status : "active";
 
+        const string filterFromSql = @"
+            FROM Employees e
+            LEFT JOIN Departments d ON d.DepartmentId = e.DepartmentId
+            LEFT JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
+            LEFT JOIN Teams t ON t.TeamId = e.TeamId";
+        const string whereSql = @"
+            WHERE e.IsDeleted = 0
+                AND (@Status = 'all' OR e.IsActive = CASE WHEN @Status = 'active' THEN 1 ELSE 0 END)
+                AND (@DepartmentId IS NULL OR e.DepartmentId = @DepartmentId)
+                AND (@DepartmentName IS NULL OR d.DepartmentName = @DepartmentName)
+                AND (
+                    @SearchTerm IS NULL
+                    OR (@SearchField IN ('all', 'name') AND LOWER(CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName)) LIKE '%' + LOWER(@SearchTerm) + '%')
+                    OR (@SearchField IN ('all', 'designation') AND LOWER(dsg.DesignationName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                    OR (@SearchField IN ('all', 'department') AND LOWER(d.DepartmentName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                    OR (@SearchField = 'all' AND LOWER(t.TeamName) LIKE '%' + LOWER(@SearchTerm) + '%')
+                )";
+        var filters = new
+        {
+            SearchTerm = searchTerm,
+            SearchField = searchField,
+            DepartmentId = departmentId,
+            DepartmentName = departmentName,
+            Status = status
+        };
+
+        using var connection = connectionFactory.CreateConnection();
+        var totalCount = await connection.ExecuteScalarAsync<int>(
+            new CommandDefinition("SELECT COUNT(1)" + filterFromSql + whereSql, filters, cancellationToken: cancellationToken));
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+        pageNumber = totalPages == 0 ? 1 : Math.Min(pageNumber, totalPages);
+
         const string sql = @"
+            WITH PagedEmployees AS (
+                SELECT e.EmployeeId,
+                       ROW_NUMBER() OVER (
+                           ORDER BY
+                               CASE WHEN @DepartmentId IS NOT NULL THEN dsg.[Rank] END ASC,
+                               e.FirstName, e.LastName, e.EmployeeId
+                       ) AS PageOrder
+            " + filterFromSql + whereSql + @"
+                ORDER BY
+                    CASE WHEN @DepartmentId IS NOT NULL THEN dsg.[Rank] END ASC,
+                    e.FirstName, e.LastName, e.EmployeeId
+                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY
+            )
             SELECT
                 e.EmployeeId AS Id,
                 e.ENumber,
@@ -272,7 +357,8 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 skill.SkillName AS SkillName,
                 employeeSkill.IsPrimary AS SkillIsPrimary,
                 ei.ImagePath
-            FROM Employees e
+            FROM PagedEmployees page
+            INNER JOIN Employees e ON e.EmployeeId = page.EmployeeId
             LEFT JOIN Departments d ON d.DepartmentId = e.DepartmentId
             LEFT JOIN Designations dsg ON dsg.DesignationId = e.DesignationId
             LEFT JOIN Gender g ON g.GenderId = e.GenderId
@@ -285,27 +371,23 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             LEFT JOIN EmployeeSkills employeeSkill ON employeeSkill.EmployeeId = e.EmployeeId
             LEFT JOIN Skills skill ON skill.SkillId = employeeSkill.SkillId
             LEFT JOIN EmployeeImages ei ON ei.EmployeeId = e.EmployeeId
-                        WHERE e.IsDeleted = 0
-                            AND (@Status = 'all' OR e.IsActive = CASE WHEN @Status = 'active' THEN 1 ELSE 0 END)
-                            AND (@DepartmentId IS NULL OR e.DepartmentId = @DepartmentId)
-                            AND (@DepartmentName IS NULL OR d.DepartmentName = @DepartmentName)
-                            AND (
-                                    @SearchTerm IS NULL
-                                    OR (@SearchField IN ('all', 'name') AND LOWER(CONCAT_WS(' ', e.FirstName, e.MiddleName, e.LastName)) LIKE '%' + LOWER(@SearchTerm) + '%')
-                                    OR (@SearchField IN ('all', 'designation') AND LOWER(dsg.DesignationName) LIKE '%' + LOWER(@SearchTerm) + '%')
-                                    OR (@SearchField IN ('all', 'department') AND LOWER(d.DepartmentName) LIKE '%' + LOWER(@SearchTerm) + '%')
-                                    OR (@SearchField = 'all' AND LOWER(t.TeamName) LIKE '%' + LOWER(@SearchTerm) + '%')
-                            )
-            ORDER BY
-                CASE WHEN @DepartmentId IS NOT NULL THEN dsg.[Rank] END ASC,
-                e.FirstName, e.LastName, e.EmployeeId;
-            ";
-
-        using var connection = connectionFactory.CreateConnection();
+            ORDER BY page.PageOrder;";
         var rows = await connection.QueryAsync<EmployeeGridRow>(
-                        new CommandDefinition(sql, new { SearchTerm = searchTerm, SearchField = searchField, DepartmentId = departmentId, DepartmentName = departmentName, Status = status }, cancellationToken: cancellationToken));
+            new CommandDefinition(
+                sql,
+                new
+                {
+                    filters.SearchTerm,
+                    filters.SearchField,
+                    filters.DepartmentId,
+                    filters.DepartmentName,
+                    filters.Status,
+                    Offset = (long)(pageNumber - 1) * pageSize,
+                    PageSize = pageSize
+                },
+                cancellationToken: cancellationToken));
 
-        return rows
+        var items = rows
             .GroupBy(row => row.Id)
             .Select(group =>
             {
@@ -355,7 +437,16 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                         .ToList()
                 };
             })
-            .ToList();
+            .ToArray();
+
+        return new PagedResult<GetGridEmployeeDto>
+        {
+            Items = items,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            TotalPages = totalPages
+        };
     }
 
     public Task<GetEmployeeDto?> GetByIdAsync(int employeeId, CancellationToken cancellationToken = default) =>
@@ -745,6 +836,16 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             ";
         const string deleteAddressesSql = "DELETE FROM EmployeeAddresses WHERE EmployeeId = @EmployeeId;";
         const string deleteSkillsSql = "DELETE FROM EmployeeSkills WHERE EmployeeId = @EmployeeId;";
+        const string deleteUnselectedSkillsSql = @"
+            DELETE FROM EmployeeSkills
+            WHERE EmployeeId = @EmployeeId AND SkillId NOT IN @SkillIds;
+            ";
+        const string updateSkillSql = @"
+            UPDATE EmployeeSkills
+            SET SkillLevel = @SkillLevel, IsPrimary = @IsPrimary,
+                LastModifiedDate = @LastModifiedDate, LastModifiedBy = @LastModifiedBy
+            WHERE EmployeeId = @EmployeeId AND SkillId = @SkillId;
+            ";
         const string deleteDressesSql = "DELETE FROM EmployeeDresses WHERE EmployeeId = @EmployeeId;";
         const string addressSql = @"
             INSERT INTO EmployeeAddresses
@@ -754,7 +855,7 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 (@EmployeeId, @AddressTypeId, @AddressLine1, @AddressLine2, @City, @State,
                  @Latitude, @Longitude, @IsPrimary, @CreatedDate, @CreatedBy);
             ";
-        const string skillSql = @"
+        const string insertSkillSql = @"
             INSERT INTO EmployeeSkills
                 (EmployeeId, SkillId, SkillLevel, IsPrimary, CreatedDate, CreatedBy)
             VALUES (@EmployeeId, @SkillId, @SkillLevel, @IsPrimary, @CreatedDate, @CreatedBy);
@@ -821,7 +922,18 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
 
             var employeeParameter = new { employee.EmployeeId };
             await connection.ExecuteAsync(new CommandDefinition(deleteAddressesSql, employeeParameter, transaction, cancellationToken: cancellationToken));
-            await connection.ExecuteAsync(new CommandDefinition(deleteSkillsSql, employeeParameter, transaction, cancellationToken: cancellationToken));
+            if (employee.Skills.Count == 0)
+            {
+                await connection.ExecuteAsync(new CommandDefinition(deleteSkillsSql, employeeParameter, transaction, cancellationToken: cancellationToken));
+            }
+            else
+            {
+                await connection.ExecuteAsync(new CommandDefinition(
+                    deleteUnselectedSkillsSql,
+                    new { employee.EmployeeId, SkillIds = employee.Skills.Select(skill => skill.SkillId).ToArray() },
+                    transaction,
+                    cancellationToken: cancellationToken));
+            }
             await connection.ExecuteAsync(new CommandDefinition(deleteDressesSql, employeeParameter, transaction, cancellationToken: cancellationToken));
 
             foreach (var address in employee.Addresses)
@@ -844,15 +956,24 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
 
             foreach (var skill in employee.Skills)
             {
-                await connection.ExecuteAsync(new CommandDefinition(skillSql, new
+                var skillParameters = new
                 {
                     employee.EmployeeId,
                     skill.SkillId,
                     skill.SkillLevel,
                     skill.IsPrimary,
+                    LastModifiedDate = employee.LastModifiedDate,
+                    LastModifiedBy = employee.LastModifiedBy,
                     skill.CreatedDate,
                     skill.CreatedBy
-                }, transaction, cancellationToken: cancellationToken));
+                };
+                var updatedSkillRows = await connection.ExecuteAsync(new CommandDefinition(
+                    updateSkillSql, skillParameters, transaction, cancellationToken: cancellationToken));
+                if (updatedSkillRows == 0)
+                {
+                    await connection.ExecuteAsync(new CommandDefinition(
+                        insertSkillSql, skillParameters, transaction, cancellationToken: cancellationToken));
+                }
             }
 
             foreach (var dress in employee.DressSizes)

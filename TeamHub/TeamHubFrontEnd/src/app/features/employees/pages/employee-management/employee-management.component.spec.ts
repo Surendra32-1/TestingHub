@@ -24,14 +24,16 @@ const DEPARTMENTS: Department[] = [{ departmentId: 2, departmentName: 'Engineeri
 describe('EmployeeManagementComponent filters', () => {
   let component: EmployeeManagementComponent;
   let getAllActiveInactiveEmployees: ReturnType<typeof vi.fn>;
+  let hasPermission: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     getAllActiveInactiveEmployees = vi.fn(() => of(EMPTY_PAGE));
+    hasPermission = vi.fn(() => true);
     const employeeService = {
       getAllActiveInactiveEmployees,
       getDepartments: () => of(DEPARTMENTS)
     };
-    const authService = { hasPermission: () => true };
+    const authService = { hasPermission };
     const toastService = { success: vi.fn(), error: vi.fn(), confirm: vi.fn() };
     const changeDetectorRef = { markForCheck: vi.fn(), detectChanges: vi.fn() };
     const router = { navigate: vi.fn() };
@@ -44,6 +46,16 @@ describe('EmployeeManagementComponent filters', () => {
       router as unknown as Router
     );
     component.departments = DEPARTMENTS;
+  });
+
+  it('uses Administration permission codes to control the employee page actions', () => {
+    expect(hasPermission).toHaveBeenCalledWith('administration.create');
+    expect(hasPermission).toHaveBeenCalledWith('administration.update');
+    expect(hasPermission).toHaveBeenCalledWith('administration.delete');
+    expect(hasPermission).toHaveBeenCalledWith('administration.cardview');
+    expect(hasPermission).toHaveBeenCalledWith('administration.release');
+    expect(hasPermission).toHaveBeenCalledWith('administration.hierarchy.view');
+    expect(hasPermission).toHaveBeenCalledWith('administration.terminate');
   });
 
   it('sends the selected status to the API instead of always asking for active employees', () => {

@@ -6,7 +6,8 @@
 }
 
 .employee-table-wrap {
-  overflow: visible;
+  max-width: 100%;
+  overflow-x: auto;
   background: #fff;
   border: 1px solid #dfe3e8;
   border-radius: 0.65rem;
@@ -43,11 +44,6 @@
   border-bottom: 0;
 }
 
-.employee-table tbody tr.menu-open {
-  position: relative;
-  z-index: 2;
-}
-
 .employee-table-avatar {
   display: block;
   width: 2.5rem;
@@ -72,8 +68,7 @@
   position: relative;
   right: auto;
   bottom: auto;
-  display: inline-block;
-  z-index: 3;
+  display: inline-flex;
 }
 
 .employee-table-status {
@@ -154,10 +149,6 @@
   display: flex;
   flex-direction: column;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-}
-
-.employee-card.menu-open {
-  z-index: 2;
 }
 
 .avatar-wrap {
@@ -246,16 +237,21 @@
 
 .employee-action-menu {
   position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3rem;
   bottom: 0.55rem;
   right: 0.75rem;
   z-index: 3;
 }
 
-.menu-trigger {
+.employee-action-button {
   display: grid;
   place-items: center;
   width: 2rem;
   height: 2rem;
+  flex: 0 0 2rem;
   padding: 0;
   border: 1px solid #cfd6dd;
   border-radius: 50%;
@@ -264,90 +260,16 @@
   cursor: pointer;
 }
 
-.menu-trigger:hover {
+.employee-action-button:hover {
   background: #e9edf1;
 }
 
-.menu-trigger[aria-expanded='true'] {
-  border-color: #1e293b;
-  background: #1e293b;
-  color: #fff;
-  box-shadow: 0 0 0 4px rgba(30, 41, 59, 0.12);
+.employee-action-button:focus-visible {
+  outline: 2px solid #1e293b;
+  outline-offset: 2px;
 }
 
-.menu-dots {
-  display: flex;
-  flex-direction: column;
-  gap: 0.14rem;
-}
-
-.menu-dots i {
-  width: 0.18rem;
-  height: 0.18rem;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.action-menu {
-  position: fixed;
-  z-index: 60;
-  width: 2.6rem;
-  padding: 0.2rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.7rem;
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(15, 23, 42, 0.04), 0 16px 40px rgba(15, 23, 42, 0.18);
-  animation: menu-in 140ms ease-out;
-}
-
-@keyframes menu-in {
-  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.action-menu button {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 1.9rem;
-  padding: 0.3rem;
-  border: 0;
-  border-radius: 0.25rem;
-  background: transparent;
-  color: #374151;
-  text-align: left;
-  font: inherit;
-  font-size: 0.76rem;
-  cursor: pointer;
-}
-
-.action-menu button::after {
-  content: attr(data-tip);
-  position: absolute;
-  right: calc(100% + 10px);
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0.28rem 0.55rem;
-  border: 1px solid #dfe3e8;
-  border-radius: 0.35rem;
-  background: #ffffff;
-  color: #111827;
-  font-size: 0.7rem;
-  font-weight: 500;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 140ms ease;
-}
-
-.action-menu button:hover::after {
-  opacity: 1;
-}
-
-.action-menu button svg {
+.employee-action-button svg {
   width: 1.05rem;
   height: 1.05rem;
   fill: none;
@@ -357,20 +279,11 @@
   stroke-width: 1.6;
 }
 
-.action-menu .hierarchy-menu-item,
-.action-menu .direct-hierarchy-menu-item {
-  color: #374151;
-}
-
-.action-menu button:hover {
-  background: #eef2f5;
-}
-
-.action-menu .release-menu-item {
+.employee-action-button.release-action {
   color: #a12828;
 }
 
-.action-menu .terminate-menu-item:hover {
+.employee-action-button.terminate-action:hover {
   color: #a12828;
 }
 
@@ -395,7 +308,9 @@
 .employee-preview {
   position: fixed;
   z-index: 1200;
-  width: 320px;
+  width: min(320px, calc(100vw - 1rem));
+  max-height: calc(100vh - 1rem);
+  overflow-y: auto;
   padding: 1rem;
   background: #fff;
   border: 1px solid #dfe3e8;

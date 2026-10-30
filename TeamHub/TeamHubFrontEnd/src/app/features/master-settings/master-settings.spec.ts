@@ -4,6 +4,7 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { ToastService } from '../../shared/services/toast.service';
 import { MasterSettings } from './master-settings';
+import { AuthService } from '../../core/auth/auth.service';
 
 describe('MasterSettings', () => {
   let component: MasterSettings;
@@ -55,6 +56,99 @@ describe('MasterSettings', () => {
     expect(reportsToField?.optionsSource).toBe('cotivityEmployees');
   });
 
+  it('uses independent grants to show Cotivity employee actions', () => {
+    const authService = TestBed.inject(AuthService);
+    authService.storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['cotivity.employee.view', 'cotivity.employee.create']
+    });
+
+    expect(component.canCreate).toBe(true);
+    expect(component.canUpdate).toBe(false);
+    expect(component.canDelete).toBe(false);
+
+    authService.storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['cotivity.employee.view', 'cotivity.employee.edit', 'cotivity.employee.delete']
+    });
+
+    expect(component.canCreate).toBe(false);
+    expect(component.canUpdate).toBe(true);
+    expect(component.canDelete).toBe(true);
+  });
+
+  it('uses Organization permissions for master pages and CRUD actions', () => {
+    const authService = TestBed.inject(AuthService);
+    routeParams.next(convertToParamMap({ masterKey: 'department' }));
+    authService.storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['organization.department.view', 'organization.department.create', 'organization.department.edit']
+    });
+
+    expect(component.canCreate).toBe(true);
+    expect(component.canUpdate).toBe(true);
+    expect(component.canDelete).toBe(false);
+
+    authService.storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['master.department.create', 'master.department.update', 'master.department.delete']
+    });
+
+    expect(component.canCreate).toBe(false);
+    expect(component.canUpdate).toBe(false);
+    expect(component.canDelete).toBe(false);
+  });
+
+  it('uses the Organization Blood Group action permissions', () => {
+    const authService = TestBed.inject(AuthService);
+    routeParams.next(convertToParamMap({ masterKey: 'blood-group' }));
+    authService.storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['organization.bloodgroup.create', 'organization.bloodgroup.edit', 'organization.bloodgroup.delete']
+    });
+
+    expect(component.canCreate).toBe(true);
+    expect(component.canUpdate).toBe(true);
+    expect(component.canDelete).toBe(true);
+  });
+
+  it('maps Role and Manage Permissions actions to their dedicated gear grants', () => {
+    const authService = TestBed.inject(AuthService);
+    routeParams.next(convertToParamMap({ masterKey: 'role' }));
+    authService.storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['setting.gear.role.create', 'setting.gear.role.edit']
+    });
+
+    expect(component.canCreate).toBe(true);
+    expect(component.canUpdate).toBe(true);
+    expect(component.canDelete).toBe(false);
+
+    routeParams.next(convertToParamMap({ masterKey: 'permission' }));
+    authService.storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['setting.gear.manage.permissions.view', 'setting.gear.manage.permissions.delete']
+    });
+
+    expect(component.canCreate).toBe(false);
+    expect(component.canUpdate).toBe(false);
+    expect(component.canDelete).toBe(true);
+  });
+
   it('leaves required rank blank while allowing an explicit zero', () => {
     component.fields = [{ key: 'rank', label: 'Rank', type: 'number', min: 0, integer: true }];
     component.resetForm();
@@ -68,6 +162,12 @@ describe('MasterSettings', () => {
   });
 
   it('should show required-field feedback when department and designation are missing', () => {
+    TestBed.inject(AuthService).storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['cotivity.employee.create']
+    });
     const toastService = TestBed.inject(ToastService);
     let toastMessage = '';
     const subscription = toastService.messages$.subscribe((message) => {
@@ -160,6 +260,12 @@ describe('MasterSettings', () => {
   });
 
   it('does not render a null placeholder on non-Cotivity text and number inputs', () => {
+    TestBed.inject(AuthService).storeSession({
+      accessToken: 'token',
+      expiresIn: 900,
+      roles: ['HR'],
+      permissions: ['organization.designation.create']
+    });
     routeParams.next(convertToParamMap({ masterKey: 'designation' }));
     fixture.detectChanges();
 

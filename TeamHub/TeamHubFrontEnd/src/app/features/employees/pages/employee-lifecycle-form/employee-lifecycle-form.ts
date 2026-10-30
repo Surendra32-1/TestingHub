@@ -166,7 +166,7 @@ export class EmployeeLifecycleFormComponent implements OnInit {
 
   cancel(): void {
     if (this.mode === 'release') {
-      this.router.navigate(['/people']);
+      this.router.navigate(['/administration']);
       return;
     }
     this.router.navigate([this.isRelease ? '/employees/resignations' : '/employees/terminations']);
@@ -208,7 +208,7 @@ export class EmployeeLifecycleFormComponent implements OnInit {
         experienceLetterIssued: false,
         status: status as EmployeeReleaseRequest['status']
       };
-      const destination = this.isOffboarding ? '/people' : '/employees/resignations';
+      const destination = this.isOffboarding ? '/administration' : '/employees/resignations';
       const successMessage = this.isOffboarding ? 'Employee release created successfully.' : 'Resignation saved successfully.';
       const failureMessage = this.isOffboarding ? 'Could not save the employee release.' : 'Could not save the resignation.';
       this.employeeService.createEmployeeRelease(employeeId, request).subscribe({

@@ -7,7 +7,7 @@
 			<button class="back-button" type="button" (click)="goBack()">‹ Back</button>
 		</div>
 
-		<form #masterForm class="edit-form" autocomplete="off" [class.cotivity-employee-form]="cotivityEmployeeSettings" [formGroup]="form" (ngSubmit)="save()" (focusin)="normalizeNullFormValues()">
+		<form *ngIf="canCreate || (editingId !== null && canUpdate)" #masterForm class="edit-form" autocomplete="off" [class.cotivity-employee-form]="cotivityEmployeeSettings" [formGroup]="form" (ngSubmit)="save()" (focusin)="normalizeNullFormValues()">
 			<div class="form-fields">
 				@for (field of fields; track field.key) {
 					<label class="form-field" [class.checkbox-field]="field.type === 'checkbox'" [class.cotivity-name-field]="field.key === 'cotivityEmployeeName'">
@@ -36,7 +36,7 @@
 						</div>
 					</section>
 					<div class="form-actions">
-						<button class="primary-action" type="submit" [disabled]="isSaving || isReadingImage">
+						<button *ngIf="editingId === null ? canCreate : canUpdate" class="primary-action" type="submit" [disabled]="isSaving || isReadingImage">
 							{{ isSaving ? 'Saving...' : editingId === null ? 'Create' : 'Update' }}
 						</button>
 						<button class="secondary-action" type="button" *ngIf="editingId !== null" (click)="resetForm()">Cancel</button>
@@ -44,7 +44,7 @@
 				</div>
 			</div>
 			<div class="form-actions" *ngIf="!cotivityEmployeeSettings">
-				<button class="primary-action" type="submit" [disabled]="isSaving || isReadingImage">
+				<button *ngIf="editingId === null ? canCreate : canUpdate" class="primary-action" type="submit" [disabled]="isSaving || isReadingImage">
 					{{ isSaving ? 'Saving...' : editingId === null ? 'Create' : 'Update' }}
 				</button>
 				<button class="secondary-action" type="button" *ngIf="editingId !== null" (click)="resetForm()">Cancel</button>
@@ -60,7 +60,7 @@
 						@for (field of fields; track field.key) {
 							<th>{{ field.label }}</th>
 						}
-						<th class="actions-heading">Actions</th>
+						<th *ngIf="canUpdate || canDelete" class="actions-heading">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -77,15 +77,15 @@
 								<span *ngIf="field.type !== 'checkbox'">{{ displayValue(row, field) }}</span>
 							</td>
 						}
-						<td class="row-actions">
+						<td *ngIf="canUpdate || canDelete" class="row-actions">
 							<div class="row-action-buttons">
-								<button class="text-action" type="button" (click)="edit(row)">Edit</button>
-								<button class="text-action danger" type="button" (click)="delete(row)">Delete</button>
+								<button *ngIf="canUpdate" class="text-action" type="button" (click)="edit(row)">Edit</button>
+								<button *ngIf="canDelete" class="text-action danger" type="button" (click)="delete(row)">Delete</button>
 							</div>
 						</td>
 					</tr>
 					<tr *ngIf="rows.length === 0">
-						<td class="empty-state" [attr.colspan]="fields.length + (cotivityEmployeeSettings ? 2 : 1)">No {{ master.title.toLowerCase() }} found.</td>
+						<td class="empty-state" [attr.colspan]="fields.length + (cotivityEmployeeSettings ? 2 : 1) + (canUpdate || canDelete ? 1 : 0)">No {{ master.title.toLowerCase() }} found.</td>
 					</tr>
 				</tbody>
 			</table>

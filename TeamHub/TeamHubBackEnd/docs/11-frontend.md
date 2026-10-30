@@ -49,9 +49,9 @@ which use `loadComponent` (`app.routes.ts:104, :112`).
 | `` (empty, `pathMatch: 'full'`) | `EmployeeDirectoryComponent` | `signedInLandingGuard` | `readOnlyHome: true` |
 | `people` | `EmployeeDirectoryComponent` | `authenticatedGuard` | `layout: 'table'` |
 | `home` | `EmployeeDirectoryComponent` | `signedInLandingGuard` | `readOnlyHome: true` |
-| `employees/add` | `EmployeeAddFormComponent` | `authGuard, peopleCreateGuard` | — |
-| `employees/edit/:employeeId` | `EmployeeAddFormComponent` | `authGuard, peopleUpdateGuard` | — |
-| `employees/release/:employeeId` | `EmployeeLifecycleFormComponent` | `authGuard, peopleReleaseGuard` | `mode: 'release'` |
+| `employees/add` | `EmployeeAddFormComponent` | `authGuard, administrationCreateGuard` | — |
+| `employees/edit/:employeeId` | `EmployeeAddFormComponent` | `authGuard, administrationUpdateGuard` | — |
+| `employees/release/:employeeId` | `EmployeeLifecycleFormComponent` | `authGuard, administrationReleaseGuard` | `mode: 'release'` |
 | `employees/resignations/new` | `EmployeeLifecycleFormComponent` | `authGuard, resignationAddGuard` | `mode: 'resignation'` |
 | `employees/terminations/new` | `EmployeeLifecycleFormComponent` | `authGuard, terminationAddGuard` | `mode: 'termination'` |
 | `employees/resignations` | `EmployeeLifecycleListComponent` | `authGuard, resignationViewGuard` | `mode: 'resignation'` |
@@ -76,8 +76,9 @@ which use `loadComponent` (`app.routes.ts:104, :112`).
    session **cannot** be restored it returns `of(true)` (`:38`) — i.e. it deliberately lets anonymous
    visitors render `/`, `/home` and `/login`. Combined with the seven `[AllowAnonymous]` backend
    actions this is what makes the read-only home page work without signing in.
-4. `/people` uses `authenticatedGuard`, so it is **not** reachable anonymously — it redirects to
-   `/login?returnUrl=…` (`auth.guard.ts:19`).
+4. `/people` is the People search page and uses `authGuard` plus `peopleSearchViewGuard`;
+   `/administration` is the employee-management page and uses `authenticatedGuard` plus
+   `administrationViewGuard`. `/employee` redirects to `/people`.
 5. The employee-directory `tabs` array exposes only `directory` and `departments`
    (`employee-directory.component.ts:54-57`), while `activeView` has four states
    (`:17` type, `:53` default). `hierarchy` and `details` are entered only from the row action menu
@@ -104,9 +105,9 @@ export const signedInLandingGuard: CanActivateFn = () => {
 | Guard | Verified behaviour |
 | --- | --- |
 | `authenticatedGuard` `:7-22` | If a token is in sessionStorage → allow. Otherwise try `restoreSession()` (a refresh round-trip) → allow on success; on failure clear the session and redirect to `/login?returnUrl=<url>` |
-| `signedInLandingGuard` `:26-41` | Signed in (or restorable) → hard redirect to `/people`; otherwise **allow** the read-only landing page |
+| `signedInLandingGuard` `:26-41` | Signed in (or restorable) → People `/people`, Administration `/administration`, or `/home` according to grants; otherwise **allow** the read-only landing page |
 | `adminGuard` `:43-48` | `hasRole('Admin')` → allow, else redirect to `/home` — **dead export**, no route references it (§2 observation 2) |
-| `rbacGuard(permission)` `:52-59` | `hasPermission(permission)` → allow, else `/home`. **No role check** (the server's Admin bypass is not mirrored client-side — §13 finding 16). Instantiated as `employeeRoleMatrixGuard` = `user-roles.assign` (`:61`), `rolePermissionMatrixGuard` = `role-permissions.manage` (`:63`), `resignationViewGuard`/`resignationAddGuard` (`:66, :68`), `peopleCreateGuard`/`peopleUpdateGuard`/`peopleReleaseGuard` (`:71, :73, :75`) and `terminationViewGuard`/`terminationAddGuard` (`:79, :81`) |
+| `rbacGuard(permission)` `:52-59` | `hasPermission(permission)` → allow, else `/home`. **No role check** (the server's Admin bypass is not mirrored client-side — §13 finding 16). Instantiated as `employeeRoleMatrixGuard` = `user-roles.assign` (`:61`), `rolePermissionMatrixGuard` = `role-permissions.manage` (`:63`), `resignationViewGuard`/`resignationAddGuard` (`:66, :68`), `administrationCreateGuard`/`administrationUpdateGuard`/`administrationReleaseGuard` and `administrationViewGuard` (`:87-93`) and `terminationViewGuard`/`terminationAddGuard` (`:101, :103`) |
 | `masterGuard` `:85-94` | Reads `paramMap.masterKey` and derives the code: `permission` → `permissions.manage`, otherwise `master.<key>` |
 
 *Recommended:* the two RBAC permission strings are duplicated between `auth.guard.ts:61-63`, the
@@ -227,7 +228,7 @@ Owns all list state and orchestrates the four views (`:36-57`): `employees`, `is
 | Behaviour | Verified detail |
 | --- | --- |
 | Route data mapping | `tableLayout` from `data.layout === 'table'`, `readOnlyHome` from `data.readOnlyHome === true` (`:70-71`), evaluated once in the constructor via `route.snapshot` |
-| Permissions | Four independent code checks in the constructor (`:72-78`): `canAddEmployee = hasPermission('people.create')`, `canEditEmployee = 'people.update'`, `canReleaseEmployee = 'people.release'`, `canTerminateEmployee = 'terminations.add'` (creating a termination record *is* the Terminate action, so it mirrors `RbacPolicies.TerminationAdd`, not `manage`) — **no** `hasRole('Admin')` anywhere, and captured once so a permission change mid-session does not re-render the row actions. The same codes gate the backend (`08-auth-and-rbac.md` §9) |
+| Permissions | Administration actions use `administration.create/update/release/terminate`, `administration.hierarchy.view`, `administration.delete`, and `administration.cardview`; `terminations.add` also permits employee-specific termination. No `hasRole('Admin')` fallback; checks are captured once, so a permission change mid-session does not re-render row actions. The API applies its own policies where configured (`08-auth-and-rbac.md` §9) |
 | Load | `loadEmployees()` (`:85-105`) with a **monotonic request id** guard (`loadRequestId`, `:86, :92, :99`) so a slow response cannot overwrite a newer page |
 | Search | `scheduleSearch()` debounces 300 ms and always resets to page 1 (`:117-120`) |
 | Tab switch | `selectView()` resets `departmentSelected` because `*ngIf` destroys and recreates `DepartmentsViewComponent` (`:122-126`, `employee-directory.component.html:42`) |
@@ -733,17 +734,37 @@ AuthResponse.permissions  (POST dev-sign-in / refresh-token, doc 08 §5)
 | Item | Route | Gating | Line |
 | --- | --- | --- | --- |
 | Home | `/home` | `visibility: 'anonymous'` | `:51` |
-| People | `/people` | `visibility: 'authenticated'`, **no code** (decision 1) | `:52` |
+| People | `/people` | `people.allemployee.search.view` | route `people` |
+| Administration | `/administration` | `administration.view` | route `administration` |
 | Apply Resignation | `/employees/resignations/new` | `resignations.add` **and** `hideIfPermission: resignations.view` | `:53-62` |
 | Resignations | `/employees/resignations` | `resignations.view` | `:63-69` |
 | Terminations | `/employees/terminations` | `terminations.view` | `:70-76` |
-| Manage (group) | — | `authenticated`, visible if ≥ 1 child survives | `:77-115` |
-| ├ 13 master modules | `/master/<key>` | `master.department` … `master.gender`, one per module | `:83-113` |
-| └ Manage Permissions | `/master/permission` | `permissions.manage` (not `master.permission` — mirrors `masterGuard`) | `:107` |
-| Settings (group) | — | `authenticated` | `:116-135` |
-| ├ Employee Role Matrix | `/settings/employee-role-matrix` | `user-roles.assign` | `:122-127` |
-| └ Role Permission Matrix | `/settings/role-permission-matrix` | `role-permissions.manage` | `:128-133` |
+| Organization Master (group) | — | visible when at least one child has its `.view` grant | `:47-60` |
+| └ 10 organization masters | `/master/<key>` | `organization.<master>.view` | `:49-58` |
+| Cotivity (group) | — | visible when at least one child has its `.view` grant | `:62-69` |
+| └ 3 Cotivity masters | `/master/<key>` | `master.cotivity-<key>.view` | `:66-68` |
+| Settings gear: Role | `/master/role` | `master.role.view` | `topbar.component.html` |
+| Settings gear: Manage Permissions | `/master/permission` | `permissions.manage` (not `master.permission` — mirrors `masterGuard`) | `topbar.component.html` |
+| Settings gear: Employee Role Matrix | `/settings/employee-role-matrix` | `setting.gear.EmployeeRole` | `topbar.component.html` |
+| Settings gear: Role Permission Matrix | `/settings/role-permission-matrix` | `setting.gear.RolePermission` | `topbar.component.html` |
 | Login | `/login` | `anonymous` + `alignEnd` (pushed right) | `:136` |
+
+The Organization master routes and actions use the supplied
+`organization.<master>.view/create/edit/delete` codes (for example,
+`organization.businessunit.*` and `organization.bloodgroup.*`). These granular codes control
+frontend visibility only: the API still uses its existing broad `master.<key>`
+policies, so keep granting those legacy codes for backend requests. This does not provide
+server-side per-action enforcement.
+
+Role and Manage Permissions are shown in the gear only with
+`setting.gear.role.view` and `setting.gear.manage.permissions.view`. Their CRUD controls use
+the corresponding `.create`, `.edit`, and `.delete` grants. The APIs still require the existing
+`master.role` and `permissions.manage` grants respectively.
+
+Cotivity navigation and page actions use `cotivity.department.*`, `cotivity.designation.*`, and
+`cotivity.employee.*` grants (View/Create/Edit/Delete). Backend API authorization remains on the
+existing `master.cotivity-department`, `master.cotivity-designation`, and `master.cotivity-employee`
+permissions.
 
 **Filtering rules** (`menu-filter.ts`, pure function, no Angular dependency):
 
@@ -780,13 +801,10 @@ lines once the dead dropdown styles were removed).
 
 **Four deliberate decisions** (all *Verified* against the code cited):
 
-1. **`People` carries no permission code.** `/people` is guarded only by `authenticatedGuard`
-   (`app.routes.ts`) and `EmployeesController` reads are `[AllowAnonymous]`, so `people.view` is a
-   catalog code with no backend policy (`RbacPolicies.PolicyPermissions` has no entry for it). Adding
-   `permission: 'people.view'` would hide the item for every seeded non-admin (`seed-data.sql:429-493`
-   grants `NormalUser` only `resignations.add` and no People code to any non-admin role) while the API
-   would still serve the data — nav and guards would disagree.
-   *Recommended* change if the read endpoints ever get a policy (doc 14 R2).
+1. **Administration is permission-gated in the SPA.** `/administration` requires `administration.view`
+   in its menu and route guard. The employee read API endpoints remain `[AllowAnonymous]`, so this permission
+   does not itself protect API reads. `administration.hierarchy.view` gates the hierarchy controls;
+   employee-specific termination creation accepts `administration.terminate` or `terminations.add`.
 2. **Self-service mutual exclusion is preserved** via `hideIfPermission: 'resignations.view'` (`:60`),
    the config-level equivalent of the old `@if (!canViewResignations)`. Unlike the old bar, the entry
    also requires `resignations.add` — **a fix**: the previous markup showed "Apply Resignation" to
@@ -842,7 +860,7 @@ suites in one jsdom worker, the three session-writing specs each run `afterEach(
 | 14 | **`AuthService.getCurrentUser()` and the whole `CurrentUser` model are unused** in the SPA (`auth.service.ts:92-94`, search-verified) | low |
 | 15 | **Entra mode has no session bridge** — with `enableEntra: true` the `authInterceptor` is not registered and sessionStorage is never written, so `authenticatedGuard` and every `rbacGuard` instance deny (`app.config.ts:19-30`, `auth.guard.ts:11`, `:56`) **and** the navigation collapses to its anonymous items (`Home`, `Login`) because `sessionState.isAuthenticated` reads the same storage (`auth.service.ts:33-44`) | high (only if Entra is switched on) |
 | 16 | **[AUTH/UX] The menu is code-driven while the API also honours an `Admin` role bypass** (`PermissionAuthorizationHandler.cs:25-29` succeeds every policy on the `Role` claim alone). A trimmed Admin grant set would still allow all endpoints but shrink the nav — no frontend role fallback was added, because role-specific menu logic was explicitly out of scope (§12.1 decision 4). It was harmless while the mirror held; Admin's live set has since drifted by one code, which is now visible as missing termination row actions (finding 19, doc 14 L15) | low (latent) |
-| 17 | **[DATA] Seed role grants are coarse at the top and unreachable in the middle** — Admin still receives the whole catalog (`rbac-schema.sql:164-172`), and `seed-data.sql:429-493` now grants real per-role subsets (`NormalUser`: `resignations.add`; `Manager`: resignation view/add/action codes + `master.team`; `HR`: people create/update/release + resignation steps + `terminations.view`/`.add`/`.manage`), so the partial-menu case the recursive filter exists for is finally representable, and both "Add" buttons are driven by their own code. Two limits remain: `Manager`/`HR` have no `Users`/`UserRoles` rows and are outside `DevSignIn.AllowedRoles` (`["Admin","NormalUser"]`), so those grants cannot be signed in as; and six catalog codes are grantable but enforce nothing (`people.view`, `people.terminate`, `people.hierarchy.view`, `resignations.manage`, and the legacy `master.view`/`master.manage` — live table only), which is why the seed deliberately grants none of them | low (was medium; testability) |
+| 17 | **[DATA] Seed role grants are coarse at the top and unreachable in the middle** — Admin still receives the whole catalog (`rbac-schema.sql`), and `seed-data.sql` grants real per-role subsets (`NormalUser`: `resignations.add`; `Manager`: resignation view/add/action codes + `master.team`; `HR`: administration create/update/release + resignation steps + termination codes), so partial-menu grants are representable. `administration.view` gates the Administration route; `administration.terminate` and `administration.hierarchy.view` gate their corresponding actions, while employee read endpoints remain anonymous. Two limits remain: `Manager`/`HR` have no `Users`/`UserRoles` rows and are outside `DevSignIn.AllowedRoles` (`["Admin","NormalUser"]`), so those grants cannot be signed in as; and `resignations.manage` plus legacy `master.view`/`master.manage` are unused | low (was medium; testability) |
 | 18 | **[UX/CD] `LoginComponent` was the one component that did not mark itself dirty after an HTTP callback** — the SPA runs zoneless (`zone.js` is not a dependency and `angular.json` declares no `polyfills`), so a `devUsers` assignment inside `ngOnInit`'s subscribe never reached the template: a cold `/login` rendered "No approved development accounts are available." with 0 buttons even though `GET /api/auth/dev-users` answered 200 with both accounts. Every other page already pairs its callback with `markForCheck()` (`employee-lifecycle-list.ts:144/:168/:178`, `employee-directory.component.ts:96/:102`). *Fixed 2026-10-23* — `login.component.ts:22-24` injects `ChangeDetectorRef`, `:40-49` and `:65-75` mark dirty on next/error and on the sign-in error/complete paths | high (blocked sign-in; resolved) |
 | 19 | **[AUTH] The "Add" buttons are per-code and were confirmed live, but Admin's live grant set is one code short** — `canAdd`/`canAddTermination` read only `resignations.add`/`terminations.add` (`employee-lifecycle-list.ts:64-75`, template `:6`), and driving the app in a browser confirmed each code alone toggles its own button with the list still rendering. Separately, Admin's token carried 37 codes with `terminations.manage` absent, so `nextTerminationActions()` (`:276-280`) shows Admin no termination row actions at all — a data drift, not a frontend defect (doc 14 L15) | low (data drift; UI fails closed) |
 

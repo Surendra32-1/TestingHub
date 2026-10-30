@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -6,6 +7,9 @@ import { EmployeeService } from '../../services/employee.service';
 import { ProfileService } from '../../../profile/profile.service';
 import { EmployeeAddFormComponent } from './employee-add-form';
 import { ToastService } from '../../../../shared/services/toast.service';
+
+@Component({ standalone: true, template: '' })
+class EmptyTestPage {}
 
 const employeeMastersResponse = {
   departments: [{ departmentId: 1, departmentName: 'Engineering', isActive: true }],
@@ -91,6 +95,9 @@ describe('EmployeeAddFormComponent', () => {
   let component: EmployeeAddFormComponent;
   let fixture: ComponentFixture<EmployeeAddFormComponent>;
   let lastProfilePatch: Record<string, unknown> | null;
+  let lastEmployeeRequest: Record<string, unknown> | null;
+  let lastUpdatedEmployeeId: number | null;
+  let activeInactiveEmployeeResponse = employeeEditResponse;
 
   const profileEmployee = {
     ...employeeEditResponse,
@@ -110,17 +117,28 @@ describe('EmployeeAddFormComponent', () => {
 
   beforeEach(async () => {
     lastProfilePatch = null;
+    lastEmployeeRequest = null;
+    lastUpdatedEmployeeId = null;
+    activeInactiveEmployeeResponse = employeeEditResponse;
     await TestBed.configureTestingModule({
       imports: [EmployeeAddFormComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: 'administration', component: EmptyTestPage }]),
         provideNativeDateAdapter(),
         {
           provide: EmployeeService,
           useValue: {
             getEmployeeMasters: () => of({ data: employeeMastersResponse }),
-            getActiveInactiveEmployeeById: () => of({ data: employeeEditResponse }),
-            createEmployee: () => of({ success: true, data: 1, message: 'created' })
+            getActiveInactiveEmployeeById: () => of({ data: activeInactiveEmployeeResponse }),
+            createEmployee: (request: Record<string, unknown>) => {
+              lastEmployeeRequest = request;
+              return of({ success: true, data: 1, message: 'created' });
+            },
+            updateActiveInactiveEmployee: (employeeId: number, request: Record<string, unknown>) => {
+              lastUpdatedEmployeeId = employeeId;
+              lastEmployeeRequest = request;
+              return of(undefined);
+            }
           }
         },
         {
@@ -140,6 +158,26 @@ describe('EmployeeAddFormComponent', () => {
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
+
+  const fillRequiredEmployeeFields = (): void => {
+    component.employeeForm.patchValue({
+      eNumber: 1001,
+      firstName: 'Priya',
+      lastName: 'Sharma',
+      email: 'priya@teamhub.test',
+      emergencyContactPerson: 'Emergency contact',
+      fatherName: 'Parent',
+      extensionNumber: 101,
+      citizenshipNumber: 'CIT-1001',
+      panNumber: 'PAN-1001',
+      departmentId: '1',
+      designationId: '1',
+      jobTypeId: '1',
+      bloodGroupId: '1',
+      genderId: '1',
+      teamId: '1'
+    });
+  };
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -200,7 +238,7 @@ describe('EmployeeAddFormComponent', () => {
     expect(component.isDressSelected(3)).toBe(true);
     expect(component.isDressSelected(1)).toBe(false);
 
-    component.chooseSkillLevel(1, 5, new MouseEvent('click'));
+    component.setSkillLevel(1, { target: { value: '5' } } as unknown as Event);
     expect(component.skillLevelFor(1)).toBe(5);
   });
 
@@ -224,10 +262,172 @@ describe('EmployeeAddFormComponent', () => {
     expect(component.employeeForm.get('joinedDate')?.value).toEqual(reflectedDate);
   });
 
+  it('synchronizes the date of birth between A.D. and B.S. fields', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    component.employeeForm.get('dateOfBirth')?.setValue(new Date(1990, 0, 1));
+    expect(component.employeeForm.get('dateOfBirthBS')?.value).toBe('2046-09-17');
+
+    component.employeeForm.get('dateOfBirthBS')?.setValue('2046-09-18');
+    const reflectedDate = component.employeeForm.get('dateOfBirth')?.value as Date;
+    expect([reflectedDate.getFullYear(), reflectedDate.getMonth(), reflectedDate.getDate()]).toEqual([1990, 0, 2]);
+  });
+
+  it('validates joining dates, minimum age, and date-of-birth ordering', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const joiningDate = component.employeeForm.get('joinedDate')!;
+    const dateOfBirth = component.employeeForm.get('dateOfBirth')!;
+
+    expect(dateOfBirth.errors).toBeNull();
+
+    const futureJoiningDate = new Date(component.today);
+    futureJoiningDate.setDate(futureJoiningDate.getDate() + 1);
+    joiningDate.setValue(futureJoiningDate);
+    expect(joiningDate.hasError('futureJoiningDate')).toBe(true);
+
+    joiningDate.setValue(new Date(2000, 0, 1));
+    dateOfBirth.setValue(new Date(2000, 0, 1));
+    expect(dateOfBirth.hasError('dateOfBirthNotBeforeJoining')).toBe(true);
+
+    joiningDate.setValue(component.today);
+    const underageDateOfBirth = new Date(component.maxDateOfBirth);
+    underageDateOfBirth.setDate(underageDateOfBirth.getDate() + 1);
+    dateOfBirth.setValue(underageDateOfBirth);
+    expect(dateOfBirth.hasError('minimumAge')).toBe(true);
+
+    const futureDateOfBirth = new Date(component.today);
+    futureDateOfBirth.setDate(futureDateOfBirth.getDate() + 1);
+    dateOfBirth.setValue(futureDateOfBirth);
+    expect(dateOfBirth.hasError('futureDateOfBirth')).toBe(true);
+
+    dateOfBirth.setValue(component.maxDateOfBirth);
+    expect(dateOfBirth.errors).toBeNull();
+  });
+
+  it('shows a toast immediately when an A.D. or B.S. date change is invalid', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const toastService = TestBed.inject(ToastService);
+    const toastMessages: string[] = [];
+    const subscription = toastService.messages$.subscribe((message) => toastMessages.push(message.message));
+    const futureJoiningDate = new Date(component.today);
+    futureJoiningDate.setDate(futureJoiningDate.getDate() + 1);
+
+    component.employeeForm.get('joinedDate')?.setValue(futureJoiningDate);
+    expect(toastMessages.at(-1)).toContain('Date of joining cannot be in the future.');
+
+    component.employeeForm.get('joinedDate')?.setValue(new Date(2010, 0, 1));
+    component.employeeForm.get('dateOfBirth')?.setValue(new Date(2004, 0, 1));
+    expect(toastMessages.at(-1)).toContain('at least 18 years old on the date of joining');
+
+    component.employeeForm.get('dateOfBirthBS')?.setValue('not-a-date');
+    expect(toastMessages.at(-1)).toContain('Date of birth (B.S.) must be a valid date in YYYY-MM-DD format.');
+    subscription.unsubscribe();
+  });
+
+  it('blocks profile updates and shows a toast when the employee was under 18 at joining', async () => {
+    await import('nepali-date-converter');
+    component.isProfileMode = true;
+    component['loadMyProfile']();
+    await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const toastService = TestBed.inject(ToastService);
+    let toastMessage = '';
+    const subscription = toastService.messages$.subscribe((message) => {
+      toastMessage = message.message;
+    });
+
+    component.employeeForm.get('joinedDate')?.setValue(new Date(2010, 0, 1));
+    component.employeeForm.get('dateOfBirth')?.setValue(new Date(2004, 0, 1));
+    expect(component.employeeForm.get('dateOfBirth')?.hasError('minimumAge')).toBe(true);
+
+    component.onSubmit();
+
+    expect(lastProfilePatch).toBeNull();
+    expect(toastMessage).toContain('at least 18 years old on the date of joining');
+    subscription.unsubscribe();
+  });
+
+  it('blocks employee edits and shows a toast when the employee was under 18 at joining', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    component.employeeId = employeeEditResponse.employeeId;
+    component.loadMasters(employeeEditResponse.employeeId);
+    fillRequiredEmployeeFields();
+
+    const toastService = TestBed.inject(ToastService);
+    let toastMessage = '';
+    const subscription = toastService.messages$.subscribe((message) => {
+      toastMessage = message.message;
+    });
+
+    component.employeeForm.get('joinedDate')?.setValue(new Date(2010, 0, 1));
+    component.employeeForm.get('dateOfBirth')?.setValue(new Date(2004, 0, 1));
+    expect(component.employeeForm.get('dateOfBirth')?.hasError('minimumAge')).toBe(true);
+
+    component.onSubmit();
+
+    expect(lastEmployeeRequest).toBeNull();
+    expect(toastMessage).toContain('at least 18 years old on the date of joining');
+    subscription.unsubscribe();
+  });
+
   it('renders Angular Material Nepali date pickers for both B.S. dates', () => {
     expect(fixture.nativeElement.querySelectorAll('app-nepali-date-picker')).toHaveLength(2);
     expect(fixture.nativeElement.querySelector('#joinedDateBS')).toBeNull();
     expect(fixture.nativeElement.querySelector('#dateOfBirthBS')).toBeNull();
+    expect((fixture.nativeElement.querySelector('#employeeImage') as HTMLInputElement).accept).toContain('image/png');
+  });
+
+  it('reads PNG uploads even when the browser does not report a MIME type', async () => {
+    const input = document.createElement('input');
+    const file = new File([new Uint8Array([137, 80, 78, 71])], 'employee.png', { type: '' });
+    Object.defineProperty(input, 'files', { configurable: true, value: [file] });
+
+    component.onImageSelected({ target: input } as unknown as Event);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(component.imageBase64).toMatch(/^data:image\/png;base64,/);
+    expect(component.imageFileName).toBe('employee.png');
+  });
+
+  it('allows profile date changes and includes both calendars in the profile patch', async () => {
+    await import('nepali-date-converter');
+    component.isProfileMode = true;
+    component['loadMyProfile']();
+    await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+
+    expect(component.employeeForm.get('joinedDate')?.enabled).toBe(true);
+    expect(component.employeeForm.get('joinedDateBS')?.enabled).toBe(true);
+    expect(component.employeeForm.get('dateOfBirth')?.enabled).toBe(true);
+    expect(component.employeeForm.get('dateOfBirthBS')?.enabled).toBe(true);
+
+    component.employeeForm.get('joinedDateBS')?.setValue('2081-09-18');
+    component.employeeForm.get('dateOfBirthBS')?.setValue('2046-09-17');
+    expect(component.profileHasChanges).toBe(true);
+    expect(component.employeeForm.get('joinedDateBS')?.errors).toBeNull();
+    expect(component.employeeForm.get('dateOfBirthBS')?.errors).toBeNull();
+    expect(component.profileData).not.toBeNull();
+    component.employeeForm.markAllAsTouched();
+    const invalidProfileFields = [
+      'alternateEmail', 'bloodGroupId', 'mobileNumber', 'emergencyContactNumber', 'motherName',
+      'spouseName', 'joinedDate', 'joinedDateBS', 'dateOfBirth', 'dateOfBirthBS', 'latitude', 'longitude'
+    ].map((field) => [field, component.validationMessage(field)] as const)
+      .filter(([, message]) => message !== null);
+    expect(invalidProfileFields).toEqual([]);
+    component.onSubmit();
+
+    expect(lastProfilePatch).toEqual(expect.objectContaining({
+      joinedDate: '2025-01-02',
+      joinedDateBS: '2081-09-18',
+      dateOfBirth: '1990-01-01',
+      dateOfBirthBS: '2046-09-17'
+    }));
   });
 
   it('reads several roles from the employee-master API response and offers only unassigned roles', () => {
@@ -266,7 +466,7 @@ describe('EmployeeAddFormComponent', () => {
     expect(component.employeeForm.get('addressTypeId')?.value).toBe('7');
   });
 
-  it('adds and removes skills with a default level, and dress sizes as chips', () => {
+  it('adds and removes skills without assigning a level and keeps dress sizes as chips', () => {
     component.employeeForm.patchValue({ skillIds: ['1'], dressIds: ['5'] });
     component.skillLevels = { 1: 3 };
 
@@ -277,7 +477,8 @@ describe('EmployeeAddFormComponent', () => {
 
     component.addSkill({ target: { value: '2' } } as unknown as Event);
     expect(component.employeeForm.get('skillIds')?.value).toEqual(['1', '2']);
-    expect(component.skillLevelFor(2)).toBe(1);
+    expect(component.skillLevelFor(2)).toBeNull();
+    expect(component.selectedSkills[1].skillLevel).toBeNull();
 
     component.addDress({ target: { value: '6' } } as unknown as Event);
     expect(component.employeeForm.get('dressIds')?.value).toEqual(['5', '6']);
@@ -291,56 +492,71 @@ describe('EmployeeAddFormComponent', () => {
     expect(component.skillLevels[1]).toBeUndefined();
   });
 
-  it('applies the chosen level when adding a skill and keeps it adjustable on the chip', () => {
-    component.updateNewSkillLevel(4);
-    expect(component.newSkillLevel).toBe(4);
-
+  it('requires an explicit level selection for each newly added skill', () => {
     component.addSkill({ target: { value: '1' } } as unknown as Event);
 
     expect(component.employeeForm.get('skillIds')?.value).toEqual(['1']);
-    expect(component.selectedSkills).toEqual([{ skillId: 1, skillName: 'Angular', skillLevel: 4 }]);
+    expect(component.selectedSkills).toEqual([{ skillId: 1, skillName: 'Angular', skillLevel: null }]);
 
-    component.chooseSkillLevel(1, 2, new MouseEvent('click'));
+    component.setSkillLevel(1, { target: { value: '2' } } as unknown as Event);
     expect(component.selectedSkills).toEqual([{ skillId: 1, skillName: 'Angular', skillLevel: 2 }]);
-
-    component.updateNewSkillLevel(9);
-    expect(component.newSkillLevel).toBe(1);
   });
 
-  it('re-levels the skills already selected when the level row changes', () => {
+  it('does not send a newly added skill until its level is explicitly selected', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fillRequiredEmployeeFields();
     component.addSkill({ target: { value: '1' } } as unknown as Event);
-    component.addSkill({ target: { value: '2' } } as unknown as Event);
-    expect(component.selectedSkills.map((skill) => skill.skillLevel)).toEqual([1, 1]);
+    const toastService = TestBed.inject(ToastService);
+    let toastMessage = '';
+    const subscription = toastService.messages$.subscribe((message) => {
+      toastMessage = message.message;
+    });
 
-    component.updateNewSkillLevel(4);
+    component.onSubmit();
 
-    expect(component.skillLevels).toEqual({ 1: 4, 2: 4 });
-    expect(component.selectedSkills.map((skill) => skill.skillLevel)).toEqual([4, 4]);
-    expect(component.employeeForm.get('skillIds')?.dirty).toBe(true);
+    expect(lastEmployeeRequest).toBeNull();
+    expect(toastMessage).toContain('Select a level for Angular before saving.');
+    subscription.unsubscribe();
   });
 
-  it('keeps the level row in step with the chips', () => {
+  it('sends each individually selected skill level when creating an employee', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fillRequiredEmployeeFields();
     component.employeeForm.patchValue({ skillIds: ['1', '2'] });
-    component.skillLevels = { 1: 4, 2: 4 };
-    expect(component.levelRowValue).toBe(4);
+    component.setSkillLevel(1, { target: { value: '5' } } as unknown as Event);
+    component.setSkillLevel(2, { target: { value: '3' } } as unknown as Event);
+    expect(component.selectedSkills.map((skill) => skill.skillLevel)).toEqual([5, 3]);
 
-    component.skillLevels = { 1: 4, 2: 2 };
-    expect(component.levelRowValue).toBe(1);
+    component.onSubmit();
 
-    component.skillLevels = {};
-    component.employeeForm.patchValue({ skillIds: [] });
-    component.updateNewSkillLevel(3);
-    expect(component.levelRowValue).toBe(3);
+    expect(lastEmployeeRequest?.['skills']).toEqual([
+      { skillId: 1, skillLevel: 5, isPrimary: false },
+      { skillId: 2, skillLevel: 3, isPrimary: false }
+    ]);
   });
 
-  it('saves the level chosen in the level row through the profile update payload', () => {
+  it('saves each selected skill level through the profile update payload', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
     component.isProfileMode = true;
+    component.employeeId = 1;
+    fixture.detectChanges();
     component.profileData = profileResponse as never;
     component.employeeForm.patchValue({ skillIds: ['1', '2'], bloodGroupId: '1' });
     component.skillLevels = { 1: 1, 2: 1 };
 
-    component.updateNewSkillLevel(4);
-    expect(component.levelRowValue).toBe(4);
+    component.setSkillLevel(1, { target: { value: '4' } } as unknown as Event);
+    component.setSkillLevel(2, { target: { value: '4' } } as unknown as Event);
+    expect(component.selectedSkills.map((skill) => skill.skillLevel)).toEqual([4, 4]);
+    component.employeeForm.markAllAsTouched();
+    const invalidProfileFields = [
+      'alternateEmail', 'bloodGroupId', 'mobileNumber', 'emergencyContactNumber', 'motherName',
+      'spouseName', 'joinedDate', 'joinedDateBS', 'dateOfBirth', 'dateOfBirthBS', 'latitude', 'longitude'
+    ].map((field) => [field, component.validationMessage(field)] as const)
+      .filter(([, message]) => message !== null);
+    expect(invalidProfileFields).toEqual([]);
 
     component.onSubmit();
 
@@ -351,28 +567,145 @@ describe('EmployeeAddFormComponent', () => {
     ]);
   });
 
-  it('saves the level picked from a skill chip menu', () => {
+  it('blocks profile updates when a newly added skill has no selected level', () => {
     component.isProfileMode = true;
+    component.profileData = profileResponse as never;
+    component.employeeForm.patchValue({ skillIds: ['1', '2'], bloodGroupId: '1' });
+    component.skillLevels = { 1: 1 };
+    const toastService = TestBed.inject(ToastService);
+    let toastMessage = '';
+    const subscription = toastService.messages$.subscribe((message) => {
+      toastMessage = message.message;
+    });
+
+    component.onSubmit();
+
+    expect(lastProfilePatch).toBeNull();
+    expect(toastMessage).toContain('Select a level for .NET before saving.');
+    subscription.unsubscribe();
+  });
+
+  it('saves the level selected for a skill', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    component.isProfileMode = true;
+    component.employeeId = 1;
+    fixture.detectChanges();
     component.profileData = profileResponse as never;
     component.employeeForm.patchValue({ skillIds: ['1'], bloodGroupId: '1' });
     component.skillLevels = { 1: 1 };
     fixture.detectChanges();
 
-    const toggle = fixture.nativeElement.querySelector('.chip .level-toggle') as HTMLButtonElement;
-    toggle.click();
-    fixture.detectChanges();
-
-    const options = Array.from(fixture.nativeElement.querySelectorAll('.chip .level-option')) as HTMLButtonElement[];
-    const levelFour = options.find((option) => option.textContent?.trim() === '4');
-    expect(levelFour).toBeTruthy();
-    levelFour!.click();
+    const levelSelect = fixture.nativeElement.querySelector('[aria-label="Skill level for Angular"]') as HTMLSelectElement;
+    levelSelect.value = '4';
+    levelSelect.dispatchEvent(new Event('change'));
     fixture.detectChanges();
 
     expect(component.skillLevelFor(1)).toBe(4);
-    expect((fixture.nativeElement.querySelector('.chip .level-toggle') as HTMLButtonElement).textContent?.trim()).toBe('4');
+    expect(levelSelect.value).toBe('4');
 
     component.onSubmit();
 
     expect(lastProfilePatch?.['skills']).toEqual([{ skillId: 1, skillLevel: 4 }]);
+  });
+
+  it('does not show a default level control for newly selected skills', () => {
+    component.addSkill({ target: { value: '1' } } as unknown as Event);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[aria-label="Default level for new skills"]')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Apply level to selected skills');
+    expect((fixture.nativeElement.querySelector('[aria-label="Skill level for Angular"]') as HTMLSelectElement).value).toBe('');
+  });
+
+  it('sends each selected skill level when creating an employee', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fillRequiredEmployeeFields();
+    component.employeeForm.patchValue({ skillIds: ['1', '2'] });
+    component.skillLevels = { 1: 2, 2: 5 };
+    expect(Object.entries(component.employeeForm.controls)
+      .filter(([, control]) => control.invalid)
+      .map(([name]) => name)).toEqual([]);
+
+    component.onSubmit();
+
+    expect(lastEmployeeRequest?.['skills']).toEqual([
+      { skillId: 1, skillLevel: 2, isPrimary: false },
+      { skillId: 2, skillLevel: 5, isPrimary: false }
+    ]);
+  });
+
+  it('sends updated skill levels when editing an employee', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    component.employeeId = employeeEditResponse.employeeId;
+    fillRequiredEmployeeFields();
+    component.employeeForm.patchValue({ skillIds: ['2'] });
+    component.skillLevels = { 2: 3 };
+    expect(Object.entries(component.employeeForm.controls)
+      .filter(([, control]) => control.invalid)
+      .map(([name]) => name)).toEqual([]);
+
+    component.onSubmit();
+
+    expect(lastUpdatedEmployeeId).toBe(employeeEditResponse.employeeId);
+    expect(lastEmployeeRequest?.['skills']).toEqual([
+      { skillId: 2, skillLevel: 3, isPrimary: false }
+    ]);
+  });
+
+  it('loads the persisted skill level before changing it in employee edit', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    component.employeeId = employeeEditResponse.employeeId;
+    component.loadMasters(employeeEditResponse.employeeId);
+    fillRequiredEmployeeFields();
+    component.employeeForm.get('joinedDate')?.setValue(component.today);
+
+    expect(component.skillLevelFor(2)).toBe(4);
+    expect(component.employeeForm.get('skillIds')?.value).toEqual(['2']);
+    component.setSkillLevel(2, { target: { value: '5' } } as unknown as Event);
+    expect(Object.entries(component.employeeForm.controls)
+      .filter(([, control]) => control.invalid)
+      .map(([name]) => name)).toEqual([]);
+    component.onSubmit();
+
+    expect(lastUpdatedEmployeeId).toBe(employeeEditResponse.employeeId);
+    expect(lastEmployeeRequest?.['skills']).toEqual([
+      { skillId: 2, skillLevel: 5, isPrimary: false }
+    ]);
+  });
+
+  it('loads and sends both persisted level-3 values in the employee update request', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    activeInactiveEmployeeResponse = {
+      ...employeeEditResponse,
+      skills: [
+        { employeeSkillId: 1, skillId: 1, skillName: 'Angular', skillLevel: 3, isPrimary: false },
+        { employeeSkillId: 2, skillId: 2, skillName: '.NET', skillLevel: 3, isPrimary: false }
+      ]
+    };
+    component.employeeId = employeeEditResponse.employeeId;
+    component.loadMasters(employeeEditResponse.employeeId);
+    fillRequiredEmployeeFields();
+    component.employeeForm.get('joinedDate')?.setValue(component.today);
+    fixture.detectChanges();
+
+    const levelSelectors = [1, 2].map((skillId) =>
+      fixture.nativeElement.querySelector(
+        `[aria-label="Skill level for ${skillId === 1 ? 'Angular' : '.NET'}"]`
+      ) as HTMLSelectElement
+    );
+    expect(levelSelectors.map((select) => select.value)).toEqual(['3', '3']);
+
+    component.onSubmit();
+
+    expect(lastUpdatedEmployeeId).toBe(employeeEditResponse.employeeId);
+    expect(lastEmployeeRequest?.['skills']).toEqual([
+      { skillId: 1, skillLevel: 3, isPrimary: false },
+      { skillId: 2, skillLevel: 3, isPrimary: false }
+    ]);
   });
 });

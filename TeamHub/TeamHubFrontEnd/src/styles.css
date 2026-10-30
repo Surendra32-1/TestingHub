@@ -22,6 +22,9 @@ html, body {
   --th-control-height: 2.75rem;
   --th-control-font: 0.9rem;
   --th-button-font: 0.88rem;
+  --th-dropdown-width: 12rem;
+  --th-dropdown-font-size: 0.875rem;
+  --th-dropdown-item-padding: 0.625rem 0.875rem;
   --th-panel-shadow: 0 2px 12px rgba(17, 24, 39, 0.03);
 }
 

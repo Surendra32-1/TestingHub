@@ -44,8 +44,19 @@ export class TopbarComponent implements OnInit {
     return this.authService.hasPermission('setting.gear.RolePermission');
   }
 
+  get canOpenRoleMaster(): boolean {
+    return this.authService.hasPermission('setting.gear.role.view');
+  }
+
+  get canOpenPermissionsMaster(): boolean {
+    return this.authService.hasPermission('setting.gear.manage.permissions.view');
+  }
+
   get canOpenSettingsMenu(): boolean {
-    return this.authService.hasPermission('setting.gear');
+    return this.canOpenEmployeeRoleMatrix
+      || this.canOpenRolePermissionMatrix
+      || this.canOpenRoleMaster
+      || this.canOpenPermissionsMaster;
   }
 
   ngOnInit(): void {
@@ -106,6 +117,16 @@ export class TopbarComponent implements OnInit {
   openRolePermissionMatrix(): void {
     this.isSettingsMenuOpen = false;
     void this.router.navigateByUrl('/settings/role-permission-matrix');
+  }
+
+  openRoleMaster(): void {
+    this.isSettingsMenuOpen = false;
+    void this.router.navigateByUrl('/master/role');
+  }
+
+  openPermissionsMaster(): void {
+    this.isSettingsMenuOpen = false;
+    void this.router.navigateByUrl('/master/permission');
   }
 
   editProfile(): void {

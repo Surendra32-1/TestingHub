@@ -5,7 +5,7 @@ import { EmployeeAddFormComponent } from  './features/employees/pages/employee-a
 import { EmployeeLifecycleFormComponent } from './features/employees/pages/employee-lifecycle-form/employee-lifecycle-form';
 import { EmployeeLifecycleListComponent } from './features/employees/pages/employee-lifecycle-list/employee-lifecycle-list';
 import { MasterSettings } from './features/master-settings/master-settings';
-import { authGuard, allemployeeSearchViewGuard, anonymousHomeGuard, authenticatedGuard, employeeRoleMatrixGuard, masterGuard, peopleCreateGuard, peopleReleaseGuard, peopleUpdateGuard, peopleViewGuard, profileEditGuard, resignationAddGuard, resignationViewGuard, rolePermissionMatrixGuard, signedInLandingGuard, terminationAddGuard, terminationViewGuard } from './core/auth/auth.guard';
+import { authGuard, peopleSearchViewGuard, anonymousHomeGuard, authenticatedGuard, administrationCreateGuard, administrationReleaseGuard, administrationUpdateGuard, administrationViewGuard, employeeRoleMatrixGuard, employeeTerminationAddGuard, masterGuard, profileEditGuard, resignationAddGuard, resignationViewGuard, rolePermissionMatrixGuard, signedInLandingGuard, terminationAddGuard, terminationViewGuard } from './core/auth/auth.guard';
 import { LoginComponent } from './features/auth/login/login.component';
 
 export const routes: Routes = [
@@ -25,18 +25,23 @@ export const routes: Routes = [
   },
   {
     path: 'people',
+    loadComponent: () => import('./features/employees/pages/employee-search/employee-search.component')
+      .then((m) => m.EmployeeSearchComponent),
+    canActivate: [authGuard, peopleSearchViewGuard],
+    title: 'People | TeamHub'
+  },
+  {
+    path: 'administration',
     loadComponent: () => import('./features/employees/pages/employee-management/employee-management.component')
       .then((m) => m.EmployeeManagementComponent),
-    canActivate: [authenticatedGuard, peopleViewGuard],
+    canActivate: [authenticatedGuard, administrationViewGuard],
     data: { layout: 'table' },
-    title: 'Employee List | TeamHub'
+    title: 'Administration | TeamHub'
   },
   {
     path: 'employee',
-    loadComponent: () => import('./features/employees/pages/employee-search/employee-search.component')
-      .then((m) => m.EmployeeSearchComponent),
-    canActivate: [authGuard, allemployeeSearchViewGuard],
-    title: 'Employee List | TeamHub'
+    redirectTo: '/people',
+    pathMatch: 'full'
   },
   {
     path: 'profile/edit',
@@ -55,19 +60,19 @@ export const routes: Routes = [
   {
     path: 'employees/add',
     component: EmployeeAddFormComponent,
-    canActivate: [authGuard, peopleCreateGuard],
+    canActivate: [authGuard, administrationCreateGuard],
     title: 'AddEmployee | TeamHub'
   },
   {
     path: 'employees/edit/:employeeId',
     component: EmployeeAddFormComponent,
-    canActivate: [authGuard, peopleUpdateGuard],
+    canActivate: [authGuard, administrationUpdateGuard],
     title: 'Edit Employee | TeamHub'
   },
   {
     path: 'employees/release/:employeeId',
     component: EmployeeLifecycleFormComponent,
-    canActivate: [authGuard, peopleReleaseGuard],
+    canActivate: [authGuard, administrationReleaseGuard],
     title: 'Release Employee | TeamHub',
     data: { mode: 'release' }
   },
@@ -102,7 +107,7 @@ export const routes: Routes = [
   {
     path: 'employees/terminate/:employeeId',
     component: EmployeeLifecycleFormComponent,
-    canActivate: [authGuard, terminationAddGuard],
+    canActivate: [authGuard, employeeTerminationAddGuard],
     title: 'Terminate Employee | TeamHub',
     data: { mode: 'termination' }
   },

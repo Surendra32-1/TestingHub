@@ -40,3 +40,15 @@
   cursor: pointer;
   font-size: 0.78rem;
 }
+
+@media (max-width: 480px) {
+  .results-header,
+  .results-summary {
+    flex-wrap: wrap;
+  }
+
+  .results-header {
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+}

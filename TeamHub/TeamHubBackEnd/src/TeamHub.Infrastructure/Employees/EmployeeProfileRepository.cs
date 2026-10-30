@@ -246,6 +246,10 @@ public sealed class EmployeeProfileRepository(
         const string employeeSql = @"
             UPDATE dbo.Employees
             SET AlternateEmail = CASE WHEN @AlternateEmailSpecified = 1 THEN @AlternateEmail ELSE AlternateEmail END,
+                JoinedDate = CASE WHEN @JoinedDateSpecified = 1 THEN @JoinedDate ELSE JoinedDate END,
+                JoinedDateBS = CASE WHEN @JoinedDateBSSpecified = 1 THEN @JoinedDateBS ELSE JoinedDateBS END,
+                DateOfBirth = CASE WHEN @DateOfBirthSpecified = 1 THEN @DateOfBirth ELSE DateOfBirth END,
+                DateOfBirthBS = CASE WHEN @DateOfBirthBSSpecified = 1 THEN @DateOfBirthBS ELSE DateOfBirthBS END,
                 BloodGroupId = CASE WHEN @BloodGroupIdSpecified = 1 THEN @BloodGroupId ELSE BloodGroupId END,
                 MobileNumber = CASE WHEN @MobileNumberSpecified = 1 THEN @MobileNumber ELSE MobileNumber END,
                 EmergencyContactNumber = CASE WHEN @EmergencyContactNumberSpecified = 1 THEN @EmergencyContactNumber ELSE EmergencyContactNumber END,
@@ -268,6 +272,14 @@ public sealed class EmployeeProfileRepository(
                     EmployeeId = employeeId,
                     patch.AlternateEmailSpecified,
                     patch.AlternateEmail,
+                    patch.JoinedDateSpecified,
+                    JoinedDate = patch.JoinedDate?.ToDateTime(TimeOnly.MinValue),
+                    patch.JoinedDateBSSpecified,
+                    patch.JoinedDateBS,
+                    patch.DateOfBirthSpecified,
+                    DateOfBirth = patch.DateOfBirth?.ToDateTime(TimeOnly.MinValue),
+                    patch.DateOfBirthBSSpecified,
+                    patch.DateOfBirthBS,
                     patch.BloodGroupIdSpecified,
                     patch.BloodGroupId,
                     patch.MobileNumberSpecified,
@@ -300,16 +312,15 @@ public sealed class EmployeeProfileRepository(
                     WHERE EmployeeId = @EmployeeId AND SkillId NOT IN @SkillIds;
                     ";
                 const string deleteAllSkillsSql = "DELETE FROM dbo.EmployeeSkills WHERE EmployeeId = @EmployeeId;";
-                const string upsertSkillSql = @"
+                const string updateSkillSql = @"
                     UPDATE dbo.EmployeeSkills
                     SET SkillLevel = @SkillLevel, LastModifiedBy = 'SelfService',
                         LastModifiedDate = SYSUTCDATETIME()
-                    WHERE EmployeeId = @EmployeeId AND SkillId = @SkillId;
-                    IF @@ROWCOUNT = 0
-                        INSERT INTO dbo.EmployeeSkills
-                            (EmployeeId, SkillId, SkillLevel, IsPrimary, CreatedBy, CreatedDate)
-                        VALUES (@EmployeeId, @SkillId, @SkillLevel, 0, 'SelfService', SYSUTCDATETIME());
-                    ";
+                    WHERE EmployeeId = @EmployeeId AND SkillId = @SkillId;";
+                const string insertSkillSql = @"
+                    INSERT INTO dbo.EmployeeSkills
+                        (EmployeeId, SkillId, SkillLevel, IsPrimary, CreatedBy, CreatedDate)
+                    VALUES (@EmployeeId, @SkillId, @SkillLevel, 0, 'SelfService', SYSUTCDATETIME());";
                 if (patch.Skills.Count == 0)
                 {
                     await connection.ExecuteAsync(new CommandDefinition(
@@ -330,16 +341,25 @@ public sealed class EmployeeProfileRepository(
 
                 foreach (var skill in patch.Skills)
                 {
-                    await connection.ExecuteAsync(new CommandDefinition(
-                        upsertSkillSql,
-                        new
-                        {
-                            EmployeeId = employeeId,
-                            skill.SkillId,
-                            skill.SkillLevel
-                        },
+                    var parameters = new
+                    {
+                        EmployeeId = employeeId,
+                        skill.SkillId,
+                        skill.SkillLevel
+                    };
+                    var updatedRows = await connection.ExecuteAsync(new CommandDefinition(
+                        updateSkillSql,
+                        parameters,
                         transaction,
                         cancellationToken: cancellationToken));
+                    if (updatedRows == 0)
+                    {
+                        await connection.ExecuteAsync(new CommandDefinition(
+                            insertSkillSql,
+                            parameters,
+                            transaction,
+                            cancellationToken: cancellationToken));
+                    }
                 }
             }
 

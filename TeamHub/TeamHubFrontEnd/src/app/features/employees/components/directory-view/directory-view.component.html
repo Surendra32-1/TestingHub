@@ -10,15 +10,13 @@
 />
 
 <app-results-header
-  [isLoading]="isLoading"
+  [isLoading]="isLoading && !tableLayout"
   [count]="totalCount"
   [label]="resultsLabel"
   [filterLabel]="departmentFilterName"
   (clearFilter)="clearDepartmentFilter.emit()"
   [showAddButton]="showAddButton"
 />
-
-<p class="loading-state" *ngIf="isLoading" aria-live="polite">Loading employees...</p>
 
 <section class="employee-table-wrap" [class.management-table-wrap]="managementLayout" *ngIf="tableLayout" aria-label="Employee list">
   <table class="employee-table" [class.management-table]="managementLayout">
@@ -32,9 +30,9 @@
         <th scope="col">Team</th>
         <th scope="col">Business Unit</th>
         <th scope="col">Status</th>
-        <th scope="col">Card View</th>
-        <th scope="col">Edit</th>
-        <th scope="col">Delete</th>
+        <th scope="col" *ngIf="canViewCard">Card View</th>
+        <th scope="col" *ngIf="canEditEmployee">Edit</th>
+        <th scope="col" *ngIf="canDeleteEmployee">Delete</th>
       </tr>
       <tr *ngIf="!managementLayout">
         <th scope="col">Image</th>
@@ -47,7 +45,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let employee of employees" [class.menu-open]="openMenuEmployeeId === employee.id">
+      <tr *ngFor="let employee of employees">
         <ng-container *ngIf="managementLayout; else standardEmployeeCells">
           <td class="employee-table-name" (mouseenter)="onEmployeeHover(employee.id, $event)" (mouseleave)="onEmployeeLeave()">
             {{ employee.name }}
@@ -68,18 +66,18 @@
               {{ employee.isActive === false ? 'Inactive' : 'Active' }}
             </span>
           </td>
-          <td>
-            <button *ngIf="canViewCard" class="management-action" type="button" (click)="showCard(employee.id)">
+          <td *ngIf="canViewCard">
+            <button class="management-action" type="button" (click)="showCard(employee.id)">
               Card
             </button>
           </td>
-          <td>
-            <button *ngIf="canEditEmployee" class="management-action" type="button" (click)="edit(employee.id)">
+          <td *ngIf="canEditEmployee">
+            <button class="management-action" type="button" (click)="edit(employee.id)">
               Edit
             </button>
           </td>
-          <td>
-            <button *ngIf="canDeleteEmployee && employee.isActive !== false" class="management-action danger" type="button" (click)="requestDelete(employee.id)">
+          <td *ngIf="canDeleteEmployee">
+            <button *ngIf="employee.isActive !== false" class="management-action danger" type="button" (click)="requestDelete(employee.id)">
               Delete
             </button>
           </td>
@@ -95,67 +93,56 @@
           <td>{{ employee.businessUnitName || '—' }}</td>
           <td>{{ employee.designation || '—' }}</td>
           <td class="employee-table-actions">
-            <div class="employee-action-menu" (click)="$event.stopPropagation()">
-              <button
-                *ngIf="canViewHierarchy"
-                type="button"
-                class="menu-trigger"
-                [attr.aria-label]="'Actions for ' + employee.name"
-                [attr.aria-expanded]="openMenuEmployeeId === employee.id"
-                [attr.aria-controls]="'employee-menu-' + employee.id"
-                title="Employee actions"
-                (click)="toggleActionMenu(employee.id, $event)">
-                <span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div class="employee-action-menu">
+              <button *ngIf="canViewHierarchy" type="button" class="employee-action-button"
+                      [attr.aria-label]="'View full hierarchy for ' + employee.name" title="Full hierarchy"
+                      (click)="showHierarchy(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 3v5m0 0H6m6 0h6M6 8v4m12-4v4M6 12H4v7h5v-7H6Zm12 0h-2v7h5v-7h-3Zm-6-4v4m0 0h-2v7h5v-7h-3Z" />
+                </svg>
               </button>
-              <div class="action-menu" *ngIf="openMenuEmployeeId === employee.id" [id]="'employee-menu-' + employee.id" role="menu"
-                   [style.left.px]="menuLeft" [style.top.px]="menuTop">
-                <button *ngIf="canViewHierarchy" type="button" class="hierarchy-menu-item" role="menuitem"
-                        [attr.aria-label]="'View hierarchy for ' + employee.name" data-tip="Full hierarchy"
-                        (click)="showHierarchy(employee.id)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M12 3v5m0 0H6m6 0h6M6 8v4m12-4v4M6 12H4v7h5v-7H6Zm12 0h-2v7h5v-7h-3Zm-6-4v4m0 0h-2v7h5v-7h-3Z" />
-                  </svg>
-                </button>
-                <button *ngIf="canViewHierarchy" type="button" class="direct-hierarchy-menu-item" role="menuitem"
-                        [attr.aria-label]="'View immediate manager and reports for ' + employee.name"
-                        data-tip="Manager &amp; Reports" (click)="showDirectHierarchy(employee.id)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M5 4v5h14V4" />
-                    <path d="M12 9v2.5" />
-                    <rect x="9.5" y="11.5" width="5" height="3.5" rx="0.8" />
-                    <path d="M12 15v2" />
-                    <path d="M5 21v-4h14v4" />
-                  </svg>
-                </button>
-                <button *ngIf="canEditEmployee" type="button" role="menuitem" aria-label="Edit employee" data-tip="Edit" (click)="edit(employee.id)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M12 20h9" />
-                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                  </svg>
-                </button>
-                <button *ngIf="canReleaseEmployee" type="button" class="release-menu-item" role="menuitem" aria-label="Release employee" data-tip="Release" (click)="release(employee.id)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <path d="M16 17l5-5-5-5" />
-                    <path d="M21 12H9" />
-                  </svg>
-                </button>
-                <button *ngIf="canTerminateEmployee" type="button" class="terminate-menu-item" role="menuitem" aria-label="Terminate employee" data-tip="Terminate" (click)="terminate(employee.id)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
-                    <path d="M12 2v10" />
-                  </svg>
-                </button>
-              </div>
+              <button *ngIf="canViewHierarchy" type="button" class="employee-action-button"
+                      [attr.aria-label]="'View immediate manager and reports for ' + employee.name" title="Manager &amp; Reports"
+                      (click)="showDirectHierarchy(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M5 4v5h14V4" />
+                  <path d="M12 9v2.5" />
+                  <rect x="9.5" y="11.5" width="5" height="3.5" rx="0.8" />
+                  <path d="M12 15v2" />
+                  <path d="M5 21v-4h14v4" />
+                </svg>
+              </button>
+              <button *ngIf="canEditEmployee" type="button" class="employee-action-button"
+                      [attr.aria-label]="'Edit ' + employee.name" title="Edit" (click)="edit(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+              </button>
+              <button *ngIf="canReleaseEmployee" type="button" class="employee-action-button release-action"
+                      [attr.aria-label]="'Release ' + employee.name" title="Release" (click)="release(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <path d="M16 17l5-5-5-5" />
+                  <path d="M21 12H9" />
+                </svg>
+              </button>
+              <button *ngIf="canTerminateEmployee" type="button" class="employee-action-button terminate-action"
+                      [attr.aria-label]="'Terminate ' + employee.name" title="Terminate" (click)="terminate(employee.id)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+                  <path d="M12 2v10" />
+                </svg>
+              </button>
             </div>
           </td>
         </ng-template>
       </tr>
       <tr *ngIf="isLoading">
-        <td [attr.colspan]="managementLayout ? 10 : 7" class="employee-table-status" aria-live="polite">Loading employees...</td>
+        <td [attr.colspan]="managementLayout ? managementColumnCount : 7" class="employee-table-status" aria-live="polite">Loading employees...</td>
       </tr>
       <tr *ngIf="!isLoading && employees.length === 0">
-        <td [attr.colspan]="managementLayout ? 10 : 7" class="employee-table-status">
+        <td [attr.colspan]="managementLayout ? managementColumnCount : 7" class="employee-table-status">
           {{ departmentFilterName ? 'No employees found in this department.' : 'No employees match your search.' }}
         </td>
       </tr>
@@ -164,7 +151,7 @@
 </section>
 
 <section class="employee-grid" *ngIf="!tableLayout && !isLoading && employees.length > 0" aria-label="Employee list">
-  <article class="employee-card" *ngFor="let employee of employees" [class.menu-open]="openMenuEmployeeId === employee.id">
+  <article class="employee-card" *ngFor="let employee of employees">
     <div class="avatar-wrap">
       <img [src]="employee.imageBase64" [alt]="employee.name"
            (mouseenter)="onEmployeeHover(employee.id, $event)" (mouseleave)="onEmployeeLeave()" />
@@ -185,66 +172,47 @@
         </button>
         <span *ngIf="!departmentFilterEnabled" class="tag" [style.background]="employee.accent">{{ employee.department }}</span>
       </div>
-      <div class="employee-action-menu" (click)="$event.stopPropagation()">
-        <button
-          *ngIf="canViewHierarchy"
-          type="button"
-          class="menu-trigger"
-          [attr.aria-label]="'Actions for ' + employee.name"
-          [attr.aria-expanded]="openMenuEmployeeId === employee.id"
-          [attr.aria-controls]="'employee-menu-' + employee.id"
-          title="Employee actions"
-          (click)="toggleActionMenu(employee.id, $event)">
-          <span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div class="employee-action-menu">
+        <button *ngIf="canViewHierarchy" type="button" class="employee-action-button"
+                [attr.aria-label]="'View full hierarchy for ' + employee.name" title="Full hierarchy"
+                (click)="showHierarchy(employee.id)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3v5m0 0H6m6 0h6M6 8v4m12-4v4M6 12H4v7h5v-7H6Zm12 0h-2v7h5v-7h-3Zm-6-4v4m0 0h-2v7h5v-7h-3Z" />
+          </svg>
         </button>
-        <div class="action-menu" *ngIf="openMenuEmployeeId === employee.id" [id]="'employee-menu-' + employee.id" role="menu"
-             [style.left.px]="menuLeft" [style.top.px]="menuTop">
-          <button
-            type="button"
-            class="hierarchy-menu-item"
-            role="menuitem"
-            [attr.aria-label]="'View hierarchy for ' + employee.name"
-            data-tip="Full hierarchy"
-            (click)="showHierarchy(employee.id)">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M12 3v5m0 0H6m6 0h6M6 8v4m12-4v4M6 12H4v7h5v-7H6Zm12 0h-2v7h5v-7h-3Zm-6-4v4m0 0h-2v7h5v-7h-3Z" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="direct-hierarchy-menu-item"
-            role="menuitem"
-            [attr.aria-label]="'View immediate manager and reports for ' + employee.name"
-            data-tip="Manager &amp; Reports"
-            (click)="showDirectHierarchy(employee.id)">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M5 4v5h14V4" />
-              <path d="M12 9v2.5" />
-              <rect x="9.5" y="11.5" width="5" height="3.5" rx="0.8" />
-              <path d="M12 15v2" />
-              <path d="M5 21v-4h14v4" />
-            </svg>
-          </button>
-          <button *ngIf="canEditEmployee" type="button" role="menuitem" aria-label="Edit employee" data-tip="Edit" (click)="edit(employee.id)">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-            </svg>
-          </button>
-          <button *ngIf="canReleaseEmployee" type="button" class="release-menu-item" role="menuitem" aria-label="Release employee" data-tip="Release" (click)="release(employee.id)">
-                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                            <path d="M16 17l5-5-5-5" />
-                            <path d="M21 12H9" />
-                          </svg>
-                        </button>
-                        <button *ngIf="canTerminateEmployee" type="button" class="terminate-menu-item" role="menuitem" aria-label="Terminate employee" data-tip="Terminate" (click)="terminate(employee.id)">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
-              <path d="M12 2v10" />
-            </svg>
-          </button>
-        </div>
+        <button *ngIf="canViewHierarchy" type="button" class="employee-action-button"
+                [attr.aria-label]="'View immediate manager and reports for ' + employee.name" title="Manager &amp; Reports"
+                (click)="showDirectHierarchy(employee.id)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 4v5h14V4" />
+            <path d="M12 9v2.5" />
+            <rect x="9.5" y="11.5" width="5" height="3.5" rx="0.8" />
+            <path d="M12 15v2" />
+            <path d="M5 21v-4h14v4" />
+          </svg>
+        </button>
+        <button *ngIf="canEditEmployee" type="button" class="employee-action-button"
+                [attr.aria-label]="'Edit ' + employee.name" title="Edit" (click)="edit(employee.id)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
+        </button>
+        <button *ngIf="canReleaseEmployee" type="button" class="employee-action-button release-action"
+                [attr.aria-label]="'Release ' + employee.name" title="Release" (click)="release(employee.id)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <path d="M16 17l5-5-5-5" />
+            <path d="M21 12H9" />
+          </svg>
+        </button>
+        <button *ngIf="canTerminateEmployee" type="button" class="employee-action-button terminate-action"
+                [attr.aria-label]="'Terminate ' + employee.name" title="Terminate" (click)="terminate(employee.id)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+            <path d="M12 2v10" />
+          </svg>
+        </button>
       </div>
     </div>
   </article>

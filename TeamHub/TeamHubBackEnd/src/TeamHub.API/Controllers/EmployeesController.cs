@@ -31,14 +31,14 @@ public class EmployeesController(
         [FromQuery] string? departmentName = null,
         CancellationToken cancellationToken = default)
     {
-        var employees = await service.GetAllAsync(cancellationToken, searchTerm, searchField, departmentName);
-        var publicEmployees = employees.Select(MapPublicEmployee);
+        var employees = await service.GetAllAsync(
+            cancellationToken, pageNumber, pageSize, searchTerm, searchField, departmentName);
 
         return Ok(new ApiResponse<PagedResult<PublicEmployeeDto>>
         {
             Success = true,
             Message = "Public employee directory retrieved successfully.",
-            Data = PagedResult<PublicEmployeeDto>.Create(publicEmployees, pageNumber, pageSize)
+            Data = MapPage(employees, MapPublicEmployee)
         });
     }
 
@@ -55,17 +55,30 @@ public class EmployeesController(
         var employees = await service.GetActiveByDepartmentIdAsync(
             departmentId,
             cancellationToken,
+            pageNumber,
+            pageSize,
             searchTerm,
             searchField);
-        var publicEmployees = employees.Select(MapPublicEmployee);
 
         return Ok(new ApiResponse<PagedResult<PublicEmployeeDto>>
         {
             Success = true,
             Message = "Public department employee directory retrieved successfully.",
-            Data = PagedResult<PublicEmployeeDto>.Create(publicEmployees, pageNumber, pageSize)
+            Data = MapPage(employees, MapPublicEmployee)
         });
     }
+
+    private static PagedResult<TDestination> MapPage<TSource, TDestination>(
+        PagedResult<TSource> page,
+        Func<TSource, TDestination> map) =>
+        new()
+        {
+            Items = page.Items.Select(map).ToArray(),
+            PageNumber = page.PageNumber,
+            PageSize = page.PageSize,
+            TotalCount = page.TotalCount,
+            TotalPages = page.TotalPages
+        };
 
     private static PublicEmployeeDto MapPublicEmployee(GetGridEmployeeDto employee) => new(
         employee.Id,
@@ -227,7 +240,7 @@ public class EmployeesController(
         int Level);
 
     [HttpGet("{employeeId:int}")]
-    [Authorize(Policy = RbacPolicies.PeopleView)]
+    [Authorize(Policy = RbacPolicies.AdministrationView)]
     public async Task<ActionResult<ApiResponse<GetEmployeeDto>>> GetById(int employeeId, CancellationToken cancellationToken)
     {
         var employee = await service.GetByIdAsync(employeeId, cancellationToken);
@@ -245,7 +258,7 @@ public class EmployeesController(
     }
 
     [HttpGet("active-inactive/{employeeId:int}")]
-    [Authorize(Policy = RbacPolicies.PeopleView)]
+    [Authorize(Policy = RbacPolicies.AdministrationView)]
     public async Task<ActionResult<ApiResponse<GetEmployeeDto>>> GetActiveInactiveById(
         int employeeId,
         CancellationToken cancellationToken)
@@ -265,7 +278,7 @@ public class EmployeesController(
     }
 
     [HttpGet("{employeeId:int}/details")]
-    [Authorize(Policy = RbacPolicies.PeopleView)]
+    [Authorize(Policy = RbacPolicies.AdministrationView)]
     public async Task<ActionResult<ApiResponse<GetEmployeeDto>>> GetDetails(int employeeId, CancellationToken cancellationToken)
     {
         var employee = await service.GetByIdAsync(employeeId, cancellationToken);
@@ -282,7 +295,7 @@ public class EmployeesController(
             });
     }
 
-    [Authorize(Policy = RbacPolicies.PeopleCreate)]
+    [Authorize(Policy = RbacPolicies.AdministrationCreate)]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<int>>> Create(CreateOrUpdateEmployeeRequest request,CancellationToken cancellationToken)
     {
@@ -319,13 +332,19 @@ public class EmployeesController(
         });
     }
 
-    [Authorize(Policy = RbacPolicies.PeopleUpdate)]
+    [Authorize(Policy = RbacPolicies.AdministrationUpdate)]
     [HttpPut("{employeeId:int}")]
     public async Task<IActionResult> Update(
         int employeeId,
         CreateOrUpdateEmployeeRequest request,
         CancellationToken cancellationToken)
     {
+        var validationProblem = await ValidateUpdateRequestAsync(request, cancellationToken);
+        if (validationProblem is not null)
+        {
+            return validationProblem;
+        }
+
         var updated = await service.UpdateAsync(employeeId, request, cancellationToken);
         return updated
             ? NoContent()
@@ -335,13 +354,19 @@ public class EmployeesController(
                 HttpContext.Request.Path));
     }
 
-    [Authorize(Policy = RbacPolicies.PeopleUpdate)]
+    [Authorize(Policy = RbacPolicies.AdministrationUpdate)]
     [HttpPut("active-inactive/{employeeId:int}")]
     public async Task<IActionResult> UpdateActiveInactive(
         int employeeId,
         CreateOrUpdateEmployeeRequest request,
         CancellationToken cancellationToken)
     {
+        var validationProblem = await ValidateUpdateRequestAsync(request, cancellationToken);
+        if (validationProblem is not null)
+        {
+            return validationProblem;
+        }
+
         var updated = await service.UpdateActiveInactiveAsync(employeeId, request, cancellationToken);
         return updated
             ? NoContent()
@@ -351,7 +376,7 @@ public class EmployeesController(
                 HttpContext.Request.Path));
     }
 
-    [Authorize(Policy = RbacPolicies.PeopleDelete)]
+    [Authorize(Policy = RbacPolicies.AdministrationDelete)]
     [HttpDelete("{employeeId:int}")]
     public async Task<IActionResult> Delete(int employeeId, CancellationToken cancellationToken)
     {
@@ -369,7 +394,7 @@ public class EmployeesController(
     }
 
     [HttpGet]
-    [Authorize(Policy = RbacPolicies.PeopleView)]
+    [Authorize(Policy = RbacPolicies.AdministrationView)]
     public async Task<ActionResult<ApiResponse<PagedResult<GetGridEmployeeDto>>>> GetAll(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
@@ -379,18 +404,19 @@ public class EmployeesController(
         [FromQuery] string status = "active",
         CancellationToken cancellationToken = default)
     {
-        var employees = await service.GetAllAsync(cancellationToken, searchTerm, searchField, departmentName, status);
+        var employees = await service.GetAllAsync(
+            cancellationToken, pageNumber, pageSize, searchTerm, searchField, departmentName, status);
 
         return Ok(new ApiResponse<PagedResult<GetGridEmployeeDto>>
         {
             Success = true,
             Message = "Employees retrieved successfully.",
-            Data = PagedResult<GetGridEmployeeDto>.Create(employees, pageNumber, pageSize)
+            Data = employees
         });
     }
 
     [HttpGet("active-inactive")]
-    [Authorize(Policy = RbacPolicies.PeopleView)]
+    [Authorize(Policy = RbacPolicies.AdministrationView)]
     public async Task<ActionResult<ApiResponse<PagedResult<GetActiveInactiveEmployeeDto>>>> GetAllActiveInactive(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
@@ -400,18 +426,19 @@ public class EmployeesController(
         [FromQuery] string status = "all",
         CancellationToken cancellationToken = default)
     {
-        var employees = await service.GetAllActiveInactiveAsync(cancellationToken, searchTerm, searchField, departmentName, status);
+        var employees = await service.GetAllActiveInactiveAsync(
+            cancellationToken, pageNumber, pageSize, searchTerm, searchField, departmentName, status);
 
         return Ok(new ApiResponse<PagedResult<GetActiveInactiveEmployeeDto>>
         {
             Success = true,
             Message = "Active and inactive employees retrieved successfully.",
-            Data = PagedResult<GetActiveInactiveEmployeeDto>.Create(employees, pageNumber, pageSize)
+            Data = employees
         });
     }
 
     [HttpGet("department/{departmentId:int}")]
-    [Authorize(Policy = RbacPolicies.PeopleView)]
+    [Authorize(Policy = RbacPolicies.AdministrationView)]
     public async Task<ActionResult<ApiResponse<PagedResult<GetGridEmployeeDto>>>> GetActiveByDepartmentId(
         int departmentId,
         [FromQuery] int pageNumber = 1,
@@ -423,6 +450,8 @@ public class EmployeesController(
         var employees = await service.GetActiveByDepartmentIdAsync(
             departmentId,
             cancellationToken,
+            pageNumber,
+            pageSize,
             searchTerm,
             searchField);
 
@@ -430,11 +459,11 @@ public class EmployeesController(
         {
             Success = true,
             Message = "Active department employees retrieved successfully.",
-            Data = PagedResult<GetGridEmployeeDto>.Create(employees, pageNumber, pageSize)
+            Data = employees
         });
     }
 
-    [Authorize(Policy = RbacPolicies.PeopleView)]
+    [Authorize(Policy = RbacPolicies.AdministrationView)]
     [HttpGet("tree")]
     public async Task<ActionResult<ApiResponse<IEnumerable<DepartmentTreeDto>>>> GetOrganizationTree(CancellationToken cancellationToken)
     {
@@ -449,7 +478,7 @@ public class EmployeesController(
     }
 
     [HttpGet("{employeeId:int}/hierarchy")]
-    [Authorize(Policy = RbacPolicies.PeopleView)]
+    [Authorize(Policy = RbacPolicies.AdministrationView)]
     public async Task<ActionResult<ApiResponse<EmployeeHierarchyResponse>>> GetHierarchy(
         int employeeId,
         CancellationToken cancellationToken)
@@ -481,5 +510,31 @@ public class EmployeesController(
         });
     }
 
+    private async Task<IActionResult?> ValidateUpdateRequestAsync(
+        CreateOrUpdateEmployeeRequest request,
+        CancellationToken cancellationToken)
+    {
+        var validation = await employeeValidator.ValidateAsync(request, cancellationToken);
+        if (validation.IsValid)
+        {
+            return null;
+        }
+
+        var errors = validation.Errors
+            .GroupBy(error => error.PropertyName)
+            .ToDictionary(group => group.Key, group => group.Select(error => error.ErrorMessage).ToArray());
+        var message = string.Join(" ", validation.Errors.Select(error => error.ErrorMessage).Distinct());
+        var problem = new ProblemDetails
+        {
+            Type = "https://httpstatuses.com/400",
+            Title = "Validation failed",
+            Status = StatusCodes.Status400BadRequest,
+            Detail = message,
+            Instance = HttpContext.Request.Path
+        };
+        ApiProblemDetailsFactory.AddResponseFields(problem, message);
+        problem.Extensions["errors"] = errors;
+        return BadRequest(problem);
+    }
 
 }

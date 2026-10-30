@@ -8,19 +8,21 @@ public static class RbacPolicies
     public const string SettingsGearEmployeeRole = "setting.gear.EmployeeRole";
     public const string SettingsGearRolePermission = "setting.gear.RolePermission";
 
-    public const string PeopleCreate = "people.create";
-    public const string PeopleUpdate = "people.update";
-    public const string PeopleRelease = "people.release";
-    public const string PeopleView = "people.view";
-    public const string PeopleDelete = "people.delete";
-    public const string PeopleCardView = "people.cardview";
-    public const string AllemployeeSearchView = "allemployee.search.view";
+    public const string AdministrationCreate = "administration.create";
+    public const string AdministrationUpdate = "administration.update";
+    public const string AdministrationRelease = "administration.release";
+    public const string AdministrationView = "administration.view";
+    public const string AdministrationTerminate = "administration.terminate";
+    public const string AdministrationDelete = "administration.delete";
+    public const string AdministrationCardView = "administration.cardview";
+    public const string PeopleSearchView = "people.allemployee.search.view";
     public const string ProfileView = "profile.view";
     public const string ProfileEdit = "profile.edit";
     public const string ProfileViewOrEdit = "profile.view-or-edit";
 
     public const string TerminationView = "terminations.view";
     public const string TerminationAdd = "terminations.add";
+    public const string TerminationAddOrAdministrationTerminate = "terminations.add-or-administration-terminate";
     public const string TerminationManage = "terminations.manage";
 
     public const string MasterDepartment = "master.department";
@@ -54,13 +56,13 @@ public static class RbacPolicies
         [ManagePermissions] = "permissions.manage",
         [AssignUserRoles] = SettingsGearEmployeeRole,
         [ManageRolePermissions] = SettingsGearRolePermission,
-        [PeopleCreate] = "people.create",
-        [PeopleUpdate] = "people.update",
-        [PeopleRelease] = "people.release",
-        [PeopleView] = "people.view",
-        [PeopleDelete] = "people.delete",
-        [PeopleCardView] = "people.cardview",
-        [AllemployeeSearchView] = "allemployee.search.view",
+        [AdministrationCreate] = "administration.create",
+        [AdministrationUpdate] = "administration.update",
+        [AdministrationRelease] = "administration.release",
+        [AdministrationView] = "administration.view",
+        [AdministrationDelete] = "administration.delete",
+        [AdministrationCardView] = "administration.cardview",
+        [PeopleSearchView] = "people.allemployee.search.view",
         [ProfileView] = "profile.view",
         [ProfileEdit] = "profile.edit",
         [TerminationView] = "terminations.view",

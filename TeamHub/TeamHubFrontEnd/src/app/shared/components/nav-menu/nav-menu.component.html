@@ -5,8 +5,16 @@
         class="menu-branch"
         [class.menu-branch--root]="level() === 0"
         [class.menu-branch--active]="isBranchActive(item)"
+        [class.menu-branch--open]="isBranchOpen(item)"
       >
-        <button type="button" class="nav-item menu-toggle" [class.menu-row]="level() > 0">
+        <button
+          type="button"
+          class="nav-item menu-toggle"
+          [class.menu-row]="level() > 0"
+          aria-haspopup="true"
+          [attr.aria-expanded]="isBranchOpen(item)"
+          (click)="toggleBranch(item)"
+        >
           {{ item.label }}<span class="menu-caret" aria-hidden="true">{{ level() === 0 ? '▼' : '›' }}</span>
         </button>
 

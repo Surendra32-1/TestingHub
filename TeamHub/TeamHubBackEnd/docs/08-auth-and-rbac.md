@@ -445,7 +445,7 @@ attribute in [09-api-endpoints.md](09-api-endpoints.md) §2):
 | RBAC management | 3 | `[Authorize(Policy = RbacPolicies.…)]` (`PermissionsController.cs:13`, `UserRolesController.cs:13`, `RolePermissionsController.cs:13`) | Admin **or** the matching `permission` claim |
 | Master data | 14 | class-level `[Authorize(Policy = RbacPolicies.Master*)]` — one per module (`DepartmentsController.cs:13`, `DesignationsController.cs:13`, `BusinessUnitsController.cs:13`, `DressSizesController.cs:13`, `CotivityDepartments/Designations/EmployeesController.cs:13`, `RolesController.cs:13`, `AddressTypesController.cs:13`, `BloodGroupsController.cs:13`, `SkillsController.cs:13`, `JobTypesController.cs:13`, `TeamsController.cs:13`, `GendersController.cs:13`) | the same code each **Manage** menu item carries (doc 11 §12.1) |
 | Lifecycle | 2 | class `[Authorize]` + per-action policies — `EmployeeReleasesController.cs:33, :48, :68, :82` (`resignations.view`), `:157` (`resignations.add`), `:211` (`…exitchecklist`), status transitions resolved per target state at `:174-190`; `EmployeeTerminationsController.cs:16, :31, :50, :64` (`terminations.view`) vs `:85` (`terminations.add`) vs `:108, :125, :145` (`terminations.manage`) | read / file / each workflow edge separated by code |
-| Employees | 1 | `[Authorize]` (`EmployeesController.cs:18`) + `PeopleCreate` `:60` / `PeopleUpdate` `:97` + **5 `[AllowAnonymous]` reads** (`:24, :42, :113, :132, :163`); `people.release` is checked in code, not by attribute (`EmployeeReleasesController.cs:110, :129`) | signed-in for writes/masters; **anonymous** for the grid, detail, department list and hierarchy |
+| Employees | 1 | `[Authorize]` (`EmployeesController.cs:18`) + `AdministrationCreate` `:60` / `AdministrationUpdate` `:97` + **5 `[AllowAnonymous]` reads** (`:24, :42, :113, :132, :163`); `administration.release` is checked in code, not by attribute (`EmployeeReleasesController.cs:110, :129`) | signed-in for writes/masters; **anonymous** for the public grid, detail, department list and hierarchy |
 | Recruitments | 1 | `[Authorize(Roles = "Admin")]` (`RecruitmentsController.cs:12`) | the only role-only surface left — no permission code behind it |
 | Auth | 1 | per-action (`[AllowAnonymous]` × 3, `[Authorize]` × 3) | see §8 |
 
@@ -469,27 +469,27 @@ catalog onto the `Admin` role:
 
 | Module | Codes seeded | Enforced by a server policy? | Read by the SPA? |
 | --- | --- | --- | --- |
-| People | `people.create`, `people.update`, `people.release` | ✅ (`EmployeesController.cs:60, :97`; `people.release` programmatically at `EmployeeReleasesController.cs:110, :129`) | ✅ directory row actions (`employee-directory.component.ts:74-76`) |
-| People (read) | `people.view`, `people.terminate`, `people.hierarchy.view` | ❌ **no policy exists** for these three | ❌ deliberately unused — `People` is session-gated in the menu, and the Terminate row action checks `terminations.add` (`employee-directory.component.ts:78`) |
+| People | `people.allemployee.search.view` | ✅ employee-search API policy | ✅ first authenticated navigation tab and employee-search route |
+| Administration | `administration.view`, `administration.create`, `administration.update`, `administration.release`, `administration.delete`, `administration.cardview` | `administration.create/update/release/delete/cardview` use API policies; `administration.view` gates the SPA route/menu only | ✅ each code gates its matching route or employee action |
+| Administration (hierarchy/termination) | `administration.hierarchy.view`, `administration.terminate` | `administration.terminate` is accepted by the employee-specific termination create policy as an alternative to `terminations.add`; hierarchy remains a client-side action gate | ✅ hierarchy and employee-specific termination actions check these codes |
 | Resignations | `resignations.view`, `resignations.add` + 7 `resignations.action.*` | ✅ all nine (attributes + the status map `EmployeeReleasesController.cs:174-190`) | ✅ menu (`menu.config.ts:53-69`), list actions (`employee-lifecycle-list.ts:48-56, :64-75`), form gates |
 | Resignations (aggregate) | `resignations.manage` | ❌ no policy (superseded by the per-action codes) | ❌ unused by the menu |
-| Terminations | `terminations.view`, `terminations.add`, `terminations.manage` | ✅ all three — `terminations.add` guards only `POST employee/{id}` (`EmployeeTerminationsController.cs:85`), `manage` covers update/transition/clearance (`:108, :125, :145`) | ✅ menu (`menu.config.ts:70-76`), `terminationAddGuard` on both create routes (`app.routes.ts:73, :95`), "New Termination" button (`employee-lifecycle-list.html:6`) + directory terminate action |
+| Terminations | `terminations.view`, `terminations.add`, `terminations.manage` | ✅ all three — employee-specific `POST employee/{id}` accepts `administration.terminate` or `terminations.add` (`EmployeeTerminationsController.cs:85`); the general create route uses `terminations.add`; `manage` covers update/transition/clearance (`:108, :125, :145`) | ✅ menu, route guards, "New Termination" button and employee terminate action |
 | Settings | 14 `master.<module>` codes | ✅ one policy per module (14 controllers) | ✅ one code per Manage menu child (`menu.config.ts:83-113`) + `masterGuard` (`auth.guard.ts`) |
 | Settings (legacy) | `master.view`, `master.manage` — **not in the seed any more**, still present in the live `Permissions` table | ❌ | ❌ unused |
 | RBAC | `permissions.manage`, `user-roles.assign`, `role-permissions.manage` | ✅ all three | ✅ menu (`menu.config.ts:107, :126, :132`), `rbacGuard` (`auth.guard.ts:52-63`), inline `canEdit` getters (`employee-role-matrix.component.ts:53`, `role-permission-matrix.component.ts:53`) |
 
-Six catalog codes are therefore **grantable in the Role Permission Matrix and carried in the JWT, but
-gate nothing**: `people.view`, `people.terminate`, `people.hierarchy.view`, `resignations.manage`, plus
-the two legacy `master.*` rows. The navigation never references them (§10, doc 11 §12.1), which is why
-hiding an item can never disagree with the API. *Recommended*: retire them (`IsActive = 0` keeps the
-`RolePermissions` FKs valid) or bind `people.view` to the five `[AllowAnonymous]` reads. **Unknown**
-whether they are deliberately staged or abandoned.
+`administration.view` gates the Administration SPA route and menu but not the explicitly anonymous employee-read API endpoints;
+`administration.hierarchy.view` gates hierarchy controls in the SPA; and `administration.terminate` is accepted for
+employee-specific termination creation alongside `terminations.add`. `resignations.manage` and the
+legacy `master.view` / `master.manage` rows remain grantable but unused. *Recommended*: decide whether
+employee reads should remain public or also require `administration.view`, and retire codes no longer intended.
 
 **Verified (seeded since 2026-10-23):** the non-admin roles no longer rely on hand-ticked grants —
 `seed-data.sql:429-493` grants enforced subsets idempotently (natural keys `RoleName` + `PermissionCode`,
 `WHERE NOT EXISTS`, `IsActive = 1` on both sides): `NormalUser` → `resignations.add`; `Manager` →
 `resignations.view`/`.add` + `submit`/`sendforapproval`/`approve`/`reject`/`cancel` + `master.team`;
-`HR` → `people.create`/`.update`/`.release`, `resignations.view`/`.add` + `submit`/`sendforapproval`/
+`HR` → `administration.create`/`.update`/`.release`, `resignations.view`/`.add` + `submit`/`sendforapproval`/
 `cancel`/`exitchecklist`/`release` and all three termination codes — `terminations.add` to file a record,
 `terminations.manage` to edit and transition it. Both "Add" buttons therefore have a code of their own
 (`resignations.add`, `terminations.add`), so filing can be granted without granting rewrite access.
@@ -578,18 +578,19 @@ mitigated only by the 15-minute lifetime and by keeping the refresh token HttpOn
 | Guard | Behaviour | Line |
 | --- | --- | --- |
 | `authenticatedGuard` (`= authGuard`, `:24`) | pass if token present; else `restoreSession()`; on failure clear session + redirect `/login?returnUrl=…` | `:7-22` |
-| `signedInLandingGuard` | already signed in → `/people`; else try restore → `/people`, failure → stay (`of(true)`) | `:26-41` |
+| `signedInLandingGuard` | People permission → `/people`; otherwise Administration permission → `/administration`; otherwise `/home`; failed restore stays (`of(true)`) | `:26-41` |
 | `adminGuard` | `hasRole('Admin')` → pass, else `/home` | `:43-48` — **dead export**: no route references it any more (search-verified across `src/app/*.ts`), it is only cited in the Entra finding in doc 11 §13.15 |
 | `rbacGuard(code)` (private factory) | `hasPermission(code)` → pass, else `/home` | `:52-59` |
 | `employeeRoleMatrixGuard` / `rolePermissionMatrixGuard` | `user-roles.assign` / `role-permissions.manage` | `:61, :63` |
 | `resignationViewGuard` / `resignationAddGuard` | `resignations.view` / `resignations.add` | `:66, :68` |
-| `peopleCreateGuard` / `peopleUpdateGuard` / `peopleReleaseGuard` | `people.create` / `people.update` / `people.release` | `:71, :73, :75` |
+| `administrationCreateGuard` / `administrationUpdateGuard` / `administrationReleaseGuard` | `administration.create` / `administration.update` / `administration.release` | `:71, :73, :75` |
 | `terminationViewGuard` / `terminationAddGuard` | `terminations.view` / `terminations.add` | `:79, :81` |
+| `employeeTerminationAddGuard` | `administration.terminate` or `terminations.add` | Employee-specific terminate route |
 | `masterGuard` | per-module: `paramMap.masterKey` → `master.<key>`, with `permission` → `permissions.manage` | `:85-94` |
 
 **Verified:** the client-side permission strings are the *same codes* as
 `RbacPolicies.PolicyPermissions` (`"user-roles.assign"`, `"role-permissions.manage"`,
-`"resignations.add"`, `"terminations.add"`, `"people.create"`, `master.<key>`), so the two
+`"resignations.add"`, `"terminations.add"`, `"administration.create"`, `master.<key>`), so the two
 sides cannot drift silently only because a developer kept them in sync by hand — there is no
 generated contract. Guards are UX only; the server re-checks with its own policy.
 
@@ -601,7 +602,7 @@ blocks (full contract in `11-frontend.md` §12.1). From an auth point of view th
 | Property | Verified detail |
 | --- | --- |
 | Source of truth | `MenuService.visibleMenu` derives from `AuthService.sessionState()` (`menu.service.ts:20, :25-31`) — the effective codes the API issued, never a role name or a per-role menu |
-| Codes used | `resignations.view/add`, `terminations.view`, `terminations.add`, the 14 `master.*` / `permissions.manage`, `user-roles.assign`, `role-permissions.manage` — **all** present in `RbacPolicies.PolicyPermissions`; the 4 unenforced catalog codes (§12 finding 2) are deliberately *not* used, so no item is shown or hidden by a code the API ignores |
+| Codes used | Includes `administration.view` for Administration, employee-specific `administration.terminate`/`terminations.add`, `administration.hierarchy.view`, resignation and termination codes, the 14 `master.*` codes and RBAC codes. The employee-specific termination API policy accepts either create code; the hierarchy action and page-visibility checks are client-side |
 | Security role | UI only. A hidden item does not protect an endpoint, and a visible item does not grant one: the route guards above re-check the same code, and every controller re-checks its policy. Direct navigation to an unauthorized URL is answered by the guard (`→ /home` `UrlTree`), asserted in `auth.guard.spec.ts` |
 | Freshness | `sessionRevision` bumps on every write/clear, so a rotation that changes the grant set re-renders the nav without re-login; `clearSession()` in `finalize` guarantees no stale item after logout |
 | Known asymmetry | the server also succeeds any policy for the `Admin` **role** (`PermissionAuthorizationHandler.cs:25-29`) while the menu has no role fallback (added deliberately: role-specific menu logic was out of scope). Today both agree because `rbac-schema.sql:164-172` grants Admin the whole catalog |
@@ -671,13 +672,12 @@ missing/inactive/not-approved), 401 (missing/invalid/rotated cookie), 401 (token
 
 1. **Committed JWT signing secret** (`appsettings.json:14`, never overridden) — forgeable `Admin`
    tokens. Severity: high. *Recommended*: secret provider.
-2. **Fine-grained permissions cover 32 of the 36 catalog codes** (`RbacPolicies.PolicyPermissions:52-86`;
-   §9). Six codes remain unenforced and mislead the Role Permission Matrix: `people.view`,
-   `people.terminate`, `people.hierarchy.view`, `resignations.manage` (no policy was ever written) and
-   the legacy `master.view` / `master.manage` (still in the live table, gone from the seed). Employee
-   reads stay `[AllowAnonymous]`, so `people.view` in particular protects nothing today. The navigation
-   uses **only** enforced codes, so the menu can never show or hide an item based on a dead code
-   (doc 11 §12.1). Severity: medium. See §9 and `09-api-endpoints.md` §2.
+2. **Permission enforcement differs between the SPA and API** (`RbacPolicies.PolicyPermissions:52-86`;
+   §9). `administration.view` gates Administration navigation and route access, and `administration.hierarchy.view`
+   gates hierarchy controls; neither protects anonymous    employee-read endpoints. `administration.terminate`
+   or `terminations.add` permits employee-specific termination creation. `resignations.manage` and the
+   legacy `master.view` / `master.manage` remain unused. Severity: medium. See §9 and
+   `09-api-endpoints.md` §2.
 3. **`HasTrustedOrigin()` accepts a missing `Origin` header** (`AuthController.cs:197-199`) —
    non-browser callers bypass the CSRF gate. Severity: medium.
 4. **`Secure = true` unconditional** (`:212`) — refresh breaks over plain HTTP on non-localhost

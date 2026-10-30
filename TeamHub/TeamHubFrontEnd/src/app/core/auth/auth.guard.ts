@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { catchError, map, of } from 'rxjs';
 
 import { AuthService } from './auth.service';
+import { MASTER_MENU_PERMISSIONS } from '../config/menu.config';
 
 export const authenticatedGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthService);
@@ -24,11 +25,11 @@ export const authenticatedGuard: CanActivateFn = (_route, state) => {
 export const authGuard = authenticatedGuard;
 
 export const signedInLandingPath = (authService: AuthService): string => {
-  if (authService.hasPermission('allemployee.search.view')) {
-    return '/employee';
+  if (authService.hasPermission('administration.view')) {
+    return '/administration';
   }
 
-  return authService.hasPermission('people.view') ? '/people' : '/home';
+  return authService.hasPermission('people.allemployee.search.view') ? '/people' : '/home';
 };
 
 export const signedInLandingGuard: CanActivateFn = () => {
@@ -84,15 +85,15 @@ export const resignationViewGuard = rbacGuard('resignations.view');
 
 export const resignationAddGuard = rbacGuard('resignations.add');
 
-export const peopleCreateGuard = rbacGuard('people.create');
+export const administrationCreateGuard = rbacGuard('administration.create');
 
-export const peopleUpdateGuard = rbacGuard('people.update');
+export const administrationUpdateGuard = rbacGuard('administration.update');
 
-export const peopleReleaseGuard = rbacGuard('people.release');
+export const administrationReleaseGuard = rbacGuard('administration.release');
 
-export const peopleViewGuard = rbacGuard('people.view');
+export const administrationViewGuard = rbacGuard('administration.view');
 
-export const allemployeeSearchViewGuard = rbacGuard('allemployee.search.view');
+export const peopleSearchViewGuard = rbacGuard('people.allemployee.search.view');
 
 export const profileEditGuard = rbacGuard('profile.edit');
 
@@ -100,13 +101,26 @@ export const terminationViewGuard = rbacGuard('terminations.view');
 
 export const terminationAddGuard = rbacGuard('terminations.add');
 
+export const employeeTerminationAddGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  return authService.hasPermission('administration.terminate') || authService.hasPermission('terminations.add')
+    ? true
+    : router.createUrlTree([signedInLandingPath(authService)]);
+};
+
 export const masterGuard: CanActivateFn = (route) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const masterKey = route.paramMap.get('masterKey') ?? '';
-  const permission = masterKey === 'permission' ? 'permissions.manage' : `master.${masterKey}`;
+  const permissions = masterKey === 'permission'
+    ? ['setting.gear.manage.permissions.view']
+    : masterKey === 'role'
+      ? ['setting.gear.role.view']
+      : MASTER_MENU_PERMISSIONS[masterKey] ?? [`master.${masterKey}.view`];
 
-  return authService.hasPermission(permission)
+  return permissions.some((permission) => authService.hasPermission(permission))
     ? true
     : router.createUrlTree(['/home']);
 };

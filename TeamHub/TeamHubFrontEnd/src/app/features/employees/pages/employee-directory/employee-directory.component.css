@@ -212,6 +212,16 @@ input {
     padding: 0.9rem 0.8rem 1rem;
   }
 
+  .heading-row {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .tab-row {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
   .topbar {
     padding-left: 0.8rem;
     padding-right: 0.8rem;
@@ -226,6 +236,6 @@ input {
   }
 
   .employee-grid {
-    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

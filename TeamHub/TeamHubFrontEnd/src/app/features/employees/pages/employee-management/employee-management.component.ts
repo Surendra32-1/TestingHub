@@ -77,13 +77,14 @@ export class EmployeeManagementComponent implements OnInit, OnDestroy {
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly router: Router
   ) {
-    this.canAddEmployee = authService.hasPermission('people.create');
-    this.canEditEmployee = authService.hasPermission('people.update');
-    this.canDeleteEmployee = authService.hasPermission('people.delete');
-    this.canViewEmployeeCard = authService.hasPermission('people.cardview');
-    this.canReleaseEmployee = authService.hasPermission('people.release');
-    this.canTerminateEmployee = authService.hasPermission('terminations.add');
-    this.canViewHierarchy = authService.hasPermission('people.hierarchy.view');
+    this.canAddEmployee = authService.hasPermission('administration.create');
+    this.canEditEmployee = authService.hasPermission('administration.update');
+    this.canDeleteEmployee = authService.hasPermission('administration.delete');
+    this.canViewEmployeeCard = authService.hasPermission('administration.cardview');
+    this.canReleaseEmployee = authService.hasPermission('administration.release');
+    this.canTerminateEmployee = authService.hasPermission('administration.terminate')
+      || authService.hasPermission('terminations.add');
+    this.canViewHierarchy = authService.hasPermission('administration.hierarchy.view');
   }
 
   ngOnInit(): void {

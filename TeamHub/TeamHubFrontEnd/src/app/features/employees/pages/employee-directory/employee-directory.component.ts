@@ -46,7 +46,8 @@ export class EmployeeDirectoryComponent implements OnInit {
   selectedEmployeeId: number | null = null;
   readonly tableLayout: boolean;
   readonly readOnlyHome: boolean;
-  readonly canViewPeople: boolean;
+  readonly canViewAdministrationHierarchy: boolean;
+  readonly canViewEmployeeCard: boolean;
   readonly canAddEmployee: boolean;
   readonly canEditEmployee: boolean;
   readonly canReleaseEmployee: boolean;
@@ -69,11 +70,13 @@ export class EmployeeDirectoryComponent implements OnInit {
   ) {
     this.tableLayout = route.snapshot.data['layout'] === 'table';
     this.readOnlyHome = route.snapshot.data['readOnlyHome'] === true;
-    this.canViewPeople = authService.hasPermission('people.view');
-    this.canAddEmployee = authService.hasPermission('people.create');
-    this.canEditEmployee = authService.hasPermission('people.update');
-    this.canReleaseEmployee = authService.hasPermission('people.release');
-    this.canTerminateEmployee = authService.hasPermission('terminations.add');
+    this.canViewAdministrationHierarchy = authService.hasPermission('administration.hierarchy.view');
+    this.canViewEmployeeCard = authService.hasPermission('administration.cardview');
+    this.canAddEmployee = authService.hasPermission('administration.create');
+    this.canEditEmployee = authService.hasPermission('administration.update');
+    this.canReleaseEmployee = authService.hasPermission('administration.release');
+    this.canTerminateEmployee = authService.hasPermission('administration.terminate')
+      || authService.hasPermission('terminations.add');
   }
 
   ngOnInit(): void {

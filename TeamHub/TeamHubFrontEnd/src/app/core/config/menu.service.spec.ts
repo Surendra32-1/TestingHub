@@ -7,9 +7,16 @@ import { AuthService } from '../auth/auth.service';
 import { MenuItem } from './menu.config';
 import { MenuService } from './menu.service';
 
+const MASTER_KEYS = [
+  'department', 'designation', 'business-unit', 'dress-size', 'cotivity-department',
+  'cotivity-designation', 'cotivity-employee', 'role', 'address-type', 'blood-group',
+  'skills', 'job-type', 'team', 'gender', 'recruitment'
+];
+
 const FULL_CATALOG = [
-  'people.view', 'people.create', 'people.update', 'people.release', 'people.terminate', 'people.hierarchy.view',
-  'allemployee.search.view',
+  'administration.view', 'administration.create', 'administration.update', 'administration.release', 'administration.terminate', 'administration.hierarchy.view',
+  'administration.delete', 'administration.cardview',
+  'people.allemployee.search.view',
   'resignations.button', 'resignations.view', 'resignations.manage', 'resignations.add',
   'resignations.action.submit', 'resignations.action.sendforapproval', 'resignations.action.approve',
   'resignations.action.reject', 'resignations.action.cancel', 'resignations.action.exitchecklist',
@@ -17,9 +24,13 @@ const FULL_CATALOG = [
   'terminations.view', 'terminations.add', 'terminations.manage',
   'master.view', 'master.manage', 'permissions.manage', 'user-roles.assign', 'role-permissions.manage',
   'setting.gear', 'setting.gear.EmployeeRole', 'setting.gear.RolePermission',
-  'master.department', 'master.designation', 'master.business-unit', 'master.dress-size',
-  'master.cotivity-department', 'master.cotivity-designation', 'master.cotivity-employee', 'master.role',
-  'master.address-type', 'master.blood-group', 'master.skills', 'master.job-type', 'master.team', 'master.gender'
+  ...MASTER_KEYS
+    .filter((key) => !key.startsWith('cotivity-'))
+    .flatMap((key) => ['view', 'create', 'update', 'delete'].map((action) => `master.${key}.${action}`)),
+  ...(['department', 'designation', 'businessunit', 'dresssize', 'addresstype', 'bloodgroup', 'skills', 'jobtype', 'team', 'gender'] as const)
+    .flatMap((key) => ['view', 'create', 'edit', 'delete'].map((action) => `organization.${key}.${action}`)),
+  ...(['department', 'designation', 'employee'] as const)
+    .flatMap((key) => ['view', 'create', 'edit', 'delete'].map((action) => `cotivity.${key}.${action}`))
 ];
 
 const labels = (items: readonly MenuItem[]): string[] => items.map((item) => item.label);
@@ -65,71 +76,108 @@ describe('MenuService', () => {
     signIn(FULL_CATALOG);
 
     const visible = menuService.visibleMenu();
-    expect(labels(visible)).toEqual(['People', 'Employee List', 'Resignations', 'Terminations', 'Manage']);
+    expect(labels(visible)).toEqual([
+      'People', 'Administration', 'Resignations', 'Terminations', 'Organization Master', 'Cotivity'
+    ]);
 
-    const manage = visible.find((item) => item.id === 'manage')!;
-    expect(labels(manage.children!)).toEqual([
-      'Department', 'Designation', 'Business Unit', 'Dress Size', 'Cotivity Department',
-      'Cotivity Designation', 'Cotivity Employee', 'Role', 'Manage Permissions', 'Address Type',
+    const organizationMaster = visible.find((item) => item.id === 'organization-master')!;
+    const cotivity = visible.find((item) => item.id === 'cotivity')!;
+    expect(labels(organizationMaster.children!)).toEqual([
+      'Department', 'Designation', 'Business Unit', 'Dress Size', 'Address Type',
       'Blood Group', 'Skills', 'Job Type', 'Team', 'Gender'
     ]);
+    expect(labels(cotivity.children!)).toEqual(['Cotivity Department', 'Cotivity Designation', 'Cotivity Employee']);
 
   });
 
   it('does not show a hardcoded self-service resignation navigation entry', () => {
-    signIn(['people.view', 'resignations.add', 'resignations.button', 'resignations.view']);
+    signIn(['administration.view', 'resignations.add', 'resignations.button', 'resignations.view']);
 
-    expect(labels(menuService.visibleMenu())).toEqual(['People', 'Resignations']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration', 'Resignations']);
   });
 
   it('shows Resignations only when the navigation permission is granted', () => {
-    signIn(['people.view', 'resignations.view']);
-    expect(labels(menuService.visibleMenu())).toEqual(['People']);
+    signIn(['administration.view', 'resignations.view']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration']);
 
-    signIn(['people.view', 'resignations.button']);
-    expect(labels(menuService.visibleMenu())).toEqual(['People', 'Resignations']);
+    signIn(['administration.view', 'resignations.button']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration', 'Resignations']);
   });
 
   it('does not show an Apply Resignation entry to employees with only the add permission', () => {
-    signIn(['people.view', 'resignations.add']);
+    signIn(['administration.view', 'resignations.add']);
 
-    expect(labels(menuService.visibleMenu())).toEqual(['People']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration']);
   });
 
-  it('shows the People entry only to accounts with people.view', () => {
+  it('shows the Administration entry only to accounts with administration.view', () => {
     signIn([]);
 
     expect(labels(menuService.visibleMenu())).toEqual([]);
 
-    signIn(['people.view']);
+    signIn(['administration.view']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration']);
+  });
+
+  it('shows the People page only to accounts with people.allemployee.search.view', () => {
+    signIn(['administration.view']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration']);
+
+    signIn(['people.allemployee.search.view']);
     expect(labels(menuService.visibleMenu())).toEqual(['People']);
   });
 
-  it('shows the Employee List page only to accounts with allemployee.search.view', () => {
-    signIn(['people.view']);
-    expect(labels(menuService.visibleMenu())).toEqual(['People']);
+  it('places People before Administration when both are available', () => {
+    signIn(['administration.view', 'people.allemployee.search.view']);
 
-    signIn(['allemployee.search.view']);
-    expect(labels(menuService.visibleMenu())).toEqual(['Employee List']);
+    const visible = menuService.visibleMenu();
+    expect(labels(visible)).toEqual(['People', 'Administration']);
+    expect(visible.map(({ route }) => route)).toEqual(['/people', '/administration']);
   });
 
   it('merges the permissions coming from several roles into one menu', () => {
-    signIn(['people.view', 'master.department', 'setting.gear.RolePermission']);
+    signIn(['administration.view', 'organization.department.view', 'setting.gear.RolePermission']);
 
     const visible = menuService.visibleMenu();
-    expect(labels(visible)).toEqual(['People', 'Manage']);
+    expect(labels(visible)).toEqual(['Administration', 'Organization Master']);
     expect(labels(visible[1].children!)).toEqual(['Department']);
   });
 
+  it('uses the View grant for master dropdown visibility', () => {
+    signIn(['organization.department.create', 'organization.department.edit', 'organization.department.delete']);
+    expect(labels(menuService.visibleMenu())).toEqual([]);
+
+    signIn(['organization.department.view']);
+    const visible = menuService.visibleMenu();
+    expect(labels(visible)).toEqual(['Organization Master']);
+    expect(labels(visible[0].children!)).toEqual(['Department']);
+  });
+
+  it('uses the Organization Blood Group View grant', () => {
+    signIn(['organization.bloodgroup.view']);
+
+    const organization = menuService.visibleMenu().find((item) => item.id === 'organization-master');
+    expect(labels(organization?.children ?? [])).toEqual(['Blood Group']);
+  });
+
+  it('uses Cotivity View grants to show Cotivity master links', () => {
+    signIn(['cotivity.department.create', 'cotivity.employee.edit']);
+    expect(labels(menuService.visibleMenu())).toEqual([]);
+
+    signIn(['cotivity.department.view', 'cotivity.employee.view']);
+    const cotivity = menuService.visibleMenu().find((item) => item.id === 'cotivity');
+    expect(labels(cotivity?.children ?? [])).toEqual(['Cotivity Department', 'Cotivity Employee']);
+  });
+
   it('matches permission codes case-insensitively', () => {
-    signIn(['people.view', 'Master.Department']);
+    signIn(['administration.view', 'Organization.Department.View']);
 
     expect(labels(menuService.visibleMenu()[1].children!)).toEqual(['Department']);
   });
 
   it('drops stale items on logout', () => {
-    signIn(['people.view', 'master.department']);
-    expect(labels(menuService.visibleMenu())).toEqual(['People', 'Manage']);
+    signIn(['administration.view', 'organization.department.view']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration', 'Organization Master']);
 
     authService.logout().subscribe();
 
@@ -137,26 +185,26 @@ describe('MenuService', () => {
   });
 
   it('rebuilds the menu when the token refresh returns new permissions', () => {
-    signIn(['master.department'], 'expired-token');
+    signIn(['organization.department.view'], 'expired-token');
     refreshResponses = [{
       accessToken: 'new-token',
       expiresIn: 900,
       roles: ['HR'],
-      permissions: ['people.view', 'terminations.view']
+      permissions: ['administration.view', 'terminations.view']
     }];
 
     authService.refreshAccessToken().subscribe();
 
-    expect(labels(menuService.visibleMenu())).toEqual(['People', 'Terminations']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration', 'Terminations']);
   });
 
   it('switches menus cleanly when another account signs in', () => {
-    signIn(['people.view', 'setting.gear.EmployeeRole']);
-    expect(labels(menuService.visibleMenu())).toEqual(['People']);
+    signIn(['administration.view', 'setting.gear.EmployeeRole']);
+    expect(labels(menuService.visibleMenu())).toEqual(['Administration']);
 
-    signIn(['people.view', 'master.gender']);
+    signIn(['administration.view', 'organization.gender.view']);
     const visible = menuService.visibleMenu();
-    expect(labels(visible)).toEqual(['People', 'Manage']);
+    expect(labels(visible)).toEqual(['Administration', 'Organization Master']);
     expect(labels(visible[1].children!)).toEqual(['Gender']);
   });
 

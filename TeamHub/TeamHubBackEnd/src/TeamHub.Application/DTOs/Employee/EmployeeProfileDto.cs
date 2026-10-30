@@ -44,7 +44,15 @@ public sealed record EmployeeProfilePatch(
     bool SkillsSpecified,
     IReadOnlyList<EmployeeProfileSkillUpdateDto> Skills,
     bool DressIdsSpecified,
-    IReadOnlyList<int> DressIds);
+    IReadOnlyList<int> DressIds,
+    bool JoinedDateSpecified,
+    DateOnly? JoinedDate,
+    bool JoinedDateBSSpecified,
+    string? JoinedDateBS,
+    bool DateOfBirthSpecified,
+    DateOnly? DateOfBirth,
+    bool DateOfBirthBSSpecified,
+    string? DateOfBirthBS);
 
 public sealed record EmployeeProfileUpdateResult(
     EmployeeProfileDto? Profile,

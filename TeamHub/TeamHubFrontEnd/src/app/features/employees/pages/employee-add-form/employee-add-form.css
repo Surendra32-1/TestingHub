@@ -307,7 +307,7 @@ app-nepali-date-picker {
 }
 
 .skills-section {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .chip-picker {
@@ -319,6 +319,29 @@ app-nepali-date-picker {
   border: 1px solid #e7ecf2;
   border-radius: 0.3rem;
   background: #fafbfc;
+}
+
+.skill-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.skill-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(8rem, 11rem) auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #e1e7ef;
+  border-radius: 0.35rem;
+  background: #fff;
+}
+
+.skill-name {
+  color: #29486c;
+  font-size: 0.82rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .chip-list {
@@ -345,81 +368,26 @@ app-nepali-date-picker {
   overflow-wrap: anywhere;
 }
 
-.chip-level {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.15rem;
-  color: #5c7897;
-  font-size: 0.64rem;
-  font-weight: 600;
-}
-
-.level-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.5rem;
-  height: 1.4rem;
-  padding: 0 0.25rem;
-  border: 1px solid #c8d7e9;
-  border-radius: 0.25rem;
-  background: #fff;
-  color: #29486c;
-  font-size: 0.7rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.level-menu {
-  position: absolute;
-  top: calc(100% + 0.2rem);
-  left: 0;
-  z-index: 30;
+.skill-level-control,
+.skill-add-control {
   display: flex;
   flex-direction: column;
-  min-width: 2.4rem;
-  padding: 0.15rem;
-  border: 1px solid #c8d7e9;
-  border-radius: 0.35rem;
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.14);
-}
-
-.level-option {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 1.6rem;
-  padding: 0 0.45rem;
-  border: 0;
-  border-radius: 0.25rem;
-  background: transparent;
-  color: #29486c;
-  font-size: 0.74rem;
+  align-items: stretch;
+  gap: 0.22rem;
+  min-width: 0;
+  color: #5f6f82;
+  font-size: 0.68rem;
   font-weight: 600;
-  cursor: pointer;
-}
-
-.level-option:hover,
-.level-option:focus-visible {
-  background: var(--th-text-strong, #111827);
-  color: #fff;
-}
-
-.level-option.selected {
-  background: #eef4fb;
-  color: #1f3f66;
 }
 
 .chip-remove {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
   width: 1.05rem;
   height: 1.05rem;
   min-height: 0;
-  margin: 0;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -433,10 +401,15 @@ app-nepali-date-picker {
   background: #d7e4f3;
 }
 
-.chip-add-row {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+.skill-remove {
+  min-height: 1.8rem;
+  margin: 0;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.7rem;
+}
+
+.skill-add-control {
+  max-width: 26rem;
 }
 
 .chip-add {
@@ -444,25 +417,6 @@ app-nepali-date-picker {
   padding: 0 0.4rem;
   font-size: 0.78rem;
   background: #fff;
-}
-
-.chip-add-level {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #7b8898;
-  font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.chip-add-level .level-toggle {
-  min-width: 2.9rem;
-  height: 2rem;
-  font-size: 0.78rem;
 }
 
 .chip-empty {
@@ -590,6 +544,12 @@ button:disabled {
   }
 }
 
+@media (max-width: 760px) {
+  .date-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 640px) {
   .directory-panel {
     width: calc(100% - 1rem);
@@ -605,6 +565,20 @@ button:disabled {
   .form-section,
   .skills-section {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skill-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .skill-level-control {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .skill-row .skill-remove {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .date-grid,

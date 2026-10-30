@@ -134,7 +134,7 @@ in Swagger.
 
 | Controller | Class attribute | Extra action attributes |
 | --- | --- | --- |
-| `EmployeesController` | `[Authorize] ` (`:18`) | `[AllowAnonymous]` on `GetById :24`, `GetDetails :42`, `GetAll :113`, `GetActiveByDepartmentId :132`, `GetHierarchy :163` · `[Authorize(Policy = RbacPolicies.PeopleCreate)]` on `Create :60`, `PeopleUpdate` on `Update :97` |
+| `EmployeesController` | `[Authorize] ` (`:18`) | `[AllowAnonymous]` on `GetById :24`, `GetDetails :42`, `GetAll :113`, `GetActiveByDepartmentId :132`, `GetHierarchy :163` · `[Authorize(Policy = RbacPolicies.AdministrationCreate)]` on `Create :60`, `AdministrationUpdate` on `Update :97` |
 | `DepartmentsController` | `[Authorize(Policy = RbacPolicies.MasterDepartment)]` (`:13`) | `[AllowAnonymous]` on `GetAll :16`, `GetById :31` |
 | `DesignationsController` | `[Authorize(Policy = RbacPolicies.MasterDesignation)]` `:13` | — |
 | `BusinessUnitsController` | `[Authorize(Policy = RbacPolicies.MasterBusinessUnit)]` `:13` | — |
@@ -149,8 +149,8 @@ in Swagger.
 | `JobTypesController` | `[Authorize(Policy = RbacPolicies.MasterJobType)]` `:13` | — |
 | `TeamsController` | `[Authorize(Policy = RbacPolicies.MasterTeam)]` `:13` | — |
 | `GendersController` | `[Authorize(Policy = RbacPolicies.MasterGender)]` `:13` | — |
-| `EmployeeReleasesController` | `[Authorize]` `:14` | `ResignationView` on `:33, :48, :68, :82` · `Create :103` `[Authorize]` + in-code `ResignationAdd` `:110` / `PeopleRelease` `:129` (self-service vs. HR offboarding) · `ResignationAdd` on `Update :157` · status transitions `:174-190` resolve the per-target policy in code · `ResignationExitChecklist` on `:211` |
-| `EmployeeTerminationsController` | `[Authorize]` `:12` | `TerminationView` on `:16, :31, :50, :64` · `TerminationAdd` on `Create :85` · `TerminationManage` on `:108, :125, :145` |
+| `EmployeeReleasesController` | `[Authorize]` `:14` | `ResignationView` on `:33, :48, :68, :82` · `Create :103` `[Authorize]` + in-code `ResignationAdd` `:110` / `AdministrationRelease` `:129` (self-service vs. HR offboarding) · `ResignationAdd` on `Update :157` · status transitions `:174-190` resolve the per-target policy in code · `ResignationExitChecklist` on `:211` |
+| `EmployeeTerminationsController` | `[Authorize]` `:12` | `TerminationView` on `:16, :31, :50, :64` · `TerminationAddOrAdministrationTerminate` on employee-specific `Create :85` · `TerminationManage` on `:108, :125, :145` |
 | `PermissionsController` | `[Authorize(Policy = RbacPolicies.ManagePermissions)]` `:13` | — |
 | `UserRolesController` | `[Authorize(Policy = RbacPolicies.AssignUserRoles)]` `:13` | — |
 | `RolePermissionsController` | `[Authorize(Policy = RbacPolicies.ManageRolePermissions)]` `:13` | — |
@@ -315,16 +315,16 @@ Structurally identical to §6, verified against `EmployeeTerminationsController.
 `GET` (`:17`, `terminations.view`), `GET paged?pageNumber&pageSize&search&department&status` (`:32` —
 **no `releaseType` filter**), `GET employee/{employeeId:int}` (`:51`), `GET {terminationId:int:min(1)}`
 (`:65`) — all three still `terminations.view` — `POST employee/{employeeId:int}` (`:86`,
-**`terminations.add`**: filing a record is a separate grant from rewriting one),
+**`administration.terminate` or `terminations.add`**: employee-specific filing accepts either grant, separate from rewriting),
 `PUT {terminationId:int:min(1)}` (`:109`, `terminations.manage`, same workflow
 bypass — `EmployeeTerminationRepository.cs:139, :144-147`),
 `POST {terminationId:int:min(1)}/status` (`:126`), `PUT {terminationId:int:min(1)}/clearance`
 (`:146`) — both `terminations.manage`. Messages use "Termination record …" (`:133-134, :153`).
 
-**Verified (2026-10-23):** the create-path split is deliberate and mirrored end-to-end — the SPA's
-"New Termination" button, the directory "Terminate" row action and both create routes check
-`terminations.add` (`employee-lifecycle-list.html:6`, `employee-directory.component.ts:78`,
-`terminationAddGuard`), while the list's transition menu keeps checking `terminations.manage`
+**Verified:** the create-path split is deliberate and mirrored end-to-end — the SPA's
+"New Termination" button and its route require `terminations.add`; the employee-specific "Terminate"
+action accepts `administration.terminate` or `terminations.add` in both the SPA guard and API policy. The
+list's transition menu keeps checking `terminations.manage`
 (`employee-lifecycle-list.ts:77-80`). A role granted only `terminations.add` can file a record and
 nothing more; `Admin` bypasses all of it via the role claim (`08-auth-and-rbac.md` §3).
 

@@ -199,7 +199,7 @@ EmployeeAddFormComponent.onSubmit  (employee-add-form.ts:274-375, mode = 'create
      latitude:0, longitude:0, isPrimary:true (:335-344).
      The "Login Account" controls (createLoginAccount/username/initialPassword/…) are in the
      FormGroup but NEVER included in the request — verified dead UI (doc 11 finding).
-  → EmployeeService.create(request)   POST /api/employees     [Authorize(Policy = RbacPolicies.PeopleCreate)] (controller:60)
+  → EmployeeService.create(request)   POST /api/employees     [Authorize(Policy = RbacPolicies.AdministrationCreate)] (controller:60)
       → Manual FluentValidation with rulesets ["default","Create"] via ValidationContext
         (controller:63-67) — model-state auto-validation is NOT relied on.
         Invalid → hand-built ProblemDetails 400 with extensions.errors + joined message (:70-84)
@@ -241,7 +241,7 @@ route employees/edit/:id → EmployeeAddFormComponent mode='edit'
         • Separate queries for Skills, DressSizes, RoleIds (:324-349) — 5 round-trips, no transaction
   → form patch; edit view reads ONLY addresses[0] into the single address block (:221-225)
 
-save → PUT /api/employees/{employeeId}   [Authorize(Policy = RbacPolicies.PeopleUpdate)] (controller:97)
+save → PUT /api/employees/{employeeId}   [Authorize(Policy = RbacPolicies.AdministrationUpdate)] (controller:97)
   → Validation difference vs create, verified against Program.cs:90
     (`builder.AddFluentValidationAutoValidation()`): PUT receives FluentValidation **auto-validation
     of the "default" ruleset** (automatic 400 ValidationProblem), but NOT the extra **"Create"
@@ -452,7 +452,7 @@ Verified notes across the 15 datasets:
 3. **Audit columns never record a human**: `CreatedBy`/`LastModifiedBy` are the constants `"System"` (services) or the actor's first role name (UserRoles save). The authenticated user identity is available (claims) but not plumbed into writes.
 4. **EmployeeImages is append-only**: every save with a photo INSERTs a new row; all readers choose the newest via `ImageId DESC` (OUTER APPLY / index). No delete path exists anywhere (grep verified, doc 11 §9).
 5. **Two independent pagination models**: employees grid = full query + in-memory slice (server *and* client), lifecycle lists = SQL OFFSET/FETCH with count-only-when-full, RBAC matrices = proper server paging with COUNT up front. Behavior of pagination UI therefore differs per screen (matches doc 11 findings).
-6. **AllowAnonymous overrides the class-level [Authorize] on EmployeesController** for five reads (controller lines 23-24, 41-42, 112-113, 131-132, 162-163) — plus two more in `DepartmentsController` (`:15-16, :30-31`) — so directory/detail/hierarchy data is publicly readable on the deployed origin (verified attributes; consequence flagged in doc 14 security list). Writes on the same controller are now code-gated (`people.create`/`people.update`), no longer role-gated.
+6. **AllowAnonymous overrides the class-level [Authorize] on EmployeesController** for five reads (controller lines 23-24, 41-42, 112-113, 131-132, 162-163) — plus two more in `DepartmentsController` (`:15-16, :30-31`) — so directory/detail/hierarchy data is publicly readable on the deployed origin (verified attributes; consequence flagged in doc 14 security list). Writes on the same controller are code-gated (`administration.create`/`administration.update`), no longer role-gated.
 7. **Workflow state machine duplicated frontend/backend** (§7 intro): consistent today, two sources of truth by construction.
 8. **MediatR is used for exactly one query** (`GetEmployeeHierarchyQuery`); every other controller→service call is direct DI injection. (Verified by grep across controllers.)
 9. **One permission vocabulary, five readers**: the same codes are checked by backend policies (doc 08 §9), by route guards (`auth.guard.ts`), inline in the matrices (`*:53`), by the directory/lifecycle actions (`employee-directory.component.ts:74-78`, `employee-lifecycle-list.ts:48-56, :64-80`) and — since 2026-10-23 — by the navigation config (`menu.config.ts`). Nothing generates them, so a rename must be applied in all five places; `auth.guard.spec.ts` and `menu.service.spec.ts` pin the menu↔guard half of that contract.

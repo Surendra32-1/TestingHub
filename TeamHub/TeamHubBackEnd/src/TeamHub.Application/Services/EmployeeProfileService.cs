@@ -12,6 +12,9 @@ namespace TeamHub.Application.Services;
 public sealed class EmployeeProfileService(IEmployeeProfileRepository repository) : IEmployeeProfileService
 {
     private static readonly Regex PhonePattern = new(@"^\+?[0-9][0-9\s().-]{5,19}$", RegexOptions.Compiled);
+    private static readonly Regex NepaliDatePattern = new(
+        @"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[0-2])$",
+        RegexOptions.Compiled);
 
     public Task<EmployeeProfileDto?> GetByEmployeeIdAsync(
         int employeeId,
@@ -39,10 +42,31 @@ public sealed class EmployeeProfileService(IEmployeeProfileRepository repository
             && !patch.LongitudeSpecified
             && !patch.ImageBase64Specified
             && !patch.SkillsSpecified
-            && !patch.DressIdsSpecified)
+            && !patch.DressIdsSpecified
+            && !patch.JoinedDateSpecified
+            && !patch.JoinedDateBSSpecified
+            && !patch.DateOfBirthSpecified
+            && !patch.DateOfBirthBSSpecified)
         {
             errors["profile"] = ["At least one editable field is required."];
             return new EmployeeProfileUpdateResult(null, errors);
+        }
+
+        if (patch.JoinedDateSpecified != patch.JoinedDateBSSpecified
+            || (patch.JoinedDateSpecified
+                && (!patch.JoinedDate.HasValue || !IsValidNepaliDate(patch.JoinedDateBS))))
+        {
+            errors["joinedDate"] = ["A valid A.D. joined date and its B.S. date must be provided together."];
+            errors["joinedDateBS"] = ["A valid A.D. joined date and its B.S. date must be provided together."];
+        }
+
+        if (patch.DateOfBirthSpecified != patch.DateOfBirthBSSpecified
+            || (patch.DateOfBirthSpecified
+                && ((patch.DateOfBirth is null) != string.IsNullOrEmpty(patch.DateOfBirthBS)
+                    || (patch.DateOfBirthBS is not null && !IsValidNepaliDate(patch.DateOfBirthBS)))))
+        {
+            errors["dateOfBirth"] = ["A.D. and B.S. dates of birth must be provided together or both cleared."];
+            errors["dateOfBirthBS"] = ["A.D. and B.S. dates of birth must be provided together or both cleared."];
         }
 
         if (patch.AlternateEmailSpecified
@@ -176,6 +200,9 @@ public sealed class EmployeeProfileService(IEmployeeProfileRepository repository
 
     private static string? NormalizeEmail(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim().ToLowerInvariant();
+
+    private static bool IsValidNepaliDate(string? value) =>
+        value is not null && NepaliDatePattern.IsMatch(value);
 
     private static bool IsSupportedImage(string imageData)
     {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { map } from 'rxjs';
@@ -19,6 +19,8 @@ export class NavMenuComponent {
   readonly level = input(0);
 
   private readonly router = inject(Router);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
+  openBranchId: string | null = null;
 
   private readonly currentUrl = toSignal(this.router.events.pipe(map(() => this.router.url)), {
     initialValue: this.router.url
@@ -29,6 +31,29 @@ export class NavMenuComponent {
     return (item.children ?? []).some((child) =>
       child.route ? this.routeMatches(child.route, url) : this.isBranchActive(child)
     );
+  }
+
+  isBranchOpen(item: MenuItem): boolean {
+    return this.openBranchId === item.id;
+  }
+
+  toggleBranch(item: MenuItem): void {
+    this.openBranchId = this.isBranchOpen(item) ? null : item.id;
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeBranchOnOutsideClick(event: MouseEvent): void {
+    const target = event.target;
+    if (!(target instanceof Node)
+        || !this.elementRef.nativeElement.contains(target)
+        || (target instanceof Element && target.closest('a.nav-item:not(.menu-toggle)'))) {
+      this.openBranchId = null;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  closeBranchOnEscape(): void {
+    this.openBranchId = null;
   }
 
   private routeMatches(route: string, url: string): boolean {
