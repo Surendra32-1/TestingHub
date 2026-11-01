@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
+  FormArray,
   AbstractControl,
   ValidationErrors,
   ReactiveFormsModule
@@ -17,7 +18,6 @@ import { getApiErrorMessage } from '../../../../shared/services/api-error-messag
 
 import { CreateEmployeeRequest, EmployeeEditResponse, EmployeeService } from '../../services/employee.service';
 import { EmployeeProfile, EmployeeProfileEmployee, EmployeeProfilePatch, ProfileService } from '../../../profile/profile.service';
-import { TopbarComponent } from '../../../../shared/components/topbar/topbar.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -29,7 +29,6 @@ import { NepaliDatePickerComponent } from '../../components/nepali-date-picker/n
   standalone: true,
   imports: [
     CommonModule,
-    TopbarComponent,
     ReactiveFormsModule,
     MatDatepickerModule,
     MatFormFieldModule,
@@ -219,6 +218,8 @@ export class EmployeeAddFormComponent implements OnInit {
       cotivityEmployeeId: [''],
       skillIds: [[]],
       dressIds: [[]],
+      educations: this.fb.array([]),
+      trainings: this.fb.array([]),
       latitude: [null as number | null, [Validators.min(-90), Validators.max(90)]],
       longitude: [null as number | null, [Validators.min(-180), Validators.max(180)]],
       isActive: [true],
@@ -229,6 +230,134 @@ export class EmployeeAddFormComponent implements OnInit {
     });
     this.watchDatePair('joinedDate', 'joinedDateBS');
     this.watchDatePair('dateOfBirth', 'dateOfBirthBS');
+  }
+
+  get educations(): FormArray {
+    return this.employeeForm.get('educations') as FormArray;
+  }
+
+  get trainings(): FormArray {
+    return this.employeeForm.get('trainings') as FormArray;
+  }
+
+  addEducation(): void {
+    this.educations.push(this.buildEducationGroup());
+  }
+
+  removeEducation(index: number): void {
+    this.educations.removeAt(index);
+  }
+
+  addTraining(): void {
+    this.trainings.push(this.buildTrainingGroup());
+  }
+
+  removeTraining(index: number): void {
+    this.trainings.removeAt(index);
+  }
+
+  private buildEducationGroup(data?: any): FormGroup {
+    const group = this.fb.group({
+      educationId: [data?.educationId ?? null],
+      qualification: [data?.qualification ?? '', [Validators.required, Validators.maxLength(200)]],
+      boardUniversity: [data?.boardUniversity ?? ''],
+      institution: [data?.institution ?? ''],
+      faculty: [data?.faculty ?? ''],
+      passedYear: [data?.passedYear ?? null, [Validators.min(1900), Validators.max(2200)]],
+      joinedDate: [data?.joinedDate ? this.parseApiDate(data.joinedDate) : null],
+      joinedDateBS: [data?.joinedDateBS ?? ''],
+      passoutDate: [data?.passoutDate ? this.parseApiDate(data.passoutDate) : null],
+      passoutDateBS: [data?.passoutDateBS ?? ''],
+      divisionGrade: [data?.divisionGrade ?? ''],
+      remarks: [data?.remarks ?? '']
+    });
+    this.watchRowDatePair(group, 'joinedDate', 'joinedDateBS');
+    this.watchRowDatePair(group, 'passoutDate', 'passoutDateBS');
+    return group;
+  }
+
+  private buildTrainingGroup(data?: any): FormGroup {
+    const group = this.fb.group({
+      trainingId: [data?.trainingId ?? null],
+      trainingTitle: [data?.trainingTitle ?? '', [Validators.required, Validators.maxLength(200)]],
+      trainingProvider: [data?.trainingProvider ?? ''],
+      trainingType: [data?.trainingType ?? ''],
+      trainingLocation: [data?.trainingLocation ?? ''],
+      joinedDate: [data?.joinedDate ? this.parseApiDate(data.joinedDate) : null],
+      joinedDateBS: [data?.joinedDateBS ?? ''],
+      passoutDate: [data?.passoutDate ? this.parseApiDate(data.passoutDate) : null],
+      passoutDateBS: [data?.passoutDateBS ?? ''],
+      duration: [data?.duration ?? ''],
+      certificateNo: [data?.certificateNo ?? ''],
+      remarks: [data?.remarks ?? '']
+    });
+    this.watchRowDatePair(group, 'joinedDate', 'joinedDateBS');
+    this.watchRowDatePair(group, 'passoutDate', 'passoutDateBS');
+    return group;
+  }
+
+  private watchRowDatePair(group: FormGroup, adControlName: string, bsControlName: string): void {
+    const adControl = group.get(adControlName);
+    const bsControl = group.get(bsControlName);
+    if (!adControl || !bsControl) return;
+
+    adControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: Date | null) => {
+      bsControl.setValue(value ? this.formatNepaliDate(value) : '', { emitEvent: false });
+    });
+
+    bsControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value: string | null) => {
+      if (!value) {
+        adControl.setValue(null, { emitEvent: false });
+        return;
+      }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !this.nepaliDate) return;
+      try {
+        const nepaliDate = new this.nepaliDate(value);
+        if (nepaliDate.format('YYYY-MM-DD') !== value) return;
+        const adDate = nepaliDate.toJsDate();
+        if (!Number.isNaN(adDate.getTime())) {
+          adControl.setValue(adDate, { emitEvent: false });
+        }
+      } catch {
+      }
+    });
+  }
+
+  private syncExistingRowDatesAfterConverterLoad(): void {
+    [...this.educations.controls, ...this.trainings.controls].forEach((control) => {
+      const group = control as FormGroup;
+      (['joinedDate', 'passoutDate'] as const).forEach((adName) => {
+        const bsName = `${adName}BS`;
+        const adControl = group.get(adName);
+        const bsControl = group.get(bsName);
+        if (!adControl || !bsControl) return;
+        const bsValue = String(bsControl.value ?? '').trim();
+        const adValue = adControl.value as Date | null;
+        if (bsValue) {
+          try {
+            const nepaliDate = new this.nepaliDate!(bsValue);
+            const convertedDate = nepaliDate.toJsDate();
+            if (nepaliDate.format('YYYY-MM-DD') === bsValue && !Number.isNaN(convertedDate.getTime())) {
+              adControl.setValue(convertedDate, { emitEvent: false });
+            } else if (adValue) {
+              bsControl.setValue(this.formatNepaliDate(adValue), { emitEvent: false });
+            }
+          } catch {
+            if (adValue) bsControl.setValue(this.formatNepaliDate(adValue), { emitEvent: false });
+          }
+        } else if (adValue) {
+          bsControl.setValue(this.formatNepaliDate(adValue), { emitEvent: false });
+        }
+      });
+    });
+  }
+
+  trackByEducation(index: number, control: AbstractControl): unknown {
+    return control.get('educationId')?.value ?? index;
+  }
+
+  trackByTraining(index: number, control: AbstractControl): unknown {
+    return control.get('trainingId')?.value ?? index;
   }
 
   private getMinimumAgeDate(referenceDate: Date): Date {
@@ -408,7 +537,21 @@ export class EmployeeAddFormComponent implements OnInit {
     }, { emitEvent: false });
     this.skillLevels = Object.fromEntries(skills.map((skill) => [skill.skillId, skill.skillLevel]));
     this.currentImageBase64 = data.imageBase64;
+    this.loadEducationRows(data.educations ?? []);
+    this.loadTrainingRows(data.trainings ?? []);
     this.refreshDateValidation();
+  }
+
+  private loadEducationRows(educations: any[]): void {
+    this.educations.clear();
+    educations.forEach((education) => this.educations.push(this.buildEducationGroup(education)));
+    if (this.nepaliDate) this.syncExistingRowDatesAfterConverterLoad();
+  }
+
+  private loadTrainingRows(trainings: any[]): void {
+    this.trainings.clear();
+    trainings.forEach((training) => this.trainings.push(this.buildTrainingGroup(training)));
+    if (this.nepaliDate) this.syncExistingRowDatesAfterConverterLoad();
   }
 
   private loadMyProfile(): void {
@@ -677,7 +820,51 @@ export class EmployeeAddFormComponent implements OnInit {
           dressName: dress.dressName,
           size: dress.size,
           isActive: dress.isActive
-        }))
+        })),
+      educations: this.educations.controls
+        .map((control) => {
+          const education = control.value;
+          if (!this.hasRepeatRowData(education)) {
+            return null;
+          }
+          return {
+            educationId: education.educationId ?? undefined,
+            qualification: (education.qualification ?? '').trim(),
+            boardUniversity: education.boardUniversity?.trim() || null,
+            institution: education.institution?.trim() || null,
+            faculty: education.faculty?.trim() || null,
+            passedYear: education.passedYear ? Number(education.passedYear) : null,
+            joinedDate: this.toNullableDateString(education.joinedDate),
+            joinedDateBS: education.joinedDateBS?.trim() || null,
+            passoutDate: this.toNullableDateString(education.passoutDate),
+            passoutDateBS: education.passoutDateBS?.trim() || null,
+            divisionGrade: education.divisionGrade?.trim() || null,
+            remarks: education.remarks?.trim() || null
+          };
+        })
+        .filter((education): education is NonNullable<typeof education> => education !== null),
+      trainings: this.trainings.controls
+        .map((control) => {
+          const training = control.value;
+          if (!this.hasRepeatRowData(training)) {
+            return null;
+          }
+          return {
+            trainingId: training.trainingId ?? undefined,
+            trainingTitle: (training.trainingTitle ?? '').trim(),
+            trainingProvider: training.trainingProvider?.trim() || null,
+            trainingType: training.trainingType?.trim() || null,
+            trainingLocation: training.trainingLocation?.trim() || null,
+            joinedDate: this.toNullableDateString(training.joinedDate),
+            joinedDateBS: training.joinedDateBS?.trim() || null,
+            passoutDate: this.toNullableDateString(training.passoutDate),
+            passoutDateBS: training.passoutDateBS?.trim() || null,
+            duration: training.duration?.trim() || null,
+            certificateNo: training.certificateNo?.trim() || null,
+            remarks: training.remarks?.trim() || null
+          };
+        })
+        .filter((training): training is NonNullable<typeof training> => training !== null)
     };
 
     this.isSubmitting = true;
@@ -1180,6 +1367,28 @@ export class EmployeeAddFormComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+  private toNullableDateString(value: Date | string | null | undefined): string | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+    return this.toDateOnly(value);
+  }
+
+  private hasRepeatRowData(row: Record<string, unknown>): boolean {
+    return Object.entries(row).some(([key, value]) => {
+      if (key === 'educationId' || key === 'trainingId') {
+        return false;
+      }
+      if (value === null || value === undefined) {
+        return false;
+      }
+      if (typeof value === 'string') {
+        return value.trim().length > 0;
+      }
+      return true;
+    });
+  }
+
   private watchDatePair(adControlName: string, bsControlName: string): void {
     const adControl = this.employeeForm.get(adControlName);
     const bsControl = this.employeeForm.get(bsControlName);
@@ -1279,6 +1488,7 @@ export class EmployeeAddFormComponent implements OnInit {
         this.nepaliDate = NepaliDate;
         this.synchronizeDatePairAfterLoad('joinedDate', 'joinedDateBS');
         this.synchronizeDatePairAfterLoad('dateOfBirth', 'dateOfBirthBS');
+        this.syncExistingRowDatesAfterConverterLoad();
         this.changeDetectorRef.markForCheck();
       })
       .catch((error: unknown) => {

@@ -1,18 +1,9 @@
-import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { LoginComponent } from './login.component';
-import { TopbarComponent } from '../../../shared/components/topbar/topbar.component';
-
-@Component({
-  selector: 'app-topbar',
-  standalone: true,
-  template: ''
-})
-class TestTopbarComponent {}
 
 describe('LoginComponent', () => {
   let fixture: ComponentFixture<LoginComponent>;
@@ -54,10 +45,6 @@ describe('LoginComponent', () => {
         }
       ]
     })
-      .overrideComponent(LoginComponent, {
-        remove: { imports: [TopbarComponent] },
-        add: { imports: [TestTopbarComponent] }
-      })
       .compileComponents();
 
     router = TestBed.inject(Router);

@@ -1,7 +1,8 @@
-@if (navbarSelection.useAdminNavbar()) {
-  <app-admin-navbar />
-} @else {
 <header class="topbar">
+  <div class="topbar-brand">
+    <span class="topbar-brand-mark" aria-hidden="true"></span>
+    <span class="topbar-brand-text">TeamHub</span>
+  </div>
   <nav class="main-nav">
     <app-nav-menu [items]="menu.visibleMenu()" />
   </nav>
@@ -71,4 +72,3 @@
     </div>
   }
 </header>
-}

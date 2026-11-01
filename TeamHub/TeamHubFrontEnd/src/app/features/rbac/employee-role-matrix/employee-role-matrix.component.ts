@@ -4,7 +4,6 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angul
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 
-import { TopbarComponent } from '../../../shared/components/topbar/topbar.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { ToastService } from '../../../shared/services/toast.service';
 import { getApiErrorMessage } from '../../../shared/services/api-error-message';
@@ -14,7 +13,7 @@ import { EmployeeRoleMatrixRow, RoleOption, SaveUserRolesRequest } from '../rbac
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, TopbarComponent, PaginationComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent],
   selector: 'app-employee-role-matrix',
   templateUrl: './employee-role-matrix.component.html',
   styleUrl: '../rbac-matrix.css'

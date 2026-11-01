@@ -61,4 +61,12 @@ export class EmployeeDetailsComponent implements OnInit {
   trackByAddressId(_index: number, address: EmployeeDetails['addresses'][number]): number {
     return address.addressId;
   }
+
+  trackByEducationId(_index: number, education: EmployeeDetails['educations'][number]): number {
+    return education.educationId;
+  }
+
+  trackByTrainingId(_index: number, training: EmployeeDetails['trainings'][number]): number {
+    return training.trainingId;
+  }
 }

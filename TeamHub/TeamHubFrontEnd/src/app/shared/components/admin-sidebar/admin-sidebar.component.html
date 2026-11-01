@@ -1,0 +1,54 @@
+<aside class="admin-sidebar">
+  <div class="sidebar-brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-text">TeamHub</span>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Administration">
+    @for (item of navItems; track item.id) {
+      @if (item.children && item.children.length > 0) {
+        <div
+          class="sidebar-branch"
+          [class.is-open]="isBranchOpen(item)"
+          [class.is-active]="isActiveItem(item)"
+        >
+          <button
+            type="button"
+            class="sidebar-toggle"
+            [attr.aria-expanded]="isBranchOpen(item)"
+            (click)="toggleBranch(item)"
+          >
+            <span class="sidebar-label">{{ item.label }}</span>
+            <span class="sidebar-caret" aria-hidden="true">
+              <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2.5 4.5 6 8l3.5-3.5" />
+              </svg>
+            </span>
+          </button>
+
+          @if (isBranchOpen(item)) {
+            <div class="sidebar-submenu">
+              @for (child of item.children; track child.id) {
+                <a
+                  class="sidebar-subitem"
+                  [routerLink]="child.route"
+                  routerLinkActive="active"
+                  (click)="onNavigate()"
+                >{{ child.label }}</a>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <a
+          class="sidebar-link"
+          [class.active]="isActiveItem(item)"
+          [routerLink]="item.route"
+          (click)="onNavigate()"
+        >
+          <span class="sidebar-label">{{ item.label }}</span>
+        </a>
+      }
+    }
+  </nav>
+</aside>

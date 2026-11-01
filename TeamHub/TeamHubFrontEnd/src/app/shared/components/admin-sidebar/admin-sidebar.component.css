@@ -1,0 +1,171 @@
+:host {
+  display: block;
+}
+
+:host.sidebar-hidden {
+  display: none;
+}
+
+.admin-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  flex: 0 0 240px;
+  min-height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid var(--th-border, #dfe3e8);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--th-border, #dfe3e8);
+  color: #111827;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brand-mark {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 4px;
+  background: #111827;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 0.6rem;
+}
+
+.sidebar-link,
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #4b5563;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-toggle:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.sidebar-link:focus,
+.sidebar-toggle:focus {
+  outline: none;
+}
+
+.sidebar-link.active,
+.sidebar-branch.is-active > .sidebar-toggle {
+  background: #111827;
+  color: #ffffff;
+}
+
+.sidebar-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  color: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-caret svg {
+  display: block;
+}
+
+.sidebar-branch.is-open > .sidebar-toggle .sidebar-caret {
+  transform: rotate(180deg);
+}
+
+.sidebar-branch {
+  position: relative;
+}
+
+.sidebar-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin: 0.15rem 0 0.4rem;
+  padding-left: 0.5rem;
+  overflow: hidden;
+}
+
+.sidebar-subitem {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  color: #374151;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-subitem:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.sidebar-subitem.active {
+  background: #111827;
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .admin-sidebar {
+    width: 68px;
+    flex-basis: 68px;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding: 1.1rem 0;
+  }
+
+  .brand-text,
+  .sidebar-label,
+  .sidebar-caret {
+    display: none;
+  }
+
+  .sidebar-link,
+  .sidebar-toggle {
+    justify-content: center;
+  }
+
+  .sidebar-subitem {
+    padding-left: 0.75rem;
+    text-align: center;
+  }
+}

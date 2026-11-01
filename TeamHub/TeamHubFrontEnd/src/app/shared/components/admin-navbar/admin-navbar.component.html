@@ -1,46 +1,21 @@
 <header class="admin-navbar">
-  <span class="admin-brand" aria-hidden="true">TeamHub</span>
-
-  <nav class="admin-nav" aria-label="Administration">
-    @for (item of adminItems; track item.id) {
-      @if (item.children && item.children.length > 0) {
-        <div
-          class="admin-branch"
-          [class.is-open]="isBranchOpen(item)"
-          [class.is-active]="isActiveItem(item)"
-        >
-          <button
-            type="button"
-            class="admin-link admin-toggle"
-            aria-haspopup="true"
-            [attr.aria-expanded]="isBranchOpen(item)"
-            (click)="toggleBranch(item)"
-          >
-            {{ item.label }}<span class="admin-caret" aria-hidden="true">▾</span>
-          </button>
-
-          <div class="admin-dropdown" role="menu">
-            @for (child of item.children; track child.id) {
-              <a
-                class="admin-dropdown-item"
-                role="menuitem"
-                [routerLink]="child.route"
-                routerLinkActive="active"
-                (click)="closeAll()"
-              >{{ child.label }}</a>
-            }
-          </div>
-        </div>
-      } @else {
-        <a
-          class="admin-link"
-          [routerLink]="item.route"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: item.exact === true }"
-        >{{ item.label }}</a>
-      }
-    }
-  </nav>
+  @if (sidebarCollapsed) {
+    <div class="admin-brand">
+      <span class="admin-brand-mark" aria-hidden="true"></span>
+      <span class="admin-brand-text">TeamHub</span>
+    </div>
+  }
+  <div class="admin-title-group">
+    <button
+      class="sidebar-toggle-btn"
+      type="button"
+      aria-label="Toggle sidebar"
+      (click)="toggleSidebar()"
+    >
+      <span aria-hidden="true">☰</span>
+    </button>
+    <h1 class="admin-title">{{ sectionTitle }}</h1>
+  </div>
 
   @if (isAuthenticated) {
     <div class="admin-actions">
@@ -91,9 +66,9 @@
             <img class="profile-avatar" [src]="profileImage" alt="">
           } @else {
             <svg class="profile-avatar default-avatar" viewBox="0 0 40 40" aria-hidden="true">
-              <circle cx="20" cy="20" r="20" fill="#334155" />
-              <circle cx="20" cy="15" r="7" fill="#94a3b8" />
-              <path d="M7 36c1.7-7.2 6.4-10.8 13-10.8S31.3 28.8 33 36" fill="#94a3b8" />
+              <circle cx="20" cy="20" r="20" fill="#e2e8f0" />
+              <circle cx="20" cy="15" r="7" fill="#64748b" />
+              <path d="M7 36c1.7-7.2 6.4-10.8 13-10.8S31.3 28.8 33 36" fill="#64748b" />
             </svg>
           }
         </button>

@@ -10,16 +10,12 @@ import { AdminNavbarComponent } from './admin-navbar.component';
 @Component({ selector: 'app-blank-page', standalone: true, template: '' })
 class BlankPageComponent {}
 
-describe('AdminNavbarComponent (Navbar 2 - administration)', () => {
+describe('AdminNavbarComponent (Navbar 2 top bar)', () => {
   let fixture: ComponentFixture<AdminNavbarComponent>;
   let authService: AuthService;
   let router: Router;
 
   const host = (): HTMLElement => fixture.nativeElement as HTMLElement;
-  const topLevelLabels = (): string[] =>
-    Array.from(
-      host().querySelectorAll('.admin-nav > .admin-link, .admin-nav > .admin-branch > .admin-toggle')
-    ).map((element) => element.textContent!.replace(/▾/g, '').replace(/\s+/g, ' ').trim());
 
   const signIn = (permissions: string[]) =>
     authService.storeSession({ accessToken: 'token', expiresIn: 900, roles: ['Admin'], permissions });
@@ -31,7 +27,7 @@ describe('AdminNavbarComponent (Navbar 2 - administration)', () => {
       imports: [AdminNavbarComponent],
       providers: [
         provideRouter([
-          { path: 'login', component: BlankPageComponent },
+          { path: 'administration', component: BlankPageComponent },
           { path: 'master/:masterKey', component: BlankPageComponent },
           { path: 'settings/employee-role-matrix', component: BlankPageComponent },
           { path: 'settings/role-permission-matrix', component: BlankPageComponent },
@@ -55,14 +51,24 @@ describe('AdminNavbarComponent (Navbar 2 - administration)', () => {
 
   afterEach(() => sessionStorage.clear());
 
-  it('renders admin navigation from permissions and never shows People', () => {
-    signIn(['people.allemployee.search.view', 'administration.view', 'organization.department.view']);
+  it('does not render the horizontal nav (navigation lives in the sidebar)', () => {
+    signIn(['administration.view', 'organization.department.view']);
     fixture.detectChanges();
 
-    const labels = topLevelLabels();
-    expect(labels).toContain('Administration');
-    expect(labels).toContain('Organization Master');
-    expect(labels).not.toContain('People');
+    expect(host().querySelector('.admin-nav')).toBeNull();
+    expect(host().querySelector('.admin-title')).not.toBeNull();
+  });
+
+  it('shows the TeamHub brand only when the sidebar is not shown', () => {
+    signIn(['administration.view']);
+
+    fixture.componentRef.setInput('sidebarCollapsed', false);
+    fixture.detectChanges();
+    expect(host().querySelector('.admin-brand')).toBeNull();
+
+    fixture.componentRef.setInput('sidebarCollapsed', true);
+    fixture.detectChanges();
+    expect(host().querySelector('.admin-brand')).not.toBeNull();
   });
 
   it('shows the settings gear and its permitted links', () => {

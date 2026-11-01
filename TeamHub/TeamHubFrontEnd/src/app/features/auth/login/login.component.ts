@@ -6,13 +6,12 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { signedInLandingPath } from '../../../core/auth/auth.guard';
 import { EntraAuthService } from '../../../core/auth/entra-auth.service';
 import { DevSignInUser } from '../../../core/auth/auth.models';
-import { TopbarComponent } from '../../../shared/components/topbar/topbar.component';
 import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [TopbarComponent],
+  imports: [],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })

@@ -274,6 +274,55 @@ describe('EmployeeAddFormComponent', () => {
     expect([reflectedDate.getFullYear(), reflectedDate.getMonth(), reflectedDate.getDate()]).toEqual([1990, 0, 2]);
   });
 
+  it('synchronizes education row dates between A.D. and B.S. fields', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    component.addEducation();
+    const row = component.educations.at(0);
+
+    row.get('joinedDate')?.setValue(new Date(2025, 0, 1));
+    expect(row.get('joinedDateBS')?.value).toBe('2081-09-17');
+
+    row.get('passoutDateBS')?.setValue('2081-09-18');
+    const reflectedDate = row.get('passoutDate')?.value as Date;
+    expect(reflectedDate).toBeInstanceOf(Date);
+    expect([reflectedDate.getFullYear(), reflectedDate.getMonth(), reflectedDate.getDate()]).toEqual([2025, 0, 2]);
+  });
+
+  it('synchronizes training row dates between A.D. and B.S. fields', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    component.addTraining();
+    const row = component.trainings.at(0);
+
+    row.get('joinedDate')?.setValue(new Date(2025, 0, 1));
+    expect(row.get('joinedDateBS')?.value).toBe('2081-09-17');
+
+    row.get('passoutDateBS')?.setValue('2081-09-18');
+    const reflectedDate = row.get('passoutDate')?.value as Date;
+    expect([reflectedDate.getFullYear(), reflectedDate.getMonth(), reflectedDate.getDate()]).toEqual([2025, 0, 2]);
+  });
+
+  it('drops empty education and training rows and keeps only populated records', async () => {
+    await import('nepali-date-converter');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fillRequiredEmployeeFields();
+
+    component.addEducation(); 
+    component.addEducation();
+    component.educations.at(1).patchValue({ qualification: 'B.Sc. CSIT' });
+    component.addTraining(); 
+
+    component.onSubmit();
+
+    const educations = lastEmployeeRequest?.['educations'] as Array<Record<string, unknown>>;
+    expect(educations.length).toBe(1);
+    expect(educations[0]['qualification']).toBe('B.Sc. CSIT');
+    expect(lastEmployeeRequest?.['trainings']).toEqual([]);
+  });
+
   it('validates joining dates, minimum age, and date-of-birth ordering', async () => {
     await import('nepali-date-converter');
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -388,7 +437,11 @@ describe('EmployeeAddFormComponent', () => {
     Object.defineProperty(input, 'files', { configurable: true, value: [file] });
 
     component.onImageSelected({ target: input } as unknown as Event);
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => {
+      const check = () => (component.imageBase64 ? resolve(undefined) : setTimeout(check, 10));
+      check();
+      setTimeout(resolve, 500);
+    });
 
     expect(component.imageBase64).toMatch(/^data:image\/png;base64,/);
     expect(component.imageFileName).toBe('employee.png');

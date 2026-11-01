@@ -117,6 +117,38 @@ public sealed class EmployeeService(IEmployeeRepository repository) : IEmployeeS
                 DressId = dress.DressId,
                 CreatedDate = DateTime.UtcNow,
                 CreatedBy = "System"
+            }).ToList(),
+            Educations = (request.Educations ?? []).Select(education => new EmployeeEducation
+            {
+                Qualification = education.Qualification,
+                BoardUniversity = education.BoardUniversity,
+                Institution = education.Institution,
+                Faculty = education.Faculty,
+                PassedYear = education.PassedYear,
+                JoinedDate = education.JoinedDate,
+                PassoutDate = education.PassoutDate,
+                JoinedDateBS = education.JoinedDateBS,
+                PassoutDateBS = education.PassoutDateBS,
+                DivisionGrade = education.DivisionGrade,
+                Remarks = education.Remarks,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = "System"
+            }).ToList(),
+            Trainings = (request.Trainings ?? []).Select(training => new EmployeeTraining
+            {
+                TrainingTitle = training.TrainingTitle,
+                TrainingProvider = training.TrainingProvider,
+                TrainingType = training.TrainingType,
+                TrainingLocation = training.TrainingLocation,
+                JoinedDate = training.JoinedDate,
+                PassoutDate = training.PassoutDate,
+                JoinedDateBS = training.JoinedDateBS,
+                PassoutDateBS = training.PassoutDateBS,
+                Duration = training.Duration,
+                CertificateNo = training.CertificateNo,
+                Remarks = training.Remarks,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = "System"
             }).ToList()
         };
 
@@ -198,7 +230,37 @@ public sealed class EmployeeService(IEmployeeRepository repository) : IEmployeeS
                 SkillLevel = skill.SkillLevel,
                 IsPrimary = skill.IsPrimary
             }).ToList(),
-            DressSizes = request.DressSizes
+            DressSizes = request.DressSizes,
+            Educations = employee.Educations.Select(education => new EmployeeEducationDto
+            {
+                EducationId = education.EducationId,
+                Qualification = education.Qualification,
+                BoardUniversity = education.BoardUniversity,
+                Institution = education.Institution,
+                Faculty = education.Faculty,
+                PassedYear = education.PassedYear,
+                JoinedDate = education.JoinedDate,
+                PassoutDate = education.PassoutDate,
+                JoinedDateBS = education.JoinedDateBS,
+                PassoutDateBS = education.PassoutDateBS,
+                DivisionGrade = education.DivisionGrade,
+                Remarks = education.Remarks
+            }).ToList(),
+            Trainings = employee.Trainings.Select(training => new EmployeeTrainingDto
+            {
+                TrainingId = training.TrainingId,
+                TrainingTitle = training.TrainingTitle,
+                TrainingProvider = training.TrainingProvider,
+                TrainingType = training.TrainingType,
+                TrainingLocation = training.TrainingLocation,
+                JoinedDate = training.JoinedDate,
+                PassoutDate = training.PassoutDate,
+                JoinedDateBS = training.JoinedDateBS,
+                PassoutDateBS = training.PassoutDateBS,
+                Duration = training.Duration,
+                CertificateNo = training.CertificateNo,
+                Remarks = training.Remarks
+            }).ToList()
         };
     }
 
@@ -281,6 +343,38 @@ public sealed class EmployeeService(IEmployeeRepository repository) : IEmployeeS
             DressSizes = request.DressSizes.Select(dress => new EmployeeDress
             {
                 DressId = dress.DressId,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = "System"
+            }).ToList(),
+            Educations = (request.Educations ?? []).Select(education => new EmployeeEducation
+            {
+                Qualification = education.Qualification,
+                BoardUniversity = education.BoardUniversity,
+                Institution = education.Institution,
+                Faculty = education.Faculty,
+                PassedYear = education.PassedYear,
+                JoinedDate = education.JoinedDate,
+                PassoutDate = education.PassoutDate,
+                JoinedDateBS = education.JoinedDateBS,
+                PassoutDateBS = education.PassoutDateBS,
+                DivisionGrade = education.DivisionGrade,
+                Remarks = education.Remarks,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = "System"
+            }).ToList(),
+            Trainings = (request.Trainings ?? []).Select(training => new EmployeeTraining
+            {
+                TrainingTitle = training.TrainingTitle,
+                TrainingProvider = training.TrainingProvider,
+                TrainingType = training.TrainingType,
+                TrainingLocation = training.TrainingLocation,
+                JoinedDate = training.JoinedDate,
+                PassoutDate = training.PassoutDate,
+                JoinedDateBS = training.JoinedDateBS,
+                PassoutDateBS = training.PassoutDateBS,
+                Duration = training.Duration,
+                CertificateNo = training.CertificateNo,
+                Remarks = training.Remarks,
                 CreatedDate = DateTime.UtcNow,
                 CreatedBy = "System"
             }).ToList()

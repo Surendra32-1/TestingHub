@@ -41,4 +41,6 @@ public class CreateOrUpdateEmployeeRequest
     public IReadOnlyList<EmployeeAddressDto> Addresses { get; set; } = [];
     public IReadOnlyList<EmployeeSkillDto> Skills { get; set; } = [];
     public IReadOnlyList<EmployeeDressSizesDto> DressSizes { get; set; } = [];
+    public IReadOnlyList<EmployeeEducationDto>? Educations { get; set; }
+    public IReadOnlyList<EmployeeTrainingDto>? Trainings { get; set; }
 }

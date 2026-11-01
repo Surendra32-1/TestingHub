@@ -1,5 +1,4 @@
 <div class="page-shell">
-  <app-topbar />
   <main class="directory-panel">
     <header class="page-header">
       <h1 class="page-title">{{ isProfileMode ? 'Update Profile' : employeeId === null ? 'Add Employee' : 'Update Employee' }}</h1>
@@ -285,6 +284,164 @@
               }
             </div>
           </div>
+        </section>
+
+        <section class="form-section education-section" formArrayName="educations">
+          <h2 class="section-title">Education</h2>
+          @if (educations.length === 0) {
+            <p class="chip-empty">No education records.</p>
+          }
+          @for (control of educations.controls; track $index; let i = $index) {
+            <div class="repeat-row" [formGroupName]="i">
+              <div class="field">
+                <label class="field-label" [attr.for]="'qualification-' + i">Qualification</label>
+                <input [id]="'qualification-' + i" type="text" maxlength="200" formControlName="qualification" [readonly]="isProfileMode">
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'boardUniversity-' + i">Board / University</label>
+                <input [id]="'boardUniversity-' + i" type="text" maxlength="200" formControlName="boardUniversity" [readonly]="isProfileMode">
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'institution-' + i">Institution</label>
+                <input [id]="'institution-' + i" type="text" maxlength="200" formControlName="institution" [readonly]="isProfileMode">
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'faculty-' + i">Faculty</label>
+                <input [id]="'faculty-' + i" type="text" maxlength="100" formControlName="faculty" [readonly]="isProfileMode">
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'passedYear-' + i">Passed Year</label>
+                <input [id]="'passedYear-' + i" type="number" min="1900" max="2200" formControlName="passedYear" [readonly]="isProfileMode">
+              </div>
+              <div class="field field-wide">
+                <span class="field-label">Joined Date</span>
+                <div class="date-controls">
+                  <div class="date-control">
+                    <span class="date-caption">A.D. (English)</span>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <input [id]="'eduJoined-' + i" matInput aria-label="Education joined date in A.D." [matDatepicker]="eduJoinedPicker" formControlName="joinedDate">
+                      <mat-datepicker-toggle matSuffix [for]="eduJoinedPicker"></mat-datepicker-toggle>
+                      <mat-datepicker #eduJoinedPicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="date-control">
+                    <span class="date-caption">B.S. (Nepali)</span>
+                    <app-nepali-date-picker formControlName="joinedDateBS" ariaLabel="Education joined date in B.S." />
+                  </div>
+                </div>
+              </div>
+              <div class="field field-wide">
+                <span class="field-label">Passout Date</span>
+                <div class="date-controls">
+                  <div class="date-control">
+                    <span class="date-caption">A.D. (English)</span>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <input [id]="'eduPassout-' + i" matInput aria-label="Education passout date in A.D." [matDatepicker]="eduPassoutPicker" formControlName="passoutDate">
+                      <mat-datepicker-toggle matSuffix [for]="eduPassoutPicker"></mat-datepicker-toggle>
+                      <mat-datepicker #eduPassoutPicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="date-control">
+                    <span class="date-caption">B.S. (Nepali)</span>
+                    <app-nepali-date-picker formControlName="passoutDateBS" ariaLabel="Education passout date in B.S." />
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'divisionGrade-' + i">Division / Grade</label>
+                <input [id]="'divisionGrade-' + i" type="text" maxlength="100" formControlName="divisionGrade" [readonly]="isProfileMode">
+              </div>
+              <div class="field field-wide">
+                <label class="field-label" [attr.for]="'eduRemarks-' + i">Remarks</label>
+                <textarea [id]="'eduRemarks-' + i" rows="2" formControlName="remarks" [readonly]="isProfileMode"></textarea>
+              </div>
+              @if (!isProfileMode) {
+                <button type="button" class="repeat-remove" (click)="removeEducation(i)">Remove</button>
+              }
+            </div>
+          }
+          @if (!isProfileMode) {
+            <button type="button" class="repeat-add" (click)="addEducation()">+ Add Education</button>
+          }
+        </section>
+
+        <section class="form-section training-section" formArrayName="trainings">
+          <h2 class="section-title">Training</h2>
+          @if (trainings.length === 0) {
+            <p class="chip-empty">No training records.</p>
+          }
+          @for (control of trainings.controls; track $index; let i = $index) {
+            <div class="repeat-row" [formGroupName]="i">
+              <div class="field">
+                <label class="field-label" [attr.for]="'trainingTitle-' + i">Training Title</label>
+                <input [id]="'trainingTitle-' + i" type="text" maxlength="200" formControlName="trainingTitle" [readonly]="isProfileMode">
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'trainingProvider-' + i">Training Provider</label>
+                <input [id]="'trainingProvider-' + i" type="text" maxlength="200" formControlName="trainingProvider" [readonly]="isProfileMode">
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'trainingType-' + i">Training Type</label>
+                <input [id]="'trainingType-' + i" type="text" maxlength="100" formControlName="trainingType" [readonly]="isProfileMode">
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'trainingLocation-' + i">Training Location</label>
+                <input [id]="'trainingLocation-' + i" type="text" maxlength="200" formControlName="trainingLocation" [readonly]="isProfileMode">
+              </div>
+              <div class="field field-wide">
+                <span class="field-label">Joined Date</span>
+                <div class="date-controls">
+                  <div class="date-control">
+                    <span class="date-caption">A.D. (English)</span>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <input [id]="'trnJoined-' + i" matInput aria-label="Training joined date in A.D." [matDatepicker]="trnJoinedPicker" formControlName="joinedDate">
+                      <mat-datepicker-toggle matSuffix [for]="trnJoinedPicker"></mat-datepicker-toggle>
+                      <mat-datepicker #trnJoinedPicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="date-control">
+                    <span class="date-caption">B.S. (Nepali)</span>
+                    <app-nepali-date-picker formControlName="joinedDateBS" ariaLabel="Training joined date in B.S." />
+                  </div>
+                </div>
+              </div>
+              <div class="field field-wide">
+                <span class="field-label">Passout Date</span>
+                <div class="date-controls">
+                  <div class="date-control">
+                    <span class="date-caption">A.D. (English)</span>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                      <input [id]="'trnPassout-' + i" matInput aria-label="Training passout date in A.D." [matDatepicker]="trnPassoutPicker" formControlName="passoutDate">
+                      <mat-datepicker-toggle matSuffix [for]="trnPassoutPicker"></mat-datepicker-toggle>
+                      <mat-datepicker #trnPassoutPicker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <div class="date-control">
+                    <span class="date-caption">B.S. (Nepali)</span>
+                    <app-nepali-date-picker formControlName="passoutDateBS" ariaLabel="Training passout date in B.S." />
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'duration-' + i">Duration</label>
+                <input [id]="'duration-' + i" type="text" maxlength="100" formControlName="duration" [readonly]="isProfileMode">
+              </div>
+              <div class="field">
+                <label class="field-label" [attr.for]="'certificateNo-' + i">Certificate No.</label>
+                <input [id]="'certificateNo-' + i" type="text" maxlength="100" formControlName="certificateNo" [readonly]="isProfileMode">
+              </div>
+              <div class="field field-wide">
+                <label class="field-label" [attr.for]="'trnRemarks-' + i">Remarks</label>
+                <textarea [id]="'trnRemarks-' + i" rows="2" formControlName="remarks" [readonly]="isProfileMode"></textarea>
+              </div>
+              @if (!isProfileMode) {
+                <button type="button" class="repeat-remove" (click)="removeTraining(i)">Remove</button>
+              }
+            </div>
+          }
+          @if (!isProfileMode) {
+            <button type="button" class="repeat-add" (click)="addTraining()">+ Add Training</button>
+          }
         </section>
 
         <section class="form-section team-section">

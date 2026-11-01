@@ -56,6 +56,12 @@ describe('TopbarComponent (Navbar 1 - employee)', () => {
     expect(host().querySelector('.profile-trigger')).toBeNull();
   });
 
+  it('shows the TeamHub brand since this navbar has no sidebar', () => {
+    const brand = host().querySelector('.topbar-brand');
+    expect(brand).not.toBeNull();
+    expect(brand?.textContent).toContain('TeamHub');
+  });
+
   it('renders the employee navbar (People + Profile) when no admin module is granted', () => {
     signIn(['people.allemployee.search.view', 'profile.view', 'profile.edit']);
     fixture.detectChanges();
@@ -71,14 +77,6 @@ describe('TopbarComponent (Navbar 1 - employee)', () => {
 
     expect(host().querySelector('app-admin-navbar')).toBeNull();
     expect(host().querySelector('.profile-trigger')).not.toBeNull();
-  });
-
-  it('delegates to the independent admin navbar once an admin module is granted', () => {
-    signIn(['administration.view']);
-    fixture.detectChanges();
-
-    expect(host().querySelector('app-admin-navbar')).not.toBeNull();
-    expect(host().querySelector('.topbar')).toBeNull();
   });
 
   it('opens the profile menu and closes it when clicking outside', () => {

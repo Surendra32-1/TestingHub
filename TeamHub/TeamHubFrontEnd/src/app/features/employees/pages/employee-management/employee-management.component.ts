@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/auth/auth.service';
-import { TopbarComponent } from '../../../../shared/components/topbar/topbar.component';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { getApiErrorMessage } from '../../../../shared/services/api-error-message';
 import { DirectoryViewComponent } from '../../components/directory-view/directory-view.component';
@@ -21,7 +20,6 @@ import { EmployeeService } from '../../services/employee.service';
     CommonModule,
     FormsModule,
     RouterLink,
-    TopbarComponent,
     DirectoryViewComponent,
     EmployeeDetailsComponent,
     EmployeeHierarchyComponent

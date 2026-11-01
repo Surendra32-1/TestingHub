@@ -17,6 +17,25 @@
   gap: 10px;
 }
 
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-right: 1.25rem;
+  color: #111827;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.topbar-brand-mark {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 4px;
+  background: #111827;
+}
+
 .topbar-actions {
   display: flex;
   align-items: center;

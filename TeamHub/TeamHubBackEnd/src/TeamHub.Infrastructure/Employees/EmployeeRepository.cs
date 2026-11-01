@@ -541,6 +541,20 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             WHERE employeeDress.EmployeeId = @EmployeeId
             ORDER BY dress.DressName, dress.Size;
             ";
+        const string educationSql = @"
+            SELECT EducationId, Qualification, BoardUniversity, Institution, Faculty,
+                   PassedYear, JoinedDate, PassoutDate, JoinedDateBS, PassoutDateBS, DivisionGrade, Remarks
+            FROM EmployeeEducation
+            WHERE EmployeeId = @EmployeeId
+            ORDER BY PassedYear DESC, EducationId DESC;
+            ";
+        const string trainingSql = @"
+            SELECT TrainingId, TrainingTitle, TrainingProvider, TrainingType, TrainingLocation,
+                   JoinedDate, PassoutDate, JoinedDateBS, PassoutDateBS, Duration, CertificateNo, Remarks
+            FROM EmployeeTraining
+            WHERE EmployeeId = @EmployeeId
+            ORDER BY JoinedDate DESC, TrainingId DESC;
+            ";
         const string roleIdSql = @"
             SELECT ur.RoleId
             FROM dbo.UserRoles ur
@@ -553,6 +567,8 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
         var addresses = await connection.QueryAsync<EmployeeAddressDto>(new CommandDefinition(addressSql, parameters, cancellationToken: cancellationToken));
         var skills = await connection.QueryAsync<EmployeeSkillDto>(new CommandDefinition(skillSql, parameters, cancellationToken: cancellationToken));
         var dressSizes = await connection.QueryAsync<EmployeeDressSizesDto>(new CommandDefinition(dressSql, parameters, cancellationToken: cancellationToken));
+        var educations = await connection.QueryAsync<EmployeeEducationDto>(new CommandDefinition(educationSql, parameters, cancellationToken: cancellationToken));
+        var trainings = await connection.QueryAsync<EmployeeTrainingDto>(new CommandDefinition(trainingSql, parameters, cancellationToken: cancellationToken));
         var roleIds = await connection.QueryAsync<int>(new CommandDefinition(roleIdSql, parameters, cancellationToken: cancellationToken));
 
         return new GetEmployeeDto
@@ -608,7 +624,9 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             ImageBase64 = ToBase64DataUrl(row.ImagePath),
             Addresses = addresses.AsList(),
             Skills = skills.AsList(),
-            DressSizes = dressSizes.AsList()
+            DressSizes = dressSizes.AsList(),
+            Educations = educations.AsList(),
+            Trainings = trainings.AsList()
         };
     }
 
@@ -653,6 +671,22 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                 (EmployeeId, DressId, CreatedDate, CreatedBy)
             OUTPUT INSERTED.EmployeeDressId
             VALUES (@EmployeeId, @DressId, @CreatedDate, @CreatedBy);
+            ";
+        const string educationSql = @"
+            INSERT INTO EmployeeEducation
+                (EmployeeId, Qualification, BoardUniversity, Institution, Faculty, PassedYear,
+                 JoinedDate, PassoutDate, JoinedDateBS, PassoutDateBS, DivisionGrade, Remarks, CreatedDate, CreatedBy)
+            OUTPUT INSERTED.EducationId
+            VALUES (@EmployeeId, @Qualification, @BoardUniversity, @Institution, @Faculty, @PassedYear,
+                    @JoinedDate, @PassoutDate, @JoinedDateBS, @PassoutDateBS, @DivisionGrade, @Remarks, @CreatedDate, @CreatedBy);
+            ";
+        const string trainingSql = @"
+            INSERT INTO EmployeeTraining
+                (EmployeeId, TrainingTitle, TrainingProvider, TrainingType, TrainingLocation,
+                 JoinedDate, PassoutDate, JoinedDateBS, PassoutDateBS, Duration, CertificateNo, Remarks, CreatedDate, CreatedBy)
+            OUTPUT INSERTED.TrainingId
+            VALUES (@EmployeeId, @TrainingTitle, @TrainingProvider, @TrainingType, @TrainingLocation,
+                    @JoinedDate, @PassoutDate, @JoinedDateBS, @PassoutDateBS, @Duration, @CertificateNo, @Remarks, @CreatedDate, @CreatedBy);
             ";
 
 
@@ -761,6 +795,56 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                     dressSql, dressParams, transaction, cancellationToken: cancellationToken));
             }
 
+            foreach (var education in employee.Educations)
+            {
+                education.EmployeeId = employee.EmployeeId;
+                var educationParams = new
+                {
+                    education.EmployeeId,
+                    education.Qualification,
+                    education.BoardUniversity,
+                    education.Institution,
+                    education.Faculty,
+                    education.PassedYear,
+                    JoinedDate = education.JoinedDate?.ToDateTime(TimeOnly.MinValue),
+                    PassoutDate = education.PassoutDate?.ToDateTime(TimeOnly.MinValue),
+                    education.JoinedDateBS,
+                    education.PassoutDateBS,
+                    education.DivisionGrade,
+                    education.Remarks,
+                    education.CreatedDate,
+                    education.CreatedBy
+                };
+
+                education.EducationId = await connection.ExecuteScalarAsync<int>(new CommandDefinition(
+                    educationSql, educationParams, transaction, cancellationToken: cancellationToken));
+            }
+
+            foreach (var training in employee.Trainings)
+            {
+                training.EmployeeId = employee.EmployeeId;
+                var trainingParams = new
+                {
+                    training.EmployeeId,
+                    training.TrainingTitle,
+                    training.TrainingProvider,
+                    training.TrainingType,
+                    training.TrainingLocation,
+                    JoinedDate = training.JoinedDate?.ToDateTime(TimeOnly.MinValue),
+                    PassoutDate = training.PassoutDate?.ToDateTime(TimeOnly.MinValue),
+                    training.JoinedDateBS,
+                    training.PassoutDateBS,
+                    training.Duration,
+                    training.CertificateNo,
+                    training.Remarks,
+                    training.CreatedDate,
+                    training.CreatedBy
+                };
+
+                training.TrainingId = await connection.ExecuteScalarAsync<int>(new CommandDefinition(
+                    trainingSql, trainingParams, transaction, cancellationToken: cancellationToken));
+            }
+
             transaction.Commit();
             return employee.EmployeeId;
         }
@@ -864,6 +948,22 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
             INSERT INTO EmployeeDresses (EmployeeId, DressId, CreatedDate, CreatedBy)
             VALUES (@EmployeeId, @DressId, @CreatedDate, @CreatedBy);
             ";
+        const string deleteEducationsSql = "DELETE FROM EmployeeEducation WHERE EmployeeId = @EmployeeId;";
+        const string deleteTrainingsSql = "DELETE FROM EmployeeTraining WHERE EmployeeId = @EmployeeId;";
+        const string educationSql = @"
+            INSERT INTO EmployeeEducation
+                (EmployeeId, Qualification, BoardUniversity, Institution, Faculty, PassedYear,
+                 JoinedDate, PassoutDate, JoinedDateBS, PassoutDateBS, DivisionGrade, Remarks, CreatedDate, CreatedBy)
+            VALUES (@EmployeeId, @Qualification, @BoardUniversity, @Institution, @Faculty, @PassedYear,
+                    @JoinedDate, @PassoutDate, @JoinedDateBS, @PassoutDateBS, @DivisionGrade, @Remarks, @CreatedDate, @CreatedBy);
+            ";
+        const string trainingSql = @"
+            INSERT INTO EmployeeTraining
+                (EmployeeId, TrainingTitle, TrainingProvider, TrainingType, TrainingLocation,
+                 JoinedDate, PassoutDate, JoinedDateBS, PassoutDateBS, Duration, CertificateNo, Remarks, CreatedDate, CreatedBy)
+            VALUES (@EmployeeId, @TrainingTitle, @TrainingProvider, @TrainingType, @TrainingLocation,
+                    @JoinedDate, @PassoutDate, @JoinedDateBS, @PassoutDateBS, @Duration, @CertificateNo, @Remarks, @CreatedDate, @CreatedBy);
+            ";
 
         var parameters = new
         {
@@ -935,6 +1035,8 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                     cancellationToken: cancellationToken));
             }
             await connection.ExecuteAsync(new CommandDefinition(deleteDressesSql, employeeParameter, transaction, cancellationToken: cancellationToken));
+            await connection.ExecuteAsync(new CommandDefinition(deleteEducationsSql, employeeParameter, transaction, cancellationToken: cancellationToken));
+            await connection.ExecuteAsync(new CommandDefinition(deleteTrainingsSql, employeeParameter, transaction, cancellationToken: cancellationToken));
 
             foreach (var address in employee.Addresses)
             {
@@ -984,6 +1086,48 @@ public sealed class EmployeeRepository(IDbConnectionFactory connectionFactory) :
                     dress.DressId,
                     dress.CreatedDate,
                     dress.CreatedBy
+                }, transaction, cancellationToken: cancellationToken));
+            }
+
+            foreach (var education in employee.Educations)
+            {
+                await connection.ExecuteAsync(new CommandDefinition(educationSql, new
+                {
+                    employee.EmployeeId,
+                    education.Qualification,
+                    education.BoardUniversity,
+                    education.Institution,
+                    education.Faculty,
+                    education.PassedYear,
+                    JoinedDate = education.JoinedDate?.ToDateTime(TimeOnly.MinValue),
+                    PassoutDate = education.PassoutDate?.ToDateTime(TimeOnly.MinValue),
+                    education.JoinedDateBS,
+                    education.PassoutDateBS,
+                    education.DivisionGrade,
+                    education.Remarks,
+                    education.CreatedDate,
+                    education.CreatedBy
+                }, transaction, cancellationToken: cancellationToken));
+            }
+
+            foreach (var training in employee.Trainings)
+            {
+                await connection.ExecuteAsync(new CommandDefinition(trainingSql, new
+                {
+                    employee.EmployeeId,
+                    training.TrainingTitle,
+                    training.TrainingProvider,
+                    training.TrainingType,
+                    training.TrainingLocation,
+                    JoinedDate = training.JoinedDate?.ToDateTime(TimeOnly.MinValue),
+                    PassoutDate = training.PassoutDate?.ToDateTime(TimeOnly.MinValue),
+                    training.JoinedDateBS,
+                    training.PassoutDateBS,
+                    training.Duration,
+                    training.CertificateNo,
+                    training.Remarks,
+                    training.CreatedDate,
+                    training.CreatedBy
                 }, transaction, cancellationToken: cancellationToken));
             }
 

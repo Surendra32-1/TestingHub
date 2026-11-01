@@ -5,7 +5,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
-import { TopbarComponent } from '../../shared/components/topbar/topbar.component';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { PagedResult } from '../../shared/models/paged-result.model';
 import { ToastService } from '../../shared/services/toast.service';
@@ -166,7 +165,7 @@ const masterConfigs: Record<MasterKey, MasterConfig> = {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TopbarComponent, PaginationComponent],
+  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
   selector: 'app-master-settings',
   styleUrl: './master-settings.css',
   templateUrl: './master-settings.html'

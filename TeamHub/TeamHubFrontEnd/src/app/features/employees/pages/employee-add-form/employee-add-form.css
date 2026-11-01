@@ -55,6 +55,12 @@
   border-bottom: 0;
 }
 
+.form-section.education-section,
+.form-section.training-section {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
 .section-title {
   display: flex;
   grid-column: 1 / -1;
@@ -594,3 +600,4 @@ button:disabled {
     flex-wrap: wrap;
   }
 }
+

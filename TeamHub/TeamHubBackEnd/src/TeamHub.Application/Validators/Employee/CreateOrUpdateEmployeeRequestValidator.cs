@@ -93,6 +93,10 @@ public sealed class CreateOrUpdateEmployeeRequestValidator : AbstractValidator<C
             .When(request => request.CotivityEmployeeId.HasValue);
         RuleForEach(request => request.Addresses).SetValidator(new EmployeeAddressDtoValidator());
         RuleForEach(request => request.Skills).SetValidator(new EmployeeSkillDtoValidator());
+        RuleForEach(request => request.Educations!).SetValidator(new EmployeeEducationDtoValidator())
+            .When(request => request.Educations is not null);
+        RuleForEach(request => request.Trainings!).SetValidator(new EmployeeTrainingDtoValidator())
+            .When(request => request.Trainings is not null);
         RuleForEach(request => request.DressSizes)
             .ChildRules(dress => dress.RuleFor(item => item.DressId)
                 .GreaterThan(0).WithMessage("Select a valid dress size."));

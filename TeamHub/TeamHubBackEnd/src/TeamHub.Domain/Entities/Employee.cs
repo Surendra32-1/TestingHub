@@ -48,4 +48,6 @@ public class Employee : AuditableEntity<int>
     public ICollection<EmployeeAddress> Addresses { get; set; } = new List<EmployeeAddress>();
     public ICollection<EmployeeSkill> Skills { get; set; } = new List<EmployeeSkill>();
     public ICollection<EmployeeDress> DressSizes { get; set; } = new List<EmployeeDress>();
+    public ICollection<EmployeeEducation> Educations { get; set; } = new List<EmployeeEducation>();
+    public ICollection<EmployeeTraining> Trainings { get; set; } = new List<EmployeeTraining>();
 }

@@ -1,23 +1,16 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { MenuService } from '../../../core/config/menu.service';
 import { MenuItem } from '../../../core/config/menu.config';
 import { ProfileService } from '../../../features/profile/profile.service';
 
-/**
- * Navbar 2 (Administration). Fully independent from the employee TopbarComponent:
- * its own markup, styling, positioning, active highlighting, profile and settings
- * sections. It reuses shared services (MenuService/AuthService/ProfileService) so
- * visibility stays driven by the existing RolePermissions pipeline, and it drops
- * the People entry (People belongs to Navbar 1 only).
- */
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule],
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.css'
 })
@@ -33,13 +26,24 @@ export class AdminNavbarComponent implements OnInit {
   profileUsername: string | null = null;
   isProfileMenuOpen = false;
   isSettingsMenuOpen = false;
-  openBranchId: string | null = null;
 
-  /** Admin navigation = permission-visible menu minus People and anonymous entries. */
+  @Output() readonly sidebarToggle = new EventEmitter<void>();
+
+  @Input() sidebarCollapsed = false;
+
+  toggleSidebar(): void {
+    this.sidebarToggle.emit();
+  }
+
   get adminItems(): MenuItem[] {
     return this.menu
       .visibleMenu()
       .filter((item) => item.id !== 'employee' && item.visibility !== 'anonymous');
+  }
+
+  get sectionTitle(): string {
+    const active = this.adminItems.find((item) => this.isActiveItem(item));
+    return active?.label ?? 'Administration';
   }
 
   get isAuthenticated(): boolean {
@@ -111,17 +115,6 @@ export class AdminNavbarComponent implements OnInit {
   closeAll(): void {
     this.isProfileMenuOpen = false;
     this.isSettingsMenuOpen = false;
-    this.openBranchId = null;
-  }
-
-  isBranchOpen(item: MenuItem): boolean {
-    return this.openBranchId === item.id;
-  }
-
-  toggleBranch(item: MenuItem): void {
-    this.openBranchId = this.isBranchOpen(item) ? null : item.id;
-    this.isSettingsMenuOpen = false;
-    this.isProfileMenuOpen = false;
   }
 
   isActiveItem(item: MenuItem): boolean {
@@ -144,7 +137,6 @@ export class AdminNavbarComponent implements OnInit {
   toggleProfileMenu(): void {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
     this.isSettingsMenuOpen = false;
-    this.openBranchId = null;
     if (this.isProfileMenuOpen) {
       this.loadProfileSummary();
     }
@@ -153,7 +145,6 @@ export class AdminNavbarComponent implements OnInit {
   toggleSettingsMenu(): void {
     this.isSettingsMenuOpen = !this.isSettingsMenuOpen;
     this.isProfileMenuOpen = false;
-    this.openBranchId = null;
   }
 
   openRoleMaster(): void {

@@ -3,7 +3,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
-import { TopbarComponent } from '../../../../shared/components/topbar/topbar.component';
 import { getApiErrorMessage } from '../../../../shared/services/api-error-message';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { Department } from '../../models/employee-master.model';
@@ -14,7 +13,7 @@ import { EmployeeService } from '../../services/employee.service';
 @Component({
   selector: 'app-employee-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, TopbarComponent, PaginationComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent],
   templateUrl: './employee-search.component.html',
   styleUrl: './employee-search.component.css'
 })

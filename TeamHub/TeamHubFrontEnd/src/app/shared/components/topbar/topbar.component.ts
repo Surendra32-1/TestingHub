@@ -3,24 +3,20 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { MenuService } from '../../../core/config/menu.service';
-import { NavbarSelectionService } from '../../../core/config/navbar-selection.service';
 import { ProfileService } from '../../../features/profile/profile.service';
-import { AdminNavbarComponent } from '../admin-navbar/admin-navbar.component';
 import { NavMenuComponent } from '../nav-menu/nav-menu.component';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
   imports: [
-    NavMenuComponent,
-    AdminNavbarComponent
+    NavMenuComponent
   ],
   templateUrl: './topbar.component.html',
   styleUrl: './topbar.component.css'
 })
 export class TopbarComponent implements OnInit {
   readonly menu = inject(MenuService);
-  readonly navbarSelection = inject(NavbarSelectionService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly profileService = inject(ProfileService);
@@ -64,10 +60,6 @@ export class TopbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // The admin navbar owns its own profile section; don't double-load the summary.
-    if (this.navbarSelection.useAdminNavbar()) {
-      return;
-    }
     this.loadProfileSummary();
   }
 

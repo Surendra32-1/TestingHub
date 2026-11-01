@@ -64,6 +64,34 @@ export interface CreateEmployeeRequest {
   }>;
   skills: Array<{ skillId: number; skillLevel: number; isPrimary: boolean }>;
   dressSizes: Array<{ dressId: number; dressName: string; size: string; isActive: boolean }>;
+  educations: Array<{
+    educationId?: number;
+    qualification: string;
+    boardUniversity: string | null;
+    institution: string | null;
+    faculty: string | null;
+    passedYear: number | null;
+    joinedDate: string | null;
+    passoutDate: string | null;
+    joinedDateBS: string | null;
+    passoutDateBS: string | null;
+    divisionGrade: string | null;
+    remarks: string | null;
+  }>;
+  trainings: Array<{
+    trainingId?: number;
+    trainingTitle: string;
+    trainingProvider: string | null;
+    trainingType: string | null;
+    trainingLocation: string | null;
+    joinedDate: string | null;
+    passoutDate: string | null;
+    joinedDateBS: string | null;
+    passoutDateBS: string | null;
+    duration: string | null;
+    certificateNo: string | null;
+    remarks: string | null;
+  }>;
 }
 
 export interface EmployeeEditResponse extends Omit<CreateEmployeeRequest, 'addresses' | 'skills' | 'dressSizes'> {
@@ -285,6 +313,34 @@ export interface EmployeeDetails {
     dressName: string;
     size: string;
     isActive: boolean;
+  }>;
+  educations: Array<{
+    educationId: number;
+    qualification: string;
+    boardUniversity: string | null;
+    institution: string | null;
+    faculty: string | null;
+    passedYear: number | null;
+    joinedDate: string | null;
+    passoutDate: string | null;
+    joinedDateBS: string | null;
+    passoutDateBS: string | null;
+    divisionGrade: string | null;
+    remarks: string | null;
+  }>;
+  trainings: Array<{
+    trainingId: number;
+    trainingTitle: string;
+    trainingProvider: string | null;
+    trainingType: string | null;
+    trainingLocation: string | null;
+    joinedDate: string | null;
+    passoutDate: string | null;
+    joinedDateBS: string | null;
+    passoutDateBS: string | null;
+    duration: string | null;
+    certificateNo: string | null;
+    remarks: string | null;
   }>;
 }
 

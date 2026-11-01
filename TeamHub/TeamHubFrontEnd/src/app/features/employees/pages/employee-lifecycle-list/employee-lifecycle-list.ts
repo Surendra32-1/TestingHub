@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { Department } from '../../models/employee-master.model';
 import { EmployeeReleaseRecord, EmployeeService, EmployeeTerminationRecord, ReleaseClearanceUpdate, ReleaseStatus, TerminationClearanceUpdate, TerminationStatus } from '../../services/employee.service';
-import { TopbarComponent } from '../../../../shared/components/topbar/topbar.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { getApiErrorMessage } from '../../../../shared/services/api-error-message';
@@ -15,7 +14,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 @Component({
   selector: 'app-employee-lifecycle-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TopbarComponent, PaginationComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent],
   templateUrl: './employee-lifecycle-list.html',
   styleUrl: './employee-lifecycle-list.css'
 })

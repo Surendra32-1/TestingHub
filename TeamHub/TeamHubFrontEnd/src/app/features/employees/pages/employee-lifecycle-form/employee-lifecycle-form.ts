@@ -10,7 +10,6 @@ import {
   EmployeeService,
   EmployeeTerminationRequest
 } from '../../services/employee.service';
-import { TopbarComponent } from '../../../../shared/components/topbar/topbar.component';
 import { ToastService } from '../../../../shared/services/toast.service';
 import { getApiErrorMessage } from '../../../../shared/services/api-error-message';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -18,7 +17,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 @Component({
   selector: 'app-employee-lifecycle-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TopbarComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './employee-lifecycle-form.html',
   styleUrl: './employee-lifecycle-form.css'
 })

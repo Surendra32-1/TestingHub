@@ -121,5 +121,47 @@
       </dl>
     </section>
 
+    <section class="details-section">
+      <h2>Education</h2>
+      <p *ngIf="!person.educations || person.educations.length === 0" class="muted">No education records.</p>
+      <article *ngFor="let education of person.educations; trackBy: trackByEducationId" class="related-item">
+        <strong>{{ education.qualification }}</strong>
+        <p *ngIf="education.boardUniversity || education.institution">
+          {{ education.institution || '—' }}<span *ngIf="education.boardUniversity"> · {{ education.boardUniversity }}</span>
+        </p>
+        <p>
+          <span *ngIf="education.faculty">{{ education.faculty }} · </span>
+          <span *ngIf="education.passedYear">Passed {{ education.passedYear }}</span>
+          <span *ngIf="education.divisionGrade"> · {{ education.divisionGrade }}</span>
+        </p>
+        <p *ngIf="education.joinedDate || education.passoutDate || education.joinedDateBS || education.passoutDateBS">
+          Joined: {{ education.joinedDate ? (education.joinedDate | date:'mediumDate') : '—' }}<span *ngIf="education.joinedDateBS"> (B.S. {{ education.joinedDateBS }})</span>
+          · Passout: {{ education.passoutDate ? (education.passoutDate | date:'mediumDate') : '—' }}<span *ngIf="education.passoutDateBS"> (B.S. {{ education.passoutDateBS }})</span>
+        </p>
+        <p *ngIf="education.remarks" class="muted">{{ education.remarks }}</p>
+      </article>
+    </section>
+
+    <section class="details-section">
+      <h2>Training</h2>
+      <p *ngIf="!person.trainings || person.trainings.length === 0" class="muted">No training records.</p>
+      <article *ngFor="let training of person.trainings; trackBy: trackByTrainingId" class="related-item">
+        <strong>{{ training.trainingTitle }}</strong>
+        <p *ngIf="training.trainingProvider || training.trainingType">
+          {{ training.trainingProvider || '—' }}<span *ngIf="training.trainingType"> · {{ training.trainingType }}</span>
+        </p>
+        <p>
+          <span *ngIf="training.trainingLocation">{{ training.trainingLocation }} · </span>
+          <span *ngIf="training.duration">{{ training.duration }}</span>
+          <span *ngIf="training.certificateNo"> · Cert. {{ training.certificateNo }}</span>
+        </p>
+        <p *ngIf="training.joinedDate || training.passoutDate || training.joinedDateBS || training.passoutDateBS">
+          Joined: {{ training.joinedDate ? (training.joinedDate | date:'mediumDate') : '—' }}<span *ngIf="training.joinedDateBS"> (B.S. {{ training.joinedDateBS }})</span>
+          · Passout: {{ training.passoutDate ? (training.passoutDate | date:'mediumDate') : '—' }}<span *ngIf="training.passoutDateBS"> (B.S. {{ training.passoutDateBS }})</span>
+        </p>
+        <p *ngIf="training.remarks" class="muted">{{ training.remarks }}</p>
+      </article>
+    </section>
+
   </ng-container>
 </section>

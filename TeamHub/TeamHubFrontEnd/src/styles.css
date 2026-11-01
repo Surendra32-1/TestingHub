@@ -53,9 +53,6 @@ select {
   font: inherit;
 }
 
-/* Gear / profile dropdown items: keep the dark hover in sync with the nav dropdowns.
-   Global so Angular Material theme hover/focus overlays can't override it.
-   The hover row must span the FULL dropdown width (no inset pill, no gaps). */
 .profile-dropdown button,
 .profile-dropdown button:hover,
 .profile-dropdown button:focus,
@@ -137,3 +134,48 @@ select option:disabled {
   color: var(--th-muted);
   cursor: default;
 }
+
+.education-section,
+.training-section {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.repeat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid var(--th-border);
+  border-radius: 8px;
+}
+
+.repeat-row .field-wide {
+  grid-column: 1 / -1;
+}
+
+.repeat-row textarea {
+  width: 100%;
+  resize: vertical;
+  font: inherit;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--th-border);
+  border-radius: 6px;
+}
+
+.repeat-add,
+.repeat-remove {
+  justify-self: start;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--th-border);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.repeat-remove {
+  justify-self: end;
+  border-color: #dc2626;
+  color: #dc2626;
+}
+

@@ -109,6 +109,38 @@ export interface EmployeeProfileEmployee {
   addresses: EmployeeProfileAddress[];
   skills: EmployeeProfileSkill[];
   dressSizes: EmployeeProfileDressSize[];
+  educations: EmployeeProfileEducation[];
+  trainings: EmployeeProfileTraining[];
+}
+
+export interface EmployeeProfileEducation {
+  educationId: number;
+  qualification: string;
+  boardUniversity: string | null;
+  institution: string | null;
+  faculty: string | null;
+  passedYear: number | null;
+  joinedDate: string | null;
+  passoutDate: string | null;
+  joinedDateBS: string | null;
+  passoutDateBS: string | null;
+  divisionGrade: string | null;
+  remarks: string | null;
+}
+
+export interface EmployeeProfileTraining {
+  trainingId: number;
+  trainingTitle: string;
+  trainingProvider: string | null;
+  trainingType: string | null;
+  trainingLocation: string | null;
+  joinedDate: string | null;
+  passoutDate: string | null;
+  joinedDateBS: string | null;
+  passoutDateBS: string | null;
+  duration: string | null;
+  certificateNo: string | null;
+  remarks: string | null;
 }
 
 export interface EmployeeProfile {

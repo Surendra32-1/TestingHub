@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { TopbarComponent } from '../../../../shared/components/topbar/topbar.component';
 import { DepartmentsViewComponent } from '../../components/departments-view/departments-view.component';
 import { DirectoryViewComponent } from '../../components/directory-view/directory-view.component';
 import { EmployeeTabComponent } from '../../components/employee-tab/employee-tab.component';
@@ -22,7 +21,6 @@ type EmployeeView = 'directory' | 'departments' | 'hierarchy' | 'details';
   imports: [
     CommonModule,
     RouterLink,
-    TopbarComponent,
     EmployeeTabComponent,
     DirectoryViewComponent,
     DepartmentsViewComponent,
