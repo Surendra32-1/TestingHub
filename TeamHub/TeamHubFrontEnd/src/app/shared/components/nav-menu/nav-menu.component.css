@@ -30,8 +30,12 @@
 
 .nav-item:hover,
 .nav-item.active {
-  background: #1f2937;
+  background: #111827;
   color: #fff;
+}
+
+.nav-item:focus {
+  outline: none;
 }
 
 .nav-item--end {
@@ -48,7 +52,14 @@
 }
 
 .menu-branch--active > .nav-item {
-  background: #1f2937;
+  background: #111827;
+  color: #fff;
+}
+
+/* When a branch dropdown is opened via click, highlight its trigger the same
+   way as the active/hover state (fixes Cotivity/Org Master inconsistency). */
+.menu-branch--open > .nav-item {
+  background: #111827;
   color: #fff;
 }
 

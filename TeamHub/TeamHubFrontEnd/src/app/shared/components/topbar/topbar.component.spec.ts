@@ -10,7 +10,7 @@ import { TopbarComponent } from './topbar.component';
 @Component({ selector: 'app-blank-page', standalone: true, template: '' })
 class BlankPageComponent {}
 
-describe('TopbarComponent', () => {
+describe('TopbarComponent (Navbar 1 - employee)', () => {
   let fixture: ComponentFixture<TopbarComponent>;
   let authService: AuthService;
   let router: Router;
@@ -24,7 +24,7 @@ describe('TopbarComponent', () => {
       });
 
   const signIn = (permissions: string[]) =>
-    authService.storeSession({ accessToken: 'token', expiresIn: 900, roles: ['Admin'], permissions });
+    authService.storeSession({ accessToken: 'token', expiresIn: 900, roles: ['NormalUser'], permissions });
 
   beforeEach(async () => {
     sessionStorage.clear();
@@ -56,82 +56,33 @@ describe('TopbarComponent', () => {
     expect(host().querySelector('.profile-trigger')).toBeNull();
   });
 
-  it('renders only the entries the signed-in permissions allow', () => {
-    signIn(['administration.view', 'organization.department.view', 'user-roles.assign']);
+  it('renders the employee navbar (People + Profile) when no admin module is granted', () => {
+    signIn(['people.allemployee.search.view', 'profile.view', 'profile.edit']);
     fixture.detectChanges();
 
-    expect(itemLabels()).toEqual(['Administration', 'Organization Master']);
+    expect(host().querySelector('app-admin-navbar')).toBeNull();
+    expect(itemLabels()).toEqual(['People']);
     expect(host().querySelector('.profile-trigger')).not.toBeNull();
   });
 
-  it('shows only permitted matrix links in the gear dropdown', () => {
-    signIn(['setting.gear', 'setting.gear.EmployeeRole', 'setting.gear.RolePermission']);
+  it('keeps the employee navbar for a profile-only signed-in user', () => {
+    signIn(['profile.view', 'profile.edit']);
     fixture.detectChanges();
 
-    host().querySelector<HTMLButtonElement>('.settings-trigger')!.click();
-    fixture.detectChanges();
-
-    const dropdown = host().querySelector('.settings-dropdown');
-    expect(dropdown?.textContent).toContain('Employee Role');
-    expect(dropdown?.textContent).toContain('Role Permission');
-    expect(dropdown?.textContent).not.toContain('Matrix');
+    expect(host().querySelector('app-admin-navbar')).toBeNull();
+    expect(host().querySelector('.profile-trigger')).not.toBeNull();
   });
 
-  it('shows Role and Manage Permissions in the gear when their permissions are granted', () => {
-    signIn(['setting.gear.role.view', 'setting.gear.manage.permissions.view']);
+  it('delegates to the independent admin navbar once an admin module is granted', () => {
+    signIn(['administration.view']);
     fixture.detectChanges();
 
-    host().querySelector<HTMLButtonElement>('.settings-trigger')!.click();
-    fixture.detectChanges();
-
-    const links = Array.from(host().querySelectorAll<HTMLButtonElement>('.settings-dropdown button'))
-      .map((button) => button.textContent?.trim());
-    expect(links).toEqual(['Role', 'Manage Permissions']);
-  });
-
-  it('hides Role and Manage Permissions from the gear without their View permissions', () => {
-    signIn(['master.role.view', 'permissions.manage']);
-    fixture.detectChanges();
-
-    expect(host().querySelector('.settings-trigger')).toBeNull();
-  });
-
-  it('shows the gear only when at least one settings entry is authorized', () => {
-    signIn(['setting.gear.EmployeeRole']);
-    fixture.detectChanges();
-    expect(host().querySelector('.settings-trigger')).not.toBeNull();
-
-    signIn(['setting.gear']);
-    fixture.detectChanges();
-    expect(host().querySelector('.settings-trigger')).toBeNull();
-  });
-
-  it('navigates to the employee role matrix from the gear menu', async () => {
-    signIn(['setting.gear', 'setting.gear.EmployeeRole']);
-    fixture.detectChanges();
-
-    host().querySelector<HTMLButtonElement>('.settings-trigger')!.click();
-    fixture.detectChanges();
-    host().querySelector<HTMLButtonElement>('.settings-dropdown button')!.click();
-    await fixture.whenStable();
-
-    expect(router.url).toBe('/settings/employee-role-matrix');
-  });
-
-  it('navigates to the role permission matrix from the gear menu', async () => {
-    signIn(['setting.gear', 'setting.gear.RolePermission']);
-    fixture.detectChanges();
-
-    host().querySelector<HTMLButtonElement>('.settings-trigger')!.click();
-    fixture.detectChanges();
-    host().querySelector<HTMLButtonElement>('.settings-dropdown button')!.click();
-    await fixture.whenStable();
-
-    expect(router.url).toBe('/settings/role-permission-matrix');
+    expect(host().querySelector('app-admin-navbar')).not.toBeNull();
+    expect(host().querySelector('.topbar')).toBeNull();
   });
 
   it('opens the profile menu and closes it when clicking outside', () => {
-    signIn(['organization.department.view', 'profile.view', 'profile.edit']);
+    signIn(['people.allemployee.search.view', 'profile.view', 'profile.edit']);
     fixture.detectChanges();
 
     host().querySelector<HTMLButtonElement>('.profile-trigger')!.click();
@@ -158,9 +109,9 @@ describe('TopbarComponent', () => {
   });
 
   it('removes every protected entry when the user signs out', async () => {
-    signIn(['organization.department.view']);
+    signIn(['people.allemployee.search.view', 'profile.view']);
     fixture.detectChanges();
-    expect(itemLabels()).toContain('Organization Master');
+    expect(itemLabels()).toContain('People');
 
     host().querySelector<HTMLButtonElement>('.profile-trigger')!.click();
     fixture.detectChanges();
@@ -171,18 +122,5 @@ describe('TopbarComponent', () => {
 
     expect(itemLabels()).toEqual(['Home', 'Login']);
     expect(router.url).toBe('/login');
-  });
-
-  it('re-renders the navigation when another account takes over the session', () => {
-    signIn(['administration.view', 'setting.gear', 'setting.gear.EmployeeRole']);
-    fixture.detectChanges();
-    expect(itemLabels()).toEqual(['Administration']);
-    expect(host().querySelector('.settings-trigger')).not.toBeNull();
-
-    signIn(['administration.view', 'terminations.view']);
-    fixture.detectChanges();
-
-    expect(itemLabels()).toEqual(['Administration', 'Terminations']);
-    expect(host().querySelector('.settings-trigger')).toBeNull();
   });
 });

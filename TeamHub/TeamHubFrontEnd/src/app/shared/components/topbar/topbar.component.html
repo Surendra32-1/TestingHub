@@ -1,3 +1,6 @@
+@if (navbarSelection.useAdminNavbar()) {
+  <app-admin-navbar />
+} @else {
 <header class="topbar">
   <nav class="main-nav">
     <app-nav-menu [items]="menu.visibleMenu()" />
@@ -68,3 +71,4 @@
     </div>
   }
 </header>
+}

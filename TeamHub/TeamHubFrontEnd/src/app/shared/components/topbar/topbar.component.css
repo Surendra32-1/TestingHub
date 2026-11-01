@@ -48,13 +48,13 @@
 
 .settings-trigger:hover,
 .settings-trigger[aria-expanded='true'] {
-  background: #e5e7eb;
-  color: #1f2937;
+  background: #111827;
+  color: #fff;
 }
 
+.settings-trigger:focus,
 .settings-trigger:focus-visible {
-  outline: 2px solid #64748b;
-  outline-offset: 2px;
+  outline: none;
 }
 
 .profile-menu-container {
