@@ -53,6 +53,42 @@ select {
   font: inherit;
 }
 
+/* Gear / profile dropdown items: keep the dark hover in sync with the nav dropdowns.
+   Global so Angular Material theme hover/focus overlays can't override it.
+   The hover row must span the FULL dropdown width (no inset pill, no gaps). */
+.profile-dropdown button,
+.profile-dropdown button:hover,
+.profile-dropdown button:focus,
+.profile-dropdown button:focus-visible,
+.profile-dropdown button:active,
+.menu-row,
+.menu-row:hover,
+.menu-row:focus,
+.menu-row:focus-visible,
+.menu-row:active {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  box-sizing: border-box;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.profile-dropdown button:hover,
+.profile-dropdown button:focus,
+.profile-dropdown button:focus-visible,
+.profile-dropdown button:active,
+.menu-row:hover,
+.menu-row:focus,
+.menu-row:focus-visible,
+.menu-row:active {
+  background: #111827 !important;
+  color: #ffffff !important;
+  outline: none;
+}
+
 select,
 ::picker(select) {
   appearance: base-select;

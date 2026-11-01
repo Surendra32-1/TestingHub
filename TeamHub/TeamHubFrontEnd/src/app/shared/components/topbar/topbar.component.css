@@ -108,9 +108,10 @@
   width: var(--th-dropdown-width);
   max-width: calc(100vw - 1.5rem);
   box-sizing: border-box;
-  padding: 0.2rem 0;
+  padding: 0;
   border: 1px solid #dfe3e8;
   border-radius: 0.35rem;
+  overflow: hidden;
   background: #fff;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
 }
@@ -135,7 +136,7 @@
 
 .profile-dropdown button:hover,
 .profile-dropdown button:focus-visible {
-  background: #1f2937;
+  background: #111827;
   color: #fff;
 }
 
