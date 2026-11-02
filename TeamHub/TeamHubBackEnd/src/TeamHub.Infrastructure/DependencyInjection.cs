@@ -1,3 +1,4 @@
+using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using TeamHub.Application.Contracts.Repositories;
 using TeamHub.Infrastructure.BloodGroups;
@@ -29,6 +30,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
     {
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
         services.AddSingleton<IDbConnectionFactory>(new SqlConnectionFactory(connectionString));
         services.AddScoped<IBloodGroupRepository, BloodGroupRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
