@@ -1,5 +1,7 @@
 :host {
   display: block;
+  flex: 1;
+  min-width: 0;
 }
 
 .menu-level--root {

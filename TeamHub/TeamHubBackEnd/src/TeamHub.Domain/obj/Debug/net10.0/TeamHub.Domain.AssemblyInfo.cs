@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TeamHub.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1e7cbb77f567d35099a826c2e6ac4b3a0388b42b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4ea63baa4a08c755f783ebebb6e3304389cd9127")]
 [assembly: System.Reflection.AssemblyProductAttribute("TeamHub.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TeamHub.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
