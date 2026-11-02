@@ -29,7 +29,7 @@ export class AdminSidebarComponent implements OnInit, OnDestroy {
   get navItems(): MenuItem[] {
     return this.menu
       .visibleMenu()
-      .filter((item) => item.id !== 'employee' && item.visibility !== 'anonymous');
+      .filter((item) => item.visibility !== 'anonymous');
   }
 
   ngOnInit(): void {

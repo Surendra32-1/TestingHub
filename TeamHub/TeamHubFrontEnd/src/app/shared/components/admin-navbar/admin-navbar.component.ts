@@ -38,7 +38,7 @@ export class AdminNavbarComponent implements OnInit {
   get adminItems(): MenuItem[] {
     return this.menu
       .visibleMenu()
-      .filter((item) => item.id !== 'employee' && item.visibility !== 'anonymous');
+      .filter((item) => item.visibility !== 'anonymous');
   }
 
   get sectionTitle(): string {

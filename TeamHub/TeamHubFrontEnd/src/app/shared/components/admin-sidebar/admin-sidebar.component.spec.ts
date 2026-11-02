@@ -47,14 +47,14 @@ describe('AdminSidebarComponent (Navbar 2 left nav)', () => {
 
   afterEach(() => sessionStorage.clear());
 
-  it('renders admin navigation from permissions and never shows People', () => {
+  it('renders admin navigation from permissions and includes People', () => {
     signIn(['people.allemployee.search.view', 'administration.view', 'organization.department.view']);
     fixture.detectChanges();
 
     const labels = topLevelLabels();
     expect(labels).toContain('Administration');
     expect(labels).toContain('Organization Master');
-    expect(labels).not.toContain('People');
+    expect(labels).toContain('People');
   });
 
   it('expands a branch on toggle and keeps a single branch open', () => {

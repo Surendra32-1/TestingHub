@@ -36,9 +36,9 @@ describe('NavbarSelectionService', () => {
 
   afterEach(() => sessionStorage.clear());
 
-  it('uses the employee navbar when only People and Profile are granted', () => {
+  it('uses the admin sidebar layout when only People and Profile are granted', () => {
     signIn(['people.allemployee.search.view', 'profile.view', 'profile.edit']);
-    expect(selection.useAdminNavbar()).toBe(false);
+    expect(selection.useAdminNavbar()).toBe(true);
   });
 
   it('uses the admin navbar when Administration is granted', () => {

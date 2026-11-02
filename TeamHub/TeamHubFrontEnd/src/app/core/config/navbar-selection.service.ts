@@ -9,7 +9,7 @@ export class NavbarSelectionService {
   private readonly auth = inject(AuthService);
 
   readonly useAdminNavbar = computed(() =>
-    this.menu.visibleMenu().some((item) => item.id !== 'employee' && item.visibility !== 'anonymous')
+    this.menu.visibleMenu().some((item) => item.visibility !== 'anonymous')
     || this.gearVisible());
 
   gearVisible(): boolean {
