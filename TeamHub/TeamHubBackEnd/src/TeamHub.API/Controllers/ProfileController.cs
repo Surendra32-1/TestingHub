@@ -98,24 +98,19 @@ public sealed class ProfileController(IEmployeeProfileService profileService) : 
 
         if (!TryReadPatch(body, out var patch, out var errors))
         {
-            return BadRequest(new ValidationProblemDetails(errors)
-            {
-                Title = "Profile update validation failed",
-                Status = StatusCodes.Status400BadRequest,
-                Instance = HttpContext.Request.Path
-            });
+            return BadRequest(ApiProblemDetailsFactory.Validation(
+                errors,
+                "Profile update validation failed",
+                HttpContext.Request.Path));
         }
 
         var result = await profileService.UpdateAsync(employeeId, patch, cancellationToken);
         if (result.Errors.Count > 0)
         {
-            return BadRequest(new ValidationProblemDetails(
-                result.Errors.ToDictionary(error => error.Key, error => error.Value))
-            {
-                Title = "Profile update validation failed",
-                Status = StatusCodes.Status400BadRequest,
-                Instance = HttpContext.Request.Path
-            });
+            return BadRequest(ApiProblemDetailsFactory.Validation(
+                new Dictionary<string, string[]>(result.Errors),
+                "Profile update validation failed",
+                HttpContext.Request.Path));
         }
 
         if (result.Profile is null)

@@ -34,14 +34,45 @@ public static class ApiProblemDetailsFactory
         return problem;
     }
 
+    public static ValidationProblemDetails Validation(
+        IDictionary<string, string[]> errors,
+        string title,
+        PathString instance)
+    {
+        var problem = new ValidationProblemDetails(
+            new Dictionary<string, string[]>(errors))
+        {
+            Title = title,
+            Status = StatusCodes.Status400BadRequest,
+            Instance = instance
+        };
+
+        var message = string.Join(" ", errors
+            .SelectMany(entry => entry.Value)
+            .Where(text => !string.IsNullOrWhiteSpace(text))
+            .Distinct());
+
+        AddResponseFields(problem, string.IsNullOrWhiteSpace(message) ? title : message);
+        return problem;
+    }
+
     public static void AddResponseFields(ProblemDetails problem, string? message = null)
     {
         var responseMessage = message ?? problem.Detail ?? problem.Title ?? "An error occurred.";
+
+        if (string.IsNullOrWhiteSpace(problem.Detail))
+        {
+            problem.Detail = responseMessage;
+        }
 
         problem.Extensions["success"] = false;
         problem.Extensions["message"] = responseMessage;
         problem.Extensions["data"] = null;
         problem.Extensions["error"] = responseMessage;
-        problem.Extensions.TryAdd("errors", new Dictionary<string, string[]>());
+
+        if (problem is not ValidationProblemDetails)
+        {
+            problem.Extensions.TryAdd("errors", new Dictionary<string, string[]>());
+        }
     }
 }

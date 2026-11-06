@@ -43,7 +43,9 @@ public sealed class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) : I
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Request failed",
-                "An unexpected error occurred while processing your request.")
+                string.IsNullOrWhiteSpace(exception.Message)
+                    ? "An unexpected error occurred while processing your request."
+                    : exception.Message)
         };
 
         logger.LogError(exception, "API request failed with status {StatusCode}.", status);

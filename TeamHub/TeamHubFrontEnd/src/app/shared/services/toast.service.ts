@@ -12,6 +12,9 @@ export interface ToastMessage {
   onAction?: () => void;
 }
 
+export const TOAST_AUTO_DISMISS_MS = 3000;
+export const TOAST_CONFIRM_DISMISS_MS = 7000;
+
 @Injectable({ providedIn: 'root' })
 export class ToastService {
   private readonly subject = new Subject<ToastMessage>();
@@ -23,7 +26,7 @@ export class ToastService {
   }
 
   error(message: string): void {
-    this.show(message, 'error', 6000);
+    this.show(message, 'error');
   }
 
   info(message: string): void {
@@ -35,13 +38,13 @@ export class ToastService {
       id: ++this.nextId,
       kind: 'confirm',
       message,
-      duration: 7000,
+      duration: TOAST_CONFIRM_DISMISS_MS,
       actionLabel,
       onAction: onConfirm
     });
   }
 
-  private show(message: string, kind: ToastKind, duration = 4000): void {
+  private show(message: string, kind: ToastKind, duration = TOAST_AUTO_DISMISS_MS): void {
     this.subject.next({ id: ++this.nextId, kind, message, duration });
   }
 }
